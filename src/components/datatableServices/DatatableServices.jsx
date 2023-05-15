@@ -1,6 +1,6 @@
-import "./datatableWorkers.scss";
+import "./datatableServices.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { workerColumns } from "../../datatablesource";
+import { machineColumns } from "../../datatablesource";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
@@ -12,7 +12,7 @@ const DatatableServices = () => {
   useEffect(() => {
     //LISTEN
     const unsub = onSnapshot(
-      collection(db, "workers"),
+      collection(db, "services"),
       (snapShot) => {
         let list = [];
         snapShot.docs.forEach((doc) => {
@@ -32,7 +32,7 @@ const DatatableServices = () => {
 
   const handleDelete = async (id) => {
     try {
-      await deleteDoc(doc(db, "workers", id));
+      await deleteDoc(doc(db, "services", id));
       setData(data.filter((item) => item.id !== id));
     } catch (err) {
       console.log(err);
@@ -64,15 +64,15 @@ const DatatableServices = () => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        Lista pracownikow
+        Lista maszyn
         <Link to="/services/new" className="link">
-          Dodaj nowego pracownika
+          Dodaj nową usługę
         </Link>
       </div>
       <DataGrid
         className="datagrid"
         rows={data}
-        columns={workerColumns.concat(actionColumn)}
+        columns={machineColumns.concat(actionColumn)}
         pageSize={9}
         rowsPerPageOptions={[9]}
         checkboxSelection

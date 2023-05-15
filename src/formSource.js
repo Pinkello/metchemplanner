@@ -13,6 +13,21 @@ export const machineInputs = [
   },
 ];
 
+export const serviceInputs = [
+  {
+    id: "name",
+    label: "Nazwa",
+    type: "text",
+    placeholder: "Nazwa",
+  },
+  {
+    id: "rowPlace",
+    label: "Miejsce w rzędzie",
+    type: "number",
+    placeholder: "Miejsce",
+  },
+];
+
 export const workerInputs = [
   {
     id: "name",

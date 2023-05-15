@@ -1,4 +1,4 @@
-import "./newMachine.scss";
+import "./newService.scss";
 
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
@@ -10,14 +10,13 @@ import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/navigation/NavigationBar";
 import Select from "react-select";
 
-const NewMachine = ({ inputs, title }) => {
+const NewService = ({ inputs, title }) => {
   const [file, setFile] = useState("");
   const [data, setData] = useState({});
   const [perc, setPerc] = useState(null);
   const navigate = useNavigate();
 
   const options = [
-    { value: "Boczny rząd ", label: "Boczny rząd" },
     { value: "Lewy rząd", label: "Lewy rząd" },
     { value: "Środkowy rząd", label: "Środkowy rząd" },
     { value: "Prawy rząd", label: "Prawy rząd" },
@@ -81,7 +80,7 @@ const NewMachine = ({ inputs, title }) => {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, "machines"), {
+      await addDoc(collection(db, "services"), {
         ...data,
       });
       navigate(-1);
@@ -122,7 +121,7 @@ const NewMachine = ({ inputs, title }) => {
                 />
               </div>
               <div className="formInput">
-                <label>Wybierz rząd maszyny</label>
+                <label>Wybierz rząd usługi</label>
                 <Select
                   options={options}
                   id="row"
@@ -142,7 +141,7 @@ const NewMachine = ({ inputs, title }) => {
                 </div>
               ))}
               <button disabled={perc !== null && perc < 100} type="submit">
-                Dodaj maszynę
+                Dodaj usługę
               </button>
             </form>
           </div>
@@ -152,4 +151,4 @@ const NewMachine = ({ inputs, title }) => {
   );
 };
 
-export default NewMachine;
+export default NewService;

@@ -1,16 +1,17 @@
-import "./workersList.scss";
-import DatatableWorkers from "../../components/datatable_workers/DatatableWorkers";
+import "./servicesList.scss";
+
+import DatatableServices from "../../components/datatableServices/DatatableServices";
 import NavigationBar from "../../components/navigation/NavigationBar";
 
-const List = () => {
+const ServicesList = () => {
   return (
     <div className="list">
       <div className="listContainer">
         <NavigationBar />
-        <DatatableWorkers />
+        <DatatableServices />
       </div>
     </div>
   );
 };
 
-export default List;
+export default ServicesList;

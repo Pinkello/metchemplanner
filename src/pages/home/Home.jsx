@@ -1,7 +1,7 @@
 import "./home.scss";
 import { toast, ToastContainer } from "react-toastify";
 import NavigationBar from "../../components/navigation/NavigationBar";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   collection,
   onSnapshot,
@@ -17,11 +17,15 @@ import { db } from "../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
+import Spinner from "react-bootstrap/Spinner";
 import Select from "react-select";
 
 const Home = () => {
   const [machines, setMachines] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentMachine, setCurrentMachine] = useState({});
+  const [currentService, setCurrentService] = useState({});
   const [currentDate, setCurrentDate] = useState(
     new Date().toISOString().slice(0, 10)
   );
@@ -30,7 +34,11 @@ const Home = () => {
   const [leftRow, setleftRow] = useState([]);
   const [rightRow, setRightRow] = useState([]);
   const [middleRow, setMiddleRow] = useState([]);
+  const [leftRow2, setleftRow2] = useState([]);
+  const [rightRow2, setRightRow2] = useState([]);
+  const [middleRow2, setMiddleRow2] = useState([]);
   const [modalShow, setModalShow] = useState(false);
+  const [modalServiceShow, setModalServiceShow] = useState(false);
   const optionsConnection = [{ value: "Brak", label: "Brak" }];
   const optionsStatus = [
     { value: "STOP", label: "Stop" },
@@ -44,6 +52,15 @@ const Home = () => {
     { value: "Środkowy rząd", label: "Środkowy rząd" },
     { value: "Prawy rząd", label: "Prawy rząd" },
   ];
+  const optionsRowService = [
+    { value: "Lewy rząd", label: "Lewy rząd" },
+    { value: "Środkowy rząd", label: "Środkowy rząd" },
+    { value: "Prawy rząd", label: "Prawy rząd" },
+  ];
+  const optionsPracaService = [
+    { value: "Tak", label: "Tak" },
+    { value: "Nie", label: "Nie" },
+  ];
   const optionsShift = [
     { value: "I", label: "I" },
     { value: "II", label: "II" },
@@ -52,7 +69,7 @@ const Home = () => {
 
   useEffect(() => {
     //LISTEN
-
+    setLoading(true);
     console.log("wywolanie duzego effecta");
 
     const unsub = onSnapshot(
@@ -66,37 +83,78 @@ const Home = () => {
         let listM = [];
         const machinesToAdd = {};
 
+        let tempService = {};
+        let list2 = [];
+        let listL2 = [];
+        let listR2 = [];
+        let listM2 = [];
+        const servicesToAdd = {};
+
         if (!querySnapshot.data()) {
           console.log("puste na start");
-          const docRef = doc(db, "dates", "2023-01-01");
-          const docSnap = await getDoc(docRef);
+          // const docRef = doc(db, "dates", "2023-01-01");
+          // const docSnap = await getDoc(docRef);
 
-          console.log("nowy snap");
-          console.log(docSnap.data());
-          const machinesDatabase = Object.values(
-            docSnap.data()["I"]["machinesToAdd"]
-          );
-          console.log("nowa lista maszyn");
-          console.log(machinesDatabase);
+          // console.log("nowy snap");
+          // const machinesDatabase = Object.values(
+          //   docSnap.data()["I"]["machinesToAdd"]
+          // );
+          // console.log("nowa lista maszyn");
+          // console.log(machinesDatabase);
 
-          for (const machine of machinesDatabase) {
-            tempMachine = machine;
-            const ref = machine.referencja;
-            const docSnap2 = await getDoc(ref);
+          // for (const machine of machinesDatabase) {
+          //   tempMachine = machine;
+          //   const ref = machine.referencja;
+          //   const docSnap2 = await getDoc(ref);
 
-            machinesToAdd[docSnap2.data().name] = tempMachine;
-            list.push(tempMachine);
-          }
+          //   machinesToAdd[docSnap2.data().name] = tempMachine;
+          //   list.push(tempMachine);
+          // }
+
+          //pobierz domyślną liste maszyn
+
+          const q2 = query(collection(db, "machines"));
+          const querySnapshot2 = await getDocs(q2);
+          querySnapshot2.forEach((doc) => {
+            // idMachinesList.push(doc.id);
+            tempMachine = {
+              referencja: doc.id,
+              status: "STOP",
+              operator: "",
+              retooling: "",
+              retoolingTime: "",
+              form: "--",
+              connection: "Brak",
+              numberOfPeople: "1",
+            };
+
+            machinesToAdd[doc.data().name] = tempMachine;
+          });
+
+          const q3 = query(collection(db, "services"));
+          const querySnapshot3 = await getDocs(q3);
+          querySnapshot3.forEach((doc) => {
+            // idMachinesList.push(doc.id);
+            tempService = {
+              referencja: doc.id,
+              praca: "Nie",
+            };
+
+            servicesToAdd[doc.data().name] = tempService;
+          });
 
           const docData = {
             I: {
               machinesToAdd,
+              servicesToAdd,
             },
             II: {
               machinesToAdd,
+              servicesToAdd,
             },
             III: {
               machinesToAdd,
+              servicesToAdd,
             },
           };
 
@@ -106,26 +164,53 @@ const Home = () => {
             console.log(err);
           }
         } else {
-          console.log("nie puste na start");
           const machinesDatabase = Object.values(
             querySnapshot.data()[currentShift]["machinesToAdd"]
           );
 
           for (const machine of machinesDatabase) {
             tempMachine = machine;
-            const ref = machine.referencja;
+            const ref = doc(db, "machines", machine.referencja);
+            const docSnap2 = await getDoc(ref);
+            // const docRef = doc(db, "dates", "2023-01-01");
+            // const docSnap = await getDoc(docRef);
+            if (docSnap2.data()) {
+              tempMachine = {
+                ...tempMachine,
+                name: docSnap2.data().name,
+                row: docSnap2.data().row,
+                rowPlace: docSnap2.data().rowPlace,
+              };
+
+              list.push(tempMachine);
+            }
+          }
+
+          const servicesDatabase = Object.values(
+            querySnapshot.data()[currentShift]["servicesToAdd"]
+          );
+
+          for (const service of servicesDatabase) {
+            tempService = service;
+            const ref = doc(db, "services", service.referencja);
             const docSnap2 = await getDoc(ref);
 
-            tempMachine = {
-              ...tempMachine,
-              name: docSnap2.data().name,
-              row: docSnap2.data().row,
-              rowPlace: docSnap2.data().rowPlace,
-            };
+            if (docSnap2.data()) {
+              tempService = {
+                ...tempService,
+                name: docSnap2.data().name,
+                row: docSnap2.data().row,
+                rowPlace: docSnap2.data().rowPlace,
+              };
 
-            list.push(tempMachine);
+              list2.push(tempService);
+            }
           }
         }
+
+        setTimeout(() => {
+          setLoading(false);
+        }, 3000);
 
         setMachines(list);
         list.forEach((element) => {
@@ -143,6 +228,20 @@ const Home = () => {
         setleftRow(listL);
         setMiddleRow(listM);
         setRightRow(listR);
+
+        setServices(list2);
+        list2.forEach((element) => {
+          if (element.row === "Prawy rząd") {
+            listR2.push(element);
+          } else if (element["row"] === "Lewy rząd") {
+            listL2.push(element);
+          } else {
+            listM2.push(element);
+          }
+        });
+        setleftRow2(listL2);
+        setMiddleRow2(listM2);
+        setRightRow2(listR2);
       },
       (error) => {
         console.log(error);
@@ -159,6 +258,7 @@ const Home = () => {
   };
 
   const loadShift = (someDate, someShift) => {
+    console.log("load shift");
     const q = query(collection(db, "dates"));
     const docsArray = [];
 
@@ -184,13 +284,14 @@ const Home = () => {
       console.log("dodawanie");
 
       var machinesToAdd = {};
+      let tempMachine = {};
 
-      for (const machine of machines) {
-        // const referredDocumentRef = doc(db, "machines", machine.id);
-        // const docSnap = await getDoc(referredDocumentRef);
-        const machineToAdd = {
-          referencja: machine.referencja,
-          // ...docSnap.data(),
+      const q2 = query(collection(db, "machines"));
+      const querySnapshot2 = await getDocs(q2);
+      querySnapshot2.forEach((doc) => {
+        // idMachinesList.push(doc.id);
+        tempMachine = {
+          referencja: doc.id,
           status: "STOP",
           operator: "",
           retooling: "",
@@ -199,8 +300,26 @@ const Home = () => {
           connection: "Brak",
           numberOfPeople: "1",
         };
-        machinesToAdd[machine.name] = machineToAdd;
-      }
+
+        machinesToAdd[doc.data().name] = tempMachine;
+      });
+
+      // for (const machine of machines) {
+      //   // const referredDocumentRef = doc(db, "machines", machine.id);
+      //   // const docSnap = await getDoc(referredDocumentRef);
+      //   const machineToAdd = {
+      //     referencja: machine.referencja,
+      //     // ...docSnap.data(),
+      //     status: "STOP",
+      //     operator: "",
+      //     retooling: "",
+      //     retoolingTime: "",
+      //     form: "--",
+      //     connection: "Brak",
+      //     numberOfPeople: "1",
+      //   };
+      //   machinesToAdd[machine.name] = machineToAdd;
+      // }
 
       console.log(machinesToAdd);
       const docData = {
@@ -221,11 +340,106 @@ const Home = () => {
         console.log(err);
       }
     };
-
     return () => {
       unsub();
     };
   };
+
+  function MyVerticallyCenteredModalService(props) {
+    const [praca, setPraca] = useState(currentService.praca);
+    const [name, setName] = useState(currentService.name);
+    const [row, setRow] = useState(currentService.row);
+    const [rowPlace, setRowPlace] = useState(currentService.rowPlace);
+
+    const handleInputSelectRow = (selectedOption) => {
+      setRow(selectedOption.value);
+    };
+    const handleInputSelectPraca = (selectedOption) => {
+      setPraca(selectedOption.value);
+    };
+
+    const updateDoc2 = async (e) => {
+      const serviceRef1 = doc(db, "services", currentService.referencja);
+      await updateDoc(serviceRef1, {
+        name: name,
+        row: row,
+        rowPlace: rowPlace,
+      });
+
+      const machineRef = doc(db, "dates", currentDate);
+      await updateDoc(machineRef, {
+        [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
+      });
+
+      toast.success("Aktualizuje...");
+    };
+
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Edycja usługi
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="rowInputs">
+            <label>Nazwa usługi</label>
+            <input
+              className="formInput"
+              type="text"
+              name="name"
+              placeholder="Nazwa"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <label>Praca</label>
+
+            <Select
+              className="formInput"
+              options={optionsPracaService}
+              id="praca"
+              name="praca"
+              defaultValue={{ label: praca, value: praca }}
+              onChange={handleInputSelectPraca}
+            />
+
+            <label>Rząd</label>
+            <Select
+              className="formInput"
+              options={optionsRowService}
+              id="row"
+              name="row"
+              defaultValue={{ label: row, value: row }}
+              onChange={handleInputSelectRow}
+            />
+            <label>Miejsce w rzędzie</label>
+            <input
+              className="formInput"
+              type="number"
+              name="rowPlace"
+              placeholder="Miejsce"
+              value={rowPlace}
+              onChange={(e) => {
+                setRowPlace(e.target.value);
+              }}
+            />
+            <Button
+              className="buttonForm"
+              variant="success"
+              onClick={updateDoc2}
+            >
+              Aktualizuj
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+    );
+  }
 
   function MyVerticallyCenteredModal(props) {
     const [name, setName] = useState(currentMachine.name);
@@ -264,6 +478,13 @@ const Home = () => {
     };
 
     const updateDoc2 = async (e) => {
+      const machineRef1 = doc(db, "machines", currentMachine.referencja);
+      await updateDoc(machineRef1, {
+        name: name,
+        row: row,
+        rowPlace: rowPlace,
+      });
+
       const machineRef = doc(db, "dates", currentDate);
       await updateDoc(machineRef, {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]:
@@ -429,6 +650,7 @@ const Home = () => {
       </Modal>
     );
   }
+
   const modal = useMemo(() => {
     return (
       <MyVerticallyCenteredModal
@@ -437,6 +659,42 @@ const Home = () => {
       />
     );
   }, [modalShow]);
+
+  const modalService = useMemo(() => {
+    return (
+      <MyVerticallyCenteredModalService
+        show={modalServiceShow}
+        onHide={() => setModalServiceShow(false)}
+      />
+    );
+  }, [modalServiceShow]);
+
+  const showRowService = (servicesRow) => {
+    servicesRow.sort((a, b) => a.rowPlace - b.rowPlace);
+    return servicesRow.map((element, index) => {
+      return (
+        <div className="machine" key={index}>
+          <Button
+            variant="primary"
+            onClick={() => {
+              setCurrentService(element);
+              console.log(element);
+              setModalServiceShow(true);
+            }}
+          >
+            <b>{element.name}</b>
+          </Button>{" "}
+          <h5
+            className={element.praca === "Tak" ? "Praca" : "STOP"}
+            style={{ float: "right" }}
+          >
+            {" "}
+            {element.praca}
+          </h5>
+        </div>
+      );
+    });
+  };
 
   const showRow = (row) => {
     row.sort((a, b) => a.rowPlace - b.rowPlace);
@@ -499,14 +757,27 @@ const Home = () => {
   return (
     <div className="home">
       <div className="homeContainer">
+        <Modal show={loading} centered>
+          <Modal.Body className="d-flex justify-content-center ">
+            <div>
+              {" "}
+              <h3>Pobieranie danych... </h3>
+            </div>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </Modal.Body>
+        </Modal>
         <ToastContainer />
         <NavigationBar />
         {modal}
+        {modalService}
         <div className="containerMain">
           <div className="dateShow">
-            Data
+            <label for="date"> Data:</label>
             <input
               className="formInput"
+              id="date"
               type="date"
               name="date"
               placeholder="Data"
@@ -516,7 +787,9 @@ const Home = () => {
                 setCurrentDate(e.target.value);
               }}
             />
-            Zmiana
+            <label for="shift" className="shift-label">
+              Zmiana:
+            </label>
             <Select
               className="formInput"
               options={optionsShift}
@@ -534,6 +807,11 @@ const Home = () => {
             <div className="mainRow">{showRow(leftRow)}</div>
             <div className="mainRow">{showRow(middleRow)}</div>
             <div className="mainRow">{showRow(rightRow)}</div>
+          </div>
+          <div className="rows">
+            <div className="mainRow">{showRowService(leftRow2)}</div>
+            <div className="mainRow">{showRowService(middleRow2)}</div>
+            <div className="mainRow">{showRowService(rightRow2)}</div>
           </div>
         </div>
       </div>

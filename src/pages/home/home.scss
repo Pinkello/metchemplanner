@@ -25,8 +25,41 @@
 
       .dateShow {
         display: flex;
-        align-items: flex-start;
-        padding: 10px 0px;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        background-color: #f4f4f4;
+        padding: 1rem;
+
+        label {
+          margin-right: 1rem;
+          font-size: 1.2rem;
+          font-weight: bold;
+
+          &.shift-label {
+            margin-left: 1rem;
+          }
+        }
+
+        .formInput {
+          padding: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-size: 1rem;
+          color: #333;
+          background-color: #fff;
+          outline: none;
+          box-shadow: none;
+          transition: border-color 0.2s ease-in-out;
+
+          &.date-input {
+            width: 50%;
+          }
+
+          &:focus {
+            border-color: #6c63ff;
+          }
+        }
       }
 
       .machine {
