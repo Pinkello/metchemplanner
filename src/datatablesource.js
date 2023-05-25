@@ -59,11 +59,31 @@ export const workerColumns = [
 ];
 
 export const scheduleColumns = [
-  { field: "name", headerName: "Nazwa", width: 150 },
+  {
+    field: "name",
+    headerName: "Nazwa",
+    width: 150,
+    height: 30,
+    renderCell: (params) => {
+      return <div className="small-column">{params.row.name}</div>;
+    },
+  },
   { field: "connection", headerName: "Połączenie", width: 150 },
   { field: "form", headerName: "Forma", width: 150 },
-  { field: "retooling", headerName: "Przezbrojenie na", width: 150 },
-  { field: "retoolingTime", headerName: "Przezbrojenie o", width: 150 },
+  {
+    field: "rettooling",
+    headerName: "Przezbrojenie",
+    width: 160,
+    renderCell: (params) => {
+      return (
+        <div>
+          {params.row.retooling} {params.row.retoolingTime}
+        </div>
+      );
+    },
+  },
+  // { field: "retooling", headerName: "Przezbrojenie na", width: 150 },
+  // { field: "retoolingTime", headerName: "Przezbrojenie o", width: 150 },
   { field: "numberOfPeople", headerName: "Osoby", width: 100 },
 
   {

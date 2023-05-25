@@ -5,3 +5,32 @@
     flex: 6;
   }
 }
+
+.notes{
+
+  .notesTitle{
+    width: 50%;
+  }
+}
+
+ .buttonNotes {
+      margin-left: auto;
+    }
+
+    .buttonNotes button {
+      font-size: 20px;
+      padding: 10px 20px;
+      background-color: #2e72cc;
+      color: #ffffff;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .buttonNotes button:hover {
+      background-color: #1b457c;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }

@@ -51,16 +51,26 @@
       background-color: #f4f4f4;
     }
 
+    .MuiDataGrid-row {
+      height: 30px !important;
+      min-height: 0px !important;
+    }
+
     .MuiDataGrid-cell {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 30px !important;
+      min-height: 0px !important;
+      font-size: 15px;
     }
 
     .MuiDataGrid-columnHeaderTitleContainer {
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 30px !important;
+      min-height: 0px !important;
     }
 
     .Praca {

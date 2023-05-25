@@ -1,12 +1,22 @@
 import "./datatableSchedules.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { scheduleColumns } from "../../datatablesource";
-import { useEffect, useState } from "react";
-import { collection, doc, getDoc, onSnapshot, query } from "firebase/firestore";
+import { useEffect, useMemo, useState } from "react";
+import {
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  query,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import Select from "react-select";
 import Spinner from "react-bootstrap/Spinner";
 import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DatatableSchedules = () => {
   const [data, setData] = useState([]);
@@ -17,6 +27,8 @@ const DatatableSchedules = () => {
   );
   const [currentShift, setCurrentShift] = useState("I");
   const [loading, setLoading] = useState(true);
+  const [notes, setNotes] = useState("");
+  const [modalNotesShow, setModalNotesShow] = useState(false);
 
   const optionsShift = [
     { value: "I", label: "I" },
@@ -79,29 +91,6 @@ const DatatableSchedules = () => {
           console.log("connections");
           console.log(connections);
 
-          const emptyConnectionMachines = list.filter(
-            (machine) => machine.connection === "Brak"
-          );
-          emptyConnectionMachines.sort((a, b) =>
-            a.connection.localeCompare(b.name)
-          );
-
-          console.log("emptyConnectionMachines");
-          console.log(emptyConnectionMachines);
-
-          const sortedMachines = [];
-          let index = 0;
-          emptyConnectionMachines.forEach((machine) => {
-            sortedMachines.push(machine);
-            if (connections[machine.name]) {
-              sortedMachines.splice(index + 1, 0, connections[machine.name]);
-              index++;
-            }
-            index++;
-          });
-          console.log("sorted");
-          console.log(sortedMachines);
-
           const servicesDatabase = Object.values(
             querySnapshot.data()[currentShift]["servicesToAdd"]
           );
@@ -123,6 +112,42 @@ const DatatableSchedules = () => {
             }
           }
 
+          const secondList = list.sort((a, b) => {
+            const aNum = parseInt(a.name.replace(/[^\d]/g, ""), 10);
+            const bNum = parseInt(b.name.replace(/[^\d]/g, ""), 10);
+
+            if (aNum !== bNum) {
+              return aNum - bNum;
+            } else {
+              return a.name.localeCompare(b.name, undefined, {
+                numeric: true,
+              });
+            }
+          });
+          console.log("druga lista");
+          console.log(secondList);
+
+          // Druga lista maszyn
+
+          // Tworzenie trzeciej listy z uwzględnieniem połączeń
+          const thirdList = [];
+
+          for (const machine of secondList) {
+            const { name, connection } = machine;
+
+            if (
+              connection === "Brak" ||
+              !thirdList.find((item) => item.name === connection)
+            ) {
+              thirdList.push(machine);
+            }
+          }
+
+          console.log("trzecia lista");
+          console.log(thirdList);
+
+          setNotes(querySnapshot.data()[currentShift]["notes"]);
+
           setTimeout(() => {
             setLoading(false);
           }, 2000);
@@ -130,7 +155,8 @@ const DatatableSchedules = () => {
           console.log(list);
           console.log("Lista usług z dnia");
           console.log(list2);
-          setMachines(list);
+
+          setMachines(secondList);
           setServices(list2);
         }
       },
@@ -182,6 +208,74 @@ const DatatableSchedules = () => {
     });
   };
 
+  function MyVerticallyCenteredModalNotes(props) {
+    const [notes2, setNotes2] = useState(notes);
+
+    const handleChange = (e) => {
+      setNotes(e.target.value);
+      setNotes2(e.target.value);
+    };
+
+    const textareaStyle = {
+      overflow: "auto", // lub 'hidden', jeśli nie chcesz widocznych pasków przewijania
+      whiteSpace: "pre-wrap", // umożliwia łamanie tekstu do kolejnych linii
+      height: "auto", // początkowa wysokość pola tekstowego
+      minHeight: "100px", // minimalna wysokość pola tekstowego
+    };
+
+    const updateDoc2 = async (e) => {
+      const machineRef = doc(db, "dates", currentDate);
+      await updateDoc(machineRef, {
+        [`${currentShift}.notes`]: notes2,
+      });
+      toast.success("Aktualizuje...");
+    };
+
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Edycja notatek
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="rowInputs">
+            <label>Notatki</label>
+            <textarea
+              className="formInput"
+              name="notes"
+              placeholder="Notatki"
+              value={notes2}
+              style={textareaStyle}
+              onChange={handleChange}
+            />
+            <Button
+              className="buttonForm"
+              variant="success"
+              onClick={updateDoc2}
+            >
+              Aktualizuj
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+    );
+  }
+
+  const modalNotes = useMemo(() => {
+    return (
+      <MyVerticallyCenteredModalNotes
+        show={modalNotesShow}
+        onHide={() => setModalNotesShow(false)}
+      />
+    );
+  }, [modalNotesShow]);
+
   return (
     <div className="datatable">
       <Modal show={loading} centered>
@@ -195,6 +289,8 @@ const DatatableSchedules = () => {
           </Spinner>
         </Modal.Body>
       </Modal>
+      <ToastContainer />
+      {modalNotes}
       <div className="dateShow print-hide ">
         <label htmlFor="date"> Data:</label>
         <input
@@ -253,14 +349,27 @@ const DatatableSchedules = () => {
         <div className="serviceList">
           <h4 className="serviceTitle">Lista obsługi:</h4>
           <div className="servicesRow">{showServices(services)}</div>
-        </div>
+        </div>{" "}
+        <hr />
         <br />
         <div className="notes">
-          <div>
+          <div className="datatableTitle">
             <h4 className="notesTitle">Uwagi:</h4>
-          </div>
 
-          <div className="notesArea">ASDASDSA</div>
+            <div className="buttonNotes  print-hide">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setModalNotesShow(true);
+                }}
+              >
+                Edytuj
+              </Button>{" "}
+            </div>
+          </div>
+          <hr />
+
+          <div className="notesArea">{notes}</div>
         </div>
       </div>
     </div>
