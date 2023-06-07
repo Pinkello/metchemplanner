@@ -39,6 +39,7 @@ const Home = () => {
   const [middleRow2, setMiddleRow2] = useState([]);
   const [modalShow, setModalShow] = useState(false);
   const [modalServiceShow, setModalServiceShow] = useState(false);
+  const [modalLoadShow, setModalLoadShow] = useState(false);
   const optionsConnection = [{ value: "Brak", label: "Brak" }];
   const optionsStatus = [
     { value: "STOP", label: "Stop" },
@@ -651,6 +652,80 @@ const Home = () => {
     );
   }
 
+  function MyVerticallyCenteredModalLoad(props) {
+    const [currentDateLoad, setCurrentDateLoad] = useState(currentDate);
+    const [currentShiftLoad, setCurrentShiftLoad] = useState(currentShift);
+
+    const handleInputSelectShiftLoad = (selectedOption) => {
+      setCurrentShiftLoad(selectedOption.value);
+    };
+
+    const updateDoc2 = async (e) => {
+      const datesRef = doc(db, "dates", currentDate);
+      await updateDoc(datesRef, {
+        [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: "",
+      });
+
+      toast.success("Aktualizuje...");
+    };
+
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            Wybierz datę oraz zmianę, z której chcesz załadować dane
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="rowInputs">
+            <div className="dateShow">
+              <label for="date"> Data:</label>
+              <input
+                className="formInput"
+                id="dateLoad"
+                type="date"
+                name="dateLoad"
+                placeholder="Data"
+                value={currentDate}
+                onChange={(e) => {
+                  setCurrentDateLoad(e.target.value);
+                }}
+              />
+              <label for="shift" className="shift-label">
+                Zmiana:
+              </label>
+              <div className="select-container">
+                <Select
+                  className="formInput"
+                  options={optionsShift}
+                  id="shiftLoad"
+                  name="shiftLoad"
+                  defaultValue={{ label: currentShift, value: currentShift }}
+                  onChange={(value) => {
+                    handleInputSelectShiftLoad(value);
+                  }}
+                />
+              </div>
+            </div>
+
+            <Button
+              className="buttonForm"
+              variant="success"
+              onClick={updateDoc2}
+            >
+              Załaduj dane
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
+    );
+  }
+
   const modal = useMemo(() => {
     return (
       <MyVerticallyCenteredModal
@@ -668,6 +743,15 @@ const Home = () => {
       />
     );
   }, [modalServiceShow]);
+
+  const modalLoad = useMemo(() => {
+    return (
+      <MyVerticallyCenteredModalLoad
+        show={modalLoadShow}
+        onHide={() => setModalLoadShow(false)}
+      />
+    );
+  }, [modalLoadShow]);
 
   const showRowService = (servicesRow) => {
     servicesRow.sort((a, b) => a.rowPlace - b.rowPlace);
@@ -772,6 +856,7 @@ const Home = () => {
         <NavigationBar />
         {modal}
         {modalService}
+        {modalLoad}
         <div className="containerMain">
           <div className="dateShow">
             <label for="date"> Data:</label>
@@ -790,17 +875,29 @@ const Home = () => {
             <label for="shift" className="shift-label">
               Zmiana:
             </label>
-            <Select
-              className="formInput"
-              options={optionsShift}
-              id="shift"
-              name="shift"
-              defaultValue={{ label: currentShift, value: currentShift }}
-              onChange={(value) => {
-                loadShift(currentDate, value.value);
-                handleInputSelectShift(value);
-              }}
-            />
+            <div className="select-container">
+              <Select
+                className="formInput"
+                options={optionsShift}
+                id="shift"
+                name="shift"
+                defaultValue={{ label: currentShift, value: currentShift }}
+                onChange={(value) => {
+                  loadShift(currentDate, value.value);
+                  handleInputSelectShift(value);
+                }}
+              />
+              {/* <button className="formButton">Wczytaj dane</button> */}
+              <Button
+                variant="primary"
+                className="formButton"
+                onClick={() => {
+                  setModalLoadShow(true);
+                }}
+              >
+                <b> Wczytaj dane</b>
+              </Button>
+            </div>
           </div>
           <div className="rows">
             <div className="mainRow">{showRow(sideRow)}</div>
