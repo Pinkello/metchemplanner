@@ -196,13 +196,13 @@ const DatatableSchedules = () => {
     return services.map((element, index) => {
       return (
         <div className="singleService" key={index}>
-          <b>{element.name}</b> &nbsp;{" "}
           {element.praca === "Tak" ? (
-            <span className="serviceWork">Pracuje</span>
+            <div>
+              <b>{element.name}</b> |&nbsp;
+            </div>
           ) : (
-            <span className="serviceStop">Nie pracuje</span>
-          )}{" "}
-          &nbsp; | &nbsp;
+            <></>
+          )}
         </div>
       );
     });
@@ -276,6 +276,8 @@ const DatatableSchedules = () => {
     );
   }, [modalNotesShow]);
 
+  const columns = scheduleColumns(machines);
+
   return (
     <div className="datatable">
       <Modal show={loading} centered>
@@ -335,7 +337,7 @@ const DatatableSchedules = () => {
         <DataGrid
           className="datagrid"
           rows={machines}
-          columns={scheduleColumns}
+          columns={columns}
           autoHeight
           components={{
             Footer: () => null,

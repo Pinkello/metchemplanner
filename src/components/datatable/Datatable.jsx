@@ -63,19 +63,23 @@ const Datatable = () => {
   ];
   return (
     <div className="datatable">
-      <div className="datatableTitle">
-        Lista maszyn
-        <Link to="/machines/new" className="link">
-          Dodaj nową maszynę
-        </Link>
+      <div className="datatableTitle" style={{}}>
+        <span>Lista maszyn</span>
+
+        <div>
+          <Link to="/machines/new" className="link">
+            Dodaj nową maszynę
+          </Link>
+        </div>
       </div>
       <DataGrid
         className="datagrid"
         rows={data}
         columns={machineColumns.concat(actionColumn)}
-        pageSize={9}
+        pageSize={15}
         rowsPerPageOptions={[9]}
         checkboxSelection
+        autoHeight
       />
     </div>
   );

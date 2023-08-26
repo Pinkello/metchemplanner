@@ -93,24 +93,6 @@ const Home = () => {
 
         if (!querySnapshot.data()) {
           console.log("puste na start");
-          // const docRef = doc(db, "dates", "2023-01-01");
-          // const docSnap = await getDoc(docRef);
-
-          // console.log("nowy snap");
-          // const machinesDatabase = Object.values(
-          //   docSnap.data()["I"]["machinesToAdd"]
-          // );
-          // console.log("nowa lista maszyn");
-          // console.log(machinesDatabase);
-
-          // for (const machine of machinesDatabase) {
-          //   tempMachine = machine;
-          //   const ref = machine.referencja;
-          //   const docSnap2 = await getDoc(ref);
-
-          //   machinesToAdd[docSnap2.data().name] = tempMachine;
-          //   list.push(tempMachine);
-          // }
 
           //pobierz domyślną liste maszyn
 
@@ -214,6 +196,8 @@ const Home = () => {
         }, 3000);
 
         setMachines(list);
+        console.log("test listy");
+        console.log(list);
         list.forEach((element) => {
           if (element.row === "Prawy rząd") {
             listR.push(element);
@@ -304,23 +288,6 @@ const Home = () => {
 
         machinesToAdd[doc.data().name] = tempMachine;
       });
-
-      // for (const machine of machines) {
-      //   // const referredDocumentRef = doc(db, "machines", machine.id);
-      //   // const docSnap = await getDoc(referredDocumentRef);
-      //   const machineToAdd = {
-      //     referencja: machine.referencja,
-      //     // ...docSnap.data(),
-      //     status: "STOP",
-      //     operator: "",
-      //     retooling: "",
-      //     retoolingTime: "",
-      //     form: "--",
-      //     connection: "Brak",
-      //     numberOfPeople: "1",
-      //   };
-      //   machinesToAdd[machine.name] = machineToAdd;
-      // }
 
       console.log(machinesToAdd);
       const docData = {
@@ -488,32 +455,28 @@ const Home = () => {
 
       const machineRef = doc(db, "dates", currentDate);
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]:
-          referencja,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]:
-          retooling,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-          retoolingTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: status,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]:
-          connection,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]:
-          numberOfPeople,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]: numberOfPeople,
       });
 
+      console.log(currentMachine);
+
+      //zmiana connection i maszyny polaczonej
       if (connection !== "Brak" && currentMachine.connection === "Brak") {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
       } else if (
         connection === "Brak" &&
         currentMachine.connection !== "Brak"
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-            "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
         });
       } else if (
         connection !== "Brak" &&
@@ -521,12 +484,10 @@ const Home = () => {
         connection !== currentMachine.connection
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-            "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
         });
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
       }
 
@@ -652,6 +613,7 @@ const Home = () => {
     );
   }
 
+  // funkcja do załadowania z innego dnia
   function MyVerticallyCenteredModalLoad(props) {
     const [currentDateLoad, setCurrentDateLoad] = useState(currentDate);
     const [currentShiftLoad, setCurrentShiftLoad] = useState(currentShift);
@@ -661,12 +623,30 @@ const Home = () => {
     };
 
     const updateDoc2 = async (e) => {
-      const datesRef = doc(db, "dates", currentDate);
-      await updateDoc(datesRef, {
-        [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: "",
-      });
+      // await updateDoc(datesRef, {
+      //   [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: "",
+      // });
 
-      toast.success("Aktualizuje...");
+      const docRef = doc(db, "dates", currentDateLoad);
+      const date = await getDoc(docRef);
+      console.log("daty");
+      try {
+        console.log(date.data().I);
+        console.log(currentDate);
+        console.log(currentDateLoad);
+
+        const dateToReplace = doc(db, "dates", currentDate);
+
+        await updateDoc(dateToReplace, {
+          I: date.data().I,
+          II: date.data().II,
+          III: date.data().III,
+        });
+        toast.success("Aktualizuje...");
+      } catch (error) {
+        console.log("tutaj blad");
+        toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
+      }
     };
 
     return (
@@ -691,7 +671,7 @@ const Home = () => {
                 type="date"
                 name="dateLoad"
                 placeholder="Data"
-                value={currentDate}
+                value={currentDateLoad}
                 onChange={(e) => {
                   setCurrentDateLoad(e.target.value);
                 }}
@@ -705,7 +685,10 @@ const Home = () => {
                   options={optionsShift}
                   id="shiftLoad"
                   name="shiftLoad"
-                  defaultValue={{ label: currentShift, value: currentShift }}
+                  defaultValue={{
+                    label: currentShiftLoad,
+                    value: currentShiftLoad,
+                  }}
                   onChange={(value) => {
                     handleInputSelectShiftLoad(value);
                   }}

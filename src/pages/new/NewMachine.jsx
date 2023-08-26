@@ -2,7 +2,14 @@ import "./newMachine.scss";
 
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
-import { addDoc, collection } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  where,
+  query,
+  getDocs,
+  writeBatch,
+} from "firebase/firestore";
 import { db, storage } from "../../firebase";
 
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -17,7 +24,7 @@ const NewMachine = ({ inputs, title }) => {
   const navigate = useNavigate();
 
   const options = [
-    { value: "Boczny rząd ", label: "Boczny rząd" },
+    { value: "Boczny rząd", label: "Boczny rząd" },
     { value: "Lewy rząd", label: "Lewy rząd" },
     { value: "Środkowy rząd", label: "Środkowy rząd" },
     { value: "Prawy rząd", label: "Prawy rząd" },
@@ -81,9 +88,28 @@ const NewMachine = ({ inputs, title }) => {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
+      const q = query(
+        collection(db, "machines"),
+        where("row", "==", data.row),
+        where("rowPlace", ">=", data.rowPlace)
+      );
+
+      const batch = writeBatch(db);
+
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data());
+        console.log("ref");
+        console.log(doc.ref);
+        const currentRowPlace = doc.data().rowPlace;
+        batch.update(doc.ref, { rowPlace: parseInt(currentRowPlace) + 1 });
+      });
+      await batch.commit();
+
       await addDoc(collection(db, "machines"), {
         ...data,
       });
+
       navigate(-1);
     } catch (err) {
       console.log(err);

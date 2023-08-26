@@ -58,40 +58,77 @@ export const workerColumns = [
   },
 ];
 
-export const scheduleColumns = [
+export const scheduleColumns = (machines) => [
   {
     field: "name",
-    headerName: "Nazwa",
+    headerName: "Maszyna",
     width: 150,
     height: 30,
     renderCell: (params) => {
-      return <div className="small-column">{params.row.name}</div>;
-    },
-  },
-  { field: "connection", headerName: "Połączenie", width: 150 },
-  { field: "form", headerName: "Forma", width: 150 },
-  {
-    field: "rettooling",
-    headerName: "Przezbrojenie",
-    width: 160,
-    renderCell: (params) => {
       return (
-        <div>
-          {params.row.retooling} {params.row.retoolingTime}
+        <div className="small-column">
+          <b style={{ color: "#0066ff" }}>{params.row.name}</b> +{" "}
+          <b style={{ color: "#009933" }}>{params.row.connection}</b>{" "}
         </div>
       );
     },
   },
-  // { field: "retooling", headerName: "Przezbrojenie na", width: 150 },
-  // { field: "retoolingTime", headerName: "Przezbrojenie o", width: 150 },
-  { field: "numberOfPeople", headerName: "Osoby", width: 100 },
-
+  // Pozostałe kolumny
+  {
+    field: "retooling",
+    headerName: "Przezbrojenie",
+    width: 400,
+    renderCell: (params) => {
+      return renderRetooling(params.row, machines);
+    },
+  },
   {
     field: "status",
     headerName: "Status",
-    width: 160,
+    width: 200,
     renderCell: (params) => {
-      return <div className={`${params.row.status}`}>{params.row.status}</div>;
+      return params.row.status === "Praca" ? (
+        <div style={{ color: "#008000" }}>Praca</div>
+      ) : params.row.status === "Rozruch" ? (
+        <div style={{ color: "#b3b300" }}>Rozruch</div>
+      ) : (
+        <div style={{ color: "#ff7b00" }}>Uruchomienie</div>
+      );
     },
   },
+  {
+    field: "numberOfPeople",
+    headerName: "Ilość osób",
+    width: 200,
+  },
 ];
+
+// Funkcja do renderowania retoolingu
+function renderRetooling(row, machines) {
+  const currentMachine = row;
+  const connectedMachineName = currentMachine.connection;
+
+  const connectedMachine = machines.find(
+    (machine) => machine.name === connectedMachineName
+  );
+
+  if (connectedMachine) {
+    return (
+      <div>
+        <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
+        {"-> "}
+        <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
+        {" | "}
+        <b style={{ color: "#009933" }}>{currentMachine.connection}</b>
+        {"-> "}
+        <b>{connectedMachine.retooling}</b> o {connectedMachine.retoolingTime}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {currentMachine.retooling} {currentMachine.retoolingTime}
+    </div>
+  );
+}
