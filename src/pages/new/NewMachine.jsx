@@ -73,14 +73,27 @@ const NewMachine = ({ inputs, title }) => {
     file && uploadFile();
   }, [file]);
 
+  useEffect(() => {
+    // console.log("effect");
+    // console.log(data);
+    // console.log("name:", data.name, typeof data.name);
+    // console.log("rowPlace:", data.rowPlace, typeof data.rowPlace);
+    // console.log("row:", data.row, typeof data.row);
+  }, [data]);
+
   const handleInputSelect = (selectedOption) => {
     setData({ ...data, row: selectedOption.value });
   };
 
   const handleInput = (e) => {
     const id = e.target.id;
-    const value = e.target.value;
-    console.log(e.target.id);
+    let value = e.target.value;
+
+    if (id === "rowPlace") value = parseInt(value);
+
+    console.log("cos tu robie");
+    console.log(id, typeof id);
+    console.log(value, typeof value);
 
     setData({ ...data, [id]: value });
   };
@@ -88,6 +101,7 @@ const NewMachine = ({ inputs, title }) => {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
+      // sprawdz i dodaj numery do rowPlace innych
       const q = query(
         collection(db, "machines"),
         where("row", "==", data.row),
@@ -98,14 +112,12 @@ const NewMachine = ({ inputs, title }) => {
 
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data());
-        console.log("ref");
-        console.log(doc.ref);
         const currentRowPlace = doc.data().rowPlace;
         batch.update(doc.ref, { rowPlace: parseInt(currentRowPlace) + 1 });
       });
       await batch.commit();
 
+      //dodawanie nowegj maszyzny
       await addDoc(collection(db, "machines"), {
         ...data,
       });

@@ -11,6 +11,8 @@ import {
   setDoc,
   getDoc,
   getDocs,
+  where,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
@@ -196,8 +198,7 @@ const Home = () => {
         }, 3000);
 
         setMachines(list);
-        console.log("test listy");
-        console.log(list);
+
         list.forEach((element) => {
           if (element.row === "Prawy rząd") {
             listR.push(element);
@@ -422,12 +423,14 @@ const Home = () => {
       currentMachine.numberOfPeople
     );
     const [row, setRow] = useState(currentMachine.row);
-    const [rowPlace, setRowPlace] = useState(currentMachine.rowPlace);
+    const [rowOld, setRowOld] = useState(currentMachine.row);
+    const [rowPlace, setRowPlace] = useState(parseInt(currentMachine.rowPlace));
+    const [rowPlaceOld, setRowPlaceOld] = useState(
+      parseInt(currentMachine.rowPlace)
+    );
     const [referencja, setReferencja] = useState(currentMachine.referencja);
 
     useEffect(() => {
-      console.log("wywolanie tego dziwnego");
-
       machines.map((element) => {
         optionsConnection.push({ value: element.name, label: element.name });
       });
@@ -446,11 +449,110 @@ const Home = () => {
     };
 
     const updateDoc2 = async (e) => {
+      //zmiana miejsca w rzedzie innych maszyn
+      const batch = writeBatch(db);
+      if (rowPlace !== rowPlaceOld || row !== rowOld)
+        if (row === rowOld) {
+          if (rowPlace > rowPlaceOld) {
+            const q = query(
+              collection(db, "machines"),
+              where("row", "==", row),
+              where("rowPlace", "<=", parseInt(rowPlace)),
+              where("rowPlace", ">", parseInt(rowPlaceOld))
+            );
+            const querySnapshot = await getDocs(q);
+            console.log("nazwy ktore zmieniam");
+            querySnapshot.forEach((doc) => {
+              console.log(doc.data().name + " + " + doc.data().rowPlace);
+              const currentRowPlace = doc.data().rowPlace;
+              batch.update(doc.ref, {
+                rowPlace: parseInt(currentRowPlace) - 1,
+              });
+            });
+          } else {
+            const q = query(
+              collection(db, "machines"),
+              where("row", "==", row),
+              where("rowPlace", ">=", parseInt(rowPlace)),
+              where("rowPlace", "<", parseInt(rowPlaceOld))
+            );
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+              console.log(doc.data().name);
+              const currentRowPlace = parseInt(doc.data().rowPlace);
+              batch.update(doc.ref, {
+                rowPlace: currentRowPlace + 1,
+              });
+            });
+          }
+        } else {
+          // const q = query(
+          //   collection(db, "machines"),
+          //   where("row", "==", rowOld),
+          //   where("rowPlace", ">", rowPlaceOld)
+          // );
+
+          // console.log("po pierszym query")
+          // const querySnapshot = await getDocs(q);
+          // querySnapshot.forEach((doc) => {
+          //   console.log(doc.data().name);
+          //   const currentRowPlace = doc.data().rowPlace;
+          //   batch.update(doc.ref, {
+          //     rowPlace: currentRowPlace - 1,
+          //   });
+          // });
+
+          // const q2 = query(
+          //   collection(db, "machines"),
+          //   where("row", "==", row),
+          //   where("rowPlace", ">=", rowPlace)
+          // );
+          // console.log("po drugim query")
+
+          // const querySnapshot2 = await getDocs(q2);
+          // querySnapshot2.forEach((doc) => {
+          //   console.log(doc.name);
+          //   const currentRowPlace = doc.data().rowPlace;
+          //   batch.update(doc.ref, {
+          //     rowPlace: currentRowPlace + 1,
+          //   });
+          // });
+
+          const q = query(
+            collection(db, "machines"),
+            where("row", "==", row),
+            where("rowPlace", ">=", parseInt(rowPlace))
+          );
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            console.log(doc.data().name);
+            const currentRowPlace = parseInt(doc.data().rowPlace);
+            batch.update(doc.ref, {
+              rowPlace: currentRowPlace + 1,
+            });
+          });
+
+          const q2 = query(
+            collection(db, "machines"),
+            where("row", "==", rowOld),
+            where("rowPlace", ">", parseInt(rowPlaceOld))
+          );
+          const querySnapshot2 = await getDocs(q2);
+          querySnapshot2.forEach((doc) => {
+            console.log(doc.data().name);
+            const currentRowPlace = parseInt(doc.data().rowPlace);
+            batch.update(doc.ref, {
+              rowPlace: currentRowPlace - 1,
+            });
+          });
+        }
+      await batch.commit();
+
       const machineRef1 = doc(db, "machines", currentMachine.referencja);
       await updateDoc(machineRef1, {
         name: name,
         row: row,
-        rowPlace: rowPlace,
+        rowPlace: parseInt(rowPlace),
       });
 
       const machineRef = doc(db, "dates", currentDate);
@@ -463,8 +565,6 @@ const Home = () => {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]: numberOfPeople,
       });
-
-      console.log(currentMachine);
 
       //zmiana connection i maszyny polaczonej
       if (connection !== "Brak" && currentMachine.connection === "Brak") {
