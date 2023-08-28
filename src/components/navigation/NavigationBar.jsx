@@ -21,7 +21,7 @@ const NavigationBar = () => {
         variant="dark"
         className="example-navbar"
       >
-        <Container>
+        <Container className="print-hide">
           <Navbar.Brand href="/">Metchem Planner</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav" className="example-bg">

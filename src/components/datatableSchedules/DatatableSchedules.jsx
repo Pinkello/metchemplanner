@@ -276,7 +276,8 @@ const DatatableSchedules = () => {
     );
   }, [modalNotesShow]);
 
-  const columns = scheduleColumns(machines);
+  const usedMachines = [];
+  const columns = scheduleColumns(machines, usedMachines);
 
   return (
     <div className="datatable">

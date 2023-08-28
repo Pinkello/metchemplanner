@@ -58,19 +58,27 @@ export const workerColumns = [
   },
 ];
 
-export const scheduleColumns = (machines) => [
+export const scheduleColumns = (machines, usedMachines) => [
   {
     field: "name",
     headerName: "Maszyna",
     width: 150,
     height: 30,
     renderCell: (params) => {
-      return (
-        <div className="small-column">
-          <b style={{ color: "#0066ff" }}>{params.row.name}</b> +{" "}
-          <b style={{ color: "#009933" }}>{params.row.connection}</b>{" "}
-        </div>
-      );
+      if (params.row.connection !== "Brak") {
+        return (
+          <div className="small-column">
+            <b style={{ color: "#0066ff" }}>{params.row.name}</b> +{" "}
+            <b style={{ color: "#009933" }}>{params.row.connection}</b>{" "}
+          </div>
+        );
+      } else {
+        return (
+          <div className="small-column">
+            <b style={{ color: "#0066ff" }}>{params.row.name}</b>
+          </div>
+        );
+      }
     },
   },
   // Pozostałe kolumny
@@ -79,7 +87,7 @@ export const scheduleColumns = (machines) => [
     headerName: "Przezbrojenie",
     width: 400,
     renderCell: (params) => {
-      return renderRetooling(params.row, machines);
+      return renderRetooling(params.row, machines, usedMachines);
     },
   },
   {
@@ -104,7 +112,13 @@ export const scheduleColumns = (machines) => [
 ];
 
 // Funkcja do renderowania retoolingu
-function renderRetooling(row, machines) {
+function renderRetooling(row, machines, usedMachines) {
+  if (usedMachines.includes(row.name)) {
+    console.log("zawiera " + row.name);
+  } else {
+    console.log("nie zawiera");
+  }
+  console.log(usedMachines);
   const currentMachine = row;
   const connectedMachineName = currentMachine.connection;
 
@@ -125,10 +139,12 @@ function renderRetooling(row, machines) {
       </div>
     );
   }
-
+  usedMachines.push(connectedMachine);
   return (
     <div>
-      {currentMachine.retooling} {currentMachine.retoolingTime}
+      <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
+      {"-> "}
+      <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
     </div>
   );
 }

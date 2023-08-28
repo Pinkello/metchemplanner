@@ -108,6 +108,8 @@ const Home = () => {
               operator: "",
               retooling: "",
               retoolingTime: "",
+              transition: "",
+              transitionTime: "",
               form: "--",
               connection: "Brak",
               numberOfPeople: "1",
@@ -170,6 +172,9 @@ const Home = () => {
               list.push(tempMachine);
             }
           }
+
+          console.log("test");
+          console.log(querySnapshot.data());
 
           const servicesDatabase = Object.values(
             querySnapshot.data()[currentShift]["servicesToAdd"]
@@ -282,6 +287,8 @@ const Home = () => {
           operator: "",
           retooling: "",
           retoolingTime: "",
+          transition: "",
+          transitionTime: "",
           form: "--",
           connection: "Brak",
           numberOfPeople: "1",
@@ -290,16 +297,34 @@ const Home = () => {
         machinesToAdd[doc.data().name] = tempMachine;
       });
 
+      let tempService = {};
+      const servicesToAdd = {};
+
+      const q3 = query(collection(db, "services"));
+      const querySnapshot3 = await getDocs(q3);
+      querySnapshot3.forEach((doc) => {
+        // idMachinesList.push(doc.id);
+        tempService = {
+          referencja: doc.id,
+          praca: "Nie",
+        };
+
+        servicesToAdd[doc.data().name] = tempService;
+      });
+
       console.log(machinesToAdd);
       const docData = {
         I: {
           machinesToAdd,
+          servicesToAdd,
         },
         II: {
           machinesToAdd,
+          servicesToAdd,
         },
         III: {
           machinesToAdd,
+          servicesToAdd,
         },
       };
 
@@ -417,6 +442,10 @@ const Home = () => {
     const [retoolingTime, setRetoolingTime] = useState(
       currentMachine.retoolingTime
     );
+    const [transition, setTransition] = useState(currentMachine.transition);
+    const [transitionTime, setTransitionTime] = useState(
+      currentMachine.transitionTime
+    );
     const [status, setStatus] = useState(currentMachine.status);
     const [connection, setConnection] = useState(currentMachine.connection);
     const [numberOfPeople, setNumberOfPeople] = useState(
@@ -431,6 +460,7 @@ const Home = () => {
     const [referencja, setReferencja] = useState(currentMachine.referencja);
 
     useEffect(() => {
+      console.log(currentMachine);
       machines.map((element) => {
         optionsConnection.push({ value: element.name, label: element.name });
       });
@@ -486,38 +516,6 @@ const Home = () => {
             });
           }
         } else {
-          // const q = query(
-          //   collection(db, "machines"),
-          //   where("row", "==", rowOld),
-          //   where("rowPlace", ">", rowPlaceOld)
-          // );
-
-          // console.log("po pierszym query")
-          // const querySnapshot = await getDocs(q);
-          // querySnapshot.forEach((doc) => {
-          //   console.log(doc.data().name);
-          //   const currentRowPlace = doc.data().rowPlace;
-          //   batch.update(doc.ref, {
-          //     rowPlace: currentRowPlace - 1,
-          //   });
-          // });
-
-          // const q2 = query(
-          //   collection(db, "machines"),
-          //   where("row", "==", row),
-          //   where("rowPlace", ">=", rowPlace)
-          // );
-          // console.log("po drugim query")
-
-          // const querySnapshot2 = await getDocs(q2);
-          // querySnapshot2.forEach((doc) => {
-          //   console.log(doc.name);
-          //   const currentRowPlace = doc.data().rowPlace;
-          //   batch.update(doc.ref, {
-          //     rowPlace: currentRowPlace + 1,
-          //   });
-          // });
-
           const q = query(
             collection(db, "machines"),
             where("row", "==", row),
@@ -555,12 +553,15 @@ const Home = () => {
         rowPlace: parseInt(rowPlace),
       });
 
+      //update maszyny
       const machineRef = doc(db, "dates", currentDate);
       await updateDoc(machineRef, {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: transition,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: transitionTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: status,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]: numberOfPeople,
@@ -568,6 +569,15 @@ const Home = () => {
 
       //zmiana connection i maszyny polaczonej
       if (connection !== "Brak" && currentMachine.connection === "Brak") {
+        const docSnap = await getDoc(machineRef);
+        if (
+          docSnap.data()[currentShift]["machinesToAdd"][connection].status !==
+          status
+        )
+          await updateDoc(machineRef, {
+            [`${currentShift}.machinesToAdd.${connection}.status`]: status,
+          });
+
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
@@ -648,6 +658,28 @@ const Home = () => {
               value={retoolingTime}
               onChange={(e) => {
                 setRetoolingTime(e.target.value);
+              }}
+            />
+            <label>Przejście</label>
+            <input
+              className="formInput"
+              type="text"
+              name="transition"
+              placeholder="Przejście na:"
+              value={transition}
+              onChange={(e) => {
+                setTransition(e.target.value);
+              }}
+            />
+            <label>Czas przejścia</label>
+            <input
+              className="formInput"
+              type="time"
+              name="transitionTime"
+              placeholder="Czas przejścia"
+              value={transitionTime}
+              onChange={(e) => {
+                setTransitionTime(e.target.value);
               }}
             />
             <label>Status</label>
@@ -744,7 +776,6 @@ const Home = () => {
         });
         toast.success("Aktualizuje...");
       } catch (error) {
-        console.log("tutaj blad");
         toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
       }
     };
@@ -758,13 +789,13 @@ const Home = () => {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Wybierz datę oraz zmianę, z której chcesz załadować dane
+            Wybierz datę , z której chcesz załadować dane
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="rowInputs">
             <div className="dateShow">
-              <label for="date"> Data:</label>
+              <label htmlFor="date"> Data:</label>
               <input
                 className="formInput"
                 id="dateLoad"
@@ -776,7 +807,7 @@ const Home = () => {
                   setCurrentDateLoad(e.target.value);
                 }}
               />
-              <label for="shift" className="shift-label">
+              {/* <label for="shift" className="shift-label">
                 Zmiana:
               </label>
               <div className="select-container">
@@ -793,7 +824,7 @@ const Home = () => {
                     handleInputSelectShiftLoad(value);
                   }}
                 />
-              </div>
+              </div> */}
             </div>
 
             <Button
@@ -908,6 +939,17 @@ const Home = () => {
             ) : (
               ""
             )}
+            {element.transition ? (
+              <>
+                <br />
+                {" Przejście "}
+                <b style={{ color: "green" }}>{element.transition} </b>
+                {" o "}
+                <b style={{ color: "blue" }}>{element.transitionTime}</b>
+              </>
+            ) : (
+              ""
+            )}
           </div>
           <div>
             {" "}
@@ -942,7 +984,7 @@ const Home = () => {
         {modalLoad}
         <div className="containerMain">
           <div className="dateShow">
-            <label for="date"> Data:</label>
+            <label htmlFor="date"> Data:</label>
             <input
               className="formInput"
               id="date"
@@ -955,7 +997,7 @@ const Home = () => {
                 setCurrentDate(e.target.value);
               }}
             />
-            <label for="shift" className="shift-label">
+            <label htmlFor="shift" className="shift-label">
               Zmiana:
             </label>
             <div className="select-container">
