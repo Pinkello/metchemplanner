@@ -58,7 +58,7 @@ export const workerColumns = [
   },
 ];
 
-export const scheduleColumns = (machines, usedMachines) => [
+export const scheduleColumns = (machines, machinesAll) => [
   {
     field: "name",
     headerName: "Maszyna",
@@ -85,15 +85,23 @@ export const scheduleColumns = (machines, usedMachines) => [
   {
     field: "retooling",
     headerName: "Przezbrojenie",
-    width: 400,
+    width: 200,
     renderCell: (params) => {
-      return renderRetooling(params.row, machines, usedMachines);
+      return renderRetooling(params.row, machines, machinesAll);
+    },
+  },
+  {
+    field: "transition",
+    headerName: "Przejście",
+    width: 200,
+    renderCell: (params) => {
+      return renderTransition(params.row, machines, machinesAll);
     },
   },
   {
     field: "status",
     headerName: "Status",
-    width: 200,
+    width: 100,
     renderCell: (params) => {
       return params.row.status === "Praca" ? (
         <div style={{ color: "#008000" }}>Praca</div>
@@ -107,22 +115,16 @@ export const scheduleColumns = (machines, usedMachines) => [
   {
     field: "numberOfPeople",
     headerName: "Ilość osób",
-    width: 200,
+    width: 100,
   },
 ];
 
 // Funkcja do renderowania retoolingu
-function renderRetooling(row, machines, usedMachines) {
-  if (usedMachines.includes(row.name)) {
-    console.log("zawiera " + row.name);
-  } else {
-    console.log("nie zawiera");
-  }
-  console.log(usedMachines);
+function renderRetooling(row, machines, machinesAll) {
   const currentMachine = row;
   const connectedMachineName = currentMachine.connection;
 
-  const connectedMachine = machines.find(
+  const connectedMachine = machinesAll.find(
     (machine) => machine.name === connectedMachineName
   );
 
@@ -139,12 +141,42 @@ function renderRetooling(row, machines, usedMachines) {
       </div>
     );
   }
-  usedMachines.push(connectedMachine);
   return (
     <div>
       <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
       {"-> "}
       <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
+    </div>
+  );
+}
+
+// Funkcja do renderowania transition
+function renderTransition(row, machines, machinesAll) {
+  const currentMachine = row;
+  const connectedMachineName = currentMachine.connection;
+
+  const connectedMachine = machinesAll.find(
+    (machine) => machine.name === connectedMachineName
+  );
+
+  if (connectedMachine) {
+    return (
+      <div>
+        <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
+        {"-> "}
+        <b>{currentMachine.transition}</b> o {currentMachine.transitionTime}
+        {" | "}
+        <b style={{ color: "#009933" }}>{currentMachine.connection}</b>
+        {"-> "}
+        <b>{connectedMachine.transition}</b> o {connectedMachine.transitionTime}
+      </div>
+    );
+  }
+  return (
+    <div>
+      <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
+      {"-> "}
+      <b>{currentMachine.transition}</b> o {currentMachine.transitionTime}
     </div>
   );
 }

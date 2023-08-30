@@ -566,10 +566,88 @@ const Home = () => {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]: numberOfPeople,
       });
+      const docSnap = await getDoc(machineRef);
+
+      //jeżeli retooling wjedzie na nową zmiane, to dodaj na tej nowej zmianie
+      if (currentShift === "I") {
+        if (retoolingTime > "14:00" && retoolingTime < "22:00") {
+          await updateDoc(machineRef, {
+            [`II.machinesToAdd.${currentMachine.name}.form`]: form,
+            [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.status`]: status,
+          });
+        }
+        if (
+          retoolingTime >= "22:00" ||
+          (retoolingTime >= "00:00" && retoolingTime < "06:00")
+        ) {
+          await updateDoc(machineRef, {
+            [`III.machinesToAdd.${currentMachine.name}.form`]: form,
+            [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.status`]: status,
+          });
+        }
+      } else if (currentShift === "II") {
+        if (
+          retoolingTime > "22:00" ||
+          (retoolingTime >= "00:00" && retoolingTime < "06:00")
+        ) {
+          await updateDoc(machineRef, {
+            [`III.machinesToAdd.${currentMachine.name}.form`]: form,
+            [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.status`]: status,
+          });
+        }
+        if (retoolingTime >= "06:00" && retoolingTime <= "13:59") {
+          const dateObject = new Date(currentDate);
+          dateObject.setDate(dateObject.getDate() + 1);
+          const nextDayDateString = dateObject.toISOString().split("T")[0];
+
+          const machineRef2 = doc(db, "dates", nextDayDateString);
+
+          await updateDoc(machineRef2, {
+            [`I.machinesToAdd.${currentMachine.name}.form`]: form,
+            [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.status`]: status,
+          });
+        }
+      } else if (currentShift === "III") {
+        if (retoolingTime >= "06:00" && retoolingTime <= "21:59") {
+          const dateObject = new Date(currentDate);
+          dateObject.setDate(dateObject.getDate() + 1);
+          const nextDayDateString = dateObject.toISOString().split("T")[0];
+
+          const machineRef2 = doc(db, "dates", nextDayDateString);
+
+          await updateDoc(machineRef2, {
+            [`I.machinesToAdd.${currentMachine.name}.form`]: form,
+            [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.status`]: status,
+          });
+        }
+        if (retoolingTime > "13:59" && retoolingTime <= "21:59") {
+          const dateObject = new Date(currentDate);
+          dateObject.setDate(dateObject.getDate() + 1);
+          const nextDayDateString = dateObject.toISOString().split("T")[0];
+
+          const machineRef2 = doc(db, "dates", nextDayDateString);
+
+          await updateDoc(machineRef2, {
+            [`II.machinesToAdd.${currentMachine.name}.form`]: form,
+            [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.status`]: status,
+          });
+        }
+      }
 
       //zmiana connection i maszyny polaczonej
       if (connection !== "Brak" && currentMachine.connection === "Brak") {
-        const docSnap = await getDoc(machineRef);
         if (
           docSnap.data()[currentShift]["machinesToAdd"][connection].status !==
           status
@@ -587,6 +665,7 @@ const Home = () => {
       ) {
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
       } else if (
         connection !== "Brak" &&
@@ -595,6 +674,7 @@ const Home = () => {
       ) {
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,

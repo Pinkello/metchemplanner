@@ -21,6 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 const DatatableSchedules = () => {
   const [data, setData] = useState([]);
   const [machines, setMachines] = useState([]);
+  const [machinesAll, setMachinesAll] = useState([]);
   const [services, setServices] = useState([]);
   const [currentDate, setCurrentDate] = useState(
     new Date().toISOString().slice(0, 10)
@@ -156,7 +157,8 @@ const DatatableSchedules = () => {
           console.log("Lista usług z dnia");
           console.log(list2);
 
-          setMachines(secondList);
+          setMachines(thirdList);
+          setMachinesAll(secondList);
           setServices(list2);
         }
       },
@@ -276,8 +278,7 @@ const DatatableSchedules = () => {
     );
   }, [modalNotesShow]);
 
-  const usedMachines = [];
-  const columns = scheduleColumns(machines, usedMachines);
+  const columns = scheduleColumns(machines, machinesAll);
 
   return (
     <div className="datatable">
