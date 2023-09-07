@@ -179,9 +179,11 @@ const NewMachine = ({ inputs, title }) => {
                   />
                 </div>
               ))}
-              <button disabled={perc !== null && perc < 100} type="submit">
-                Dodaj maszynę
-              </button>
+              <div className="formInput">
+                <button disabled={perc !== null && perc < 100} type="submit">
+                  Dodaj maszynę
+                </button>
+              </div>
             </form>
           </div>
         </div>

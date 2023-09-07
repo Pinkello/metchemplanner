@@ -1,17 +1,16 @@
-.datatable {
+.datatableSchedules {
   display: flex;
   flex-direction: column;
-  height: 100vh; // lub inna wartość
-
+  padding: 10px 30px;
   .dateShow {
-    width: 50vw;
+    width: 30vw;
     display: flex;
     justify-content: center;
     align-items: center;
     margin-bottom: 1rem;
     background-color: #f4f4f4;
     padding: 1rem;
-    font-size: 20px;
+    font-size: 15px;
 
     label {
       margin-right: 1rem;
@@ -65,6 +64,9 @@
       min-height: 0px !important;
       font-size: 8px;
     }
+    .MuiDataGrid-columnHeaderDraggableContainer {
+      height: 50% !important;
+    }
 
     .MuiDataGrid-columnHeaderTitleContainer {
       display: flex;
@@ -87,14 +89,14 @@
     }
   }
 
-  .datatableTitle {
+  .datatableTitleSchedules {
     width: 100%;
-    font-size: 20px;
+    font-size: 15px;
     color: rgb(2, 2, 69);
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center !important;
 
     .currentShift,
     .currentDate {
@@ -118,7 +120,7 @@
     }
 
     .buttonPrinter button {
-      font-size: 20px;
+      font-size: 15px;
       padding: 10px 20px;
       background-color: #2ecc71;
       color: #ffffff;
@@ -134,46 +136,62 @@
       background-color: #27ae60;
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     }
+
+    .buttonNotes {
+      margin-left: auto;
+    }
+
+    .buttonNotes button {
+      font-size: 15px;
+      padding: 10px 20px;
+      background-color: #2e72cc;
+      color: #ffffff;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+
+    .buttonNotes button:hover {
+      background-color: #1b457c;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    }
   }
+}
 
-  .datagridContainer {
-    .serviceList {
-      .serviceTitle {
-        width: 100%;
-        font-size: 30px;
-        color: rgb(2, 2, 69);
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: start;
-      }
-      .servicesRow {
-        display: flex;
-        align-items: start;
-        justify-content: start;
+.datagridContainer {
+  .serviceList {
+    .serviceTitle {
+      width: 100%;
+      font-size: 15px;
+      color: rgb(2, 2, 69);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: start;
+    }
+    .servicesRow {
+      display: flex;
+      align-items: start;
+      justify-content: start;
 
-        .singleService {
-          .serviceWork {
-            color: green;
-          }
+      .singleService {
+        .serviceWork {
+          color: green;
+        }
 
-          .serviceStop {
-            color: red;
-          }
+        .serviceStop {
+          color: red;
         }
       }
     }
+  }
 
-    .notes {
-      .notesTitle {
-        width: 100%;
-        font-size: 30px;
-        color: rgb(2, 2, 69);
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: start;
-      }
+  .notes {
+    .notesTitle {
+      width: 50%;
     }
   }
 

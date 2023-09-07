@@ -62,7 +62,7 @@ const DatatableServices = () => {
     },
   ];
   return (
-    <div className="datatable">
+    <div className="datatableServices">
       <div className="datatableTitle">
         Lista maszyn
         <Link to="/services/new" className="link">

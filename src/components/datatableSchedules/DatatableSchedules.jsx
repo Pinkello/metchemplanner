@@ -281,7 +281,7 @@ const DatatableSchedules = () => {
   const columns = scheduleColumns(machines, machinesAll);
 
   return (
-    <div className="datatable">
+    <div className="datatableSchedules ">
       <Modal show={loading} centered>
         <Modal.Body className="d-flex justify-content-center ">
           <div>
@@ -325,7 +325,7 @@ const DatatableSchedules = () => {
         />
       </div>
 
-      <div className="datatableTitle">
+      <div className="datatableTitleSchedules ">
         Grafik - zmiana &nbsp;
         <span className="currentShift">{currentShift}</span> &nbsp; dnia &nbsp;
         <span className="currentDate">{currentDate}</span>
@@ -357,10 +357,9 @@ const DatatableSchedules = () => {
         <hr />
         <br />
         <div className="notes">
-          <div className="datatableTitle">
-            <h4 className="notesTitle">Uwagi:</h4>
-
-            <div className="buttonNotes  print-hide">
+          <div className="datatableTitleSchedules">
+            Uwagi:
+            <div className="buttonNotes print-hide">
               <Button
                 variant="primary"
                 onClick={() => {

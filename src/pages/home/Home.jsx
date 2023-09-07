@@ -106,6 +106,7 @@ const Home = () => {
               referencja: doc.id,
               status: "STOP",
               operator: "",
+              startTime: "",
               retooling: "",
               retoolingTime: "",
               transition: "",
@@ -285,6 +286,7 @@ const Home = () => {
           referencja: doc.id,
           status: "STOP",
           operator: "",
+          startTime: "",
           retooling: "",
           retoolingTime: "",
           transition: "",
@@ -438,6 +440,7 @@ const Home = () => {
   function MyVerticallyCenteredModal(props) {
     const [name, setName] = useState(currentMachine.name);
     const [form, setForm] = useState(currentMachine.form);
+    const [startTime, setStartTime] = useState(currentMachine.startTime);
     const [retooling, setRetooling] = useState(currentMachine.retooling);
     const [retoolingTime, setRetoolingTime] = useState(
       currentMachine.retoolingTime
@@ -558,6 +561,7 @@ const Home = () => {
       await updateDoc(machineRef, {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]: startTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: transition,
@@ -706,6 +710,17 @@ const Home = () => {
               placeholder="Nazwa"
               value={name}
               onChange={(e) => setName(e.target.value)}
+            />
+            <label>Rozpoczęcie pracy</label>
+            <input
+              className="formInput"
+              type="time"
+              name="startTime"
+              placeholder="Rozpoczęcie"
+              value={startTime}
+              onChange={(e) => {
+                setStartTime(e.target.value);
+              }}
             />
             <label>Forma</label>
             <input
@@ -1008,6 +1023,7 @@ const Home = () => {
             {element.status}
           </h5>
           <div style={{ marginTop: "10px" }}>
+            Start: <b>{element.startTime}</b> <br />
             Forma: <b>{element.form}</b>
             {element.retooling !== "" ? (
               <>

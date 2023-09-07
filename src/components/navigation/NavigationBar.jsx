@@ -19,7 +19,7 @@ const NavigationBar = () => {
         expand="lg"
         bg="dark"
         variant="dark"
-        className="example-navbar"
+        className="example-navbar print-hide"
       >
         <Container className="print-hide">
           <Navbar.Brand href="/">Metchem Planner</Navbar.Brand>

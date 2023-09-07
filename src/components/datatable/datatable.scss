@@ -28,6 +28,13 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
+    .link:hover {
+      background-color: green;
+      color: white;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
   }
 
   .cellWithImg {
@@ -80,6 +87,12 @@
       color: crimson;
       border: 1px dotted rgba(220, 20, 60, 0.6);
       cursor: pointer;
+    }
+    .deleteButton:hover {
+      background-color: crimson;
+      color: white;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
   }
 }

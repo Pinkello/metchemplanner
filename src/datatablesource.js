@@ -61,21 +61,24 @@ export const workerColumns = [
 export const scheduleColumns = (machines, machinesAll) => [
   {
     field: "name",
-    headerName: "Maszyna",
+    headerName: "Maszyna i start",
     width: 150,
     height: 30,
     renderCell: (params) => {
       if (params.row.connection !== "Brak") {
         return (
           <div className="small-column">
-            <b style={{ color: "#0066ff" }}>{params.row.name}</b> +{" "}
-            <b style={{ color: "#009933" }}>{params.row.connection}</b>{" "}
+            <b style={{ color: "#0066ff" }}>{params.row.name}</b> o{" "}
+            {params.row.startTime} +{" "}
+            <b style={{ color: "#009933" }}>{params.row.connection}</b> o{" "}
+            {params.row.startTime}
           </div>
         );
       } else {
         return (
           <div className="small-column">
-            <b style={{ color: "#0066ff" }}>{params.row.name}</b>
+            <b style={{ color: "#0066ff" }}>{params.row.name}</b> o{" "}
+            {params.row.startTime}
           </div>
         );
       }
@@ -101,7 +104,7 @@ export const scheduleColumns = (machines, machinesAll) => [
   {
     field: "status",
     headerName: "Status",
-    width: 100,
+    width: 75,
     renderCell: (params) => {
       return params.row.status === "Praca" ? (
         <div style={{ color: "#008000" }}>Praca</div>
@@ -114,8 +117,8 @@ export const scheduleColumns = (machines, machinesAll) => [
   },
   {
     field: "numberOfPeople",
-    headerName: "Ilość osób",
-    width: 100,
+    headerName: "Osoby",
+    width: 70,
   },
 ];
 
