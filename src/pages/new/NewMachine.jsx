@@ -1,4 +1,6 @@
 import "./newMachine.scss";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
@@ -13,7 +15,6 @@ import {
 import { db, storage } from "../../firebase";
 
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/navigation/NavigationBar";
 import Select from "react-select";
 
@@ -21,8 +22,8 @@ const NewMachine = ({ inputs, title }) => {
   const [file, setFile] = useState("");
   const [data, setData] = useState({});
   const [perc, setPerc] = useState(null);
-  const navigate = useNavigate();
-
+  console.log("cos");
+  console.log(inputs);
   const options = [
     { value: "Boczny rząd", label: "Boczny rząd" },
     { value: "Lewy rząd", label: "Lewy rząd" },
@@ -91,10 +92,6 @@ const NewMachine = ({ inputs, title }) => {
 
     if (id === "rowPlace") value = parseInt(value);
 
-    console.log("cos tu robie");
-    console.log(id, typeof id);
-    console.log(value, typeof value);
-
     setData({ ...data, [id]: value });
   };
 
@@ -121,8 +118,12 @@ const NewMachine = ({ inputs, title }) => {
       await addDoc(collection(db, "machines"), {
         ...data,
       });
+      toast.success("Dodaje nową maszyne..");
 
-      navigate(-1);
+      document.getElementById("name").value = ""; // Przykład dla pola "name"
+      document.getElementById("row").value = ""; // Przykład dla pola "row"
+      document.getElementById("rowPlace").value = "";
+      // navigate(-1);
     } catch (err) {
       console.log(err);
     }
@@ -132,6 +133,7 @@ const NewMachine = ({ inputs, title }) => {
     <div className="new">
       <div className="newContainer">
         <NavigationBar />
+        <ToastContainer />
         <div className="top">
           <h1>{title}</h1>
         </div>
