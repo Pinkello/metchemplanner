@@ -63,7 +63,7 @@ const Datatable = () => {
   ];
   return (
     <div className="datatable">
-      <div className="datatableTitle" style={{}}>
+      <div className="datatableTitle">
         <span>Lista maszyn</span>
 
         <div>

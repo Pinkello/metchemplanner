@@ -64,7 +64,7 @@ const DatatableServices = () => {
   return (
     <div className="datatableServices">
       <div className="datatableTitle">
-        Lista obsługi
+        <span>Lista obsługi</span>
         <Link to="/services/new" className="link">
           Dodaj nową obsługę
         </Link>
@@ -76,6 +76,7 @@ const DatatableServices = () => {
         pageSize={9}
         rowsPerPageOptions={[9]}
         checkboxSelection
+        autoHeight
       />
     </div>
   );

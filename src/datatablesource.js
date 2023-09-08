@@ -1,5 +1,5 @@
 export const machineColumns = [
-  { field: "name", headerName: "Nazwa", width: 100 },
+  { field: "name", headerName: "Nazwa", width: 400 },
   // { field: "form", headerName: "Forma", width: 150 },
   // { field: "operator", headerName: "Operator", width: 200 },
   // { field: "retooling", headerName: "Przezbrojenie na", width: 100 },
@@ -17,18 +17,18 @@ export const machineColumns = [
   //     );
   //   },
   // },
-  {
-    field: "status",
-    headerName: "Status",
-    width: 160,
-    renderCell: (params) => {
-      return (
-        <div className={`cellWithStatus ${params.row.status}`}>
-          {params.row.status}
-        </div>
-      );
-    },
-  },
+  // {
+  //   field: "status",
+  //   headerName: "Status",
+  //   width: 160,
+  //   renderCell: (params) => {
+  //     return (
+  //       <div className={`cellWithStatus ${params.row.status}`}>
+  //         {params.row.status}
+  //       </div>
+  //     );
+  //   },
+  // },
 ];
 
 export const workerColumns = [
