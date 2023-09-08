@@ -52,16 +52,16 @@
     }
 
     .MuiDataGrid-row {
-      height: 20px !important;
-      min-height: 0px !important;
+      // height: 20px !important;
+      min-height: 52px !important;
     }
 
     .MuiDataGrid-cell {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 20px !important;
-      min-height: 0px !important;
+      // height: 20px !important;
+      min-height: 52px !important;
       font-size: 8px;
     }
     .MuiDataGrid-columnHeaderDraggableContainer {
