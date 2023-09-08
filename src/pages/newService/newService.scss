@@ -19,8 +19,10 @@
       }
 
       .left {
+        padding-top: 30px;
         flex: 1;
         text-align: center;
+        border-right: 1px solid rgb(129, 126, 126);
 
         img {
           width: 100px;

@@ -988,10 +988,7 @@ const Home = () => {
     servicesRow.sort((a, b) => a.rowPlace - b.rowPlace);
     return servicesRow.map((element, index) => {
       return (
-        <div
-          className="machine border shadow p-3 mb-5 bg-white rounded "
-          key={index}
-        >
+        <div className="machine border shadow bg-white rounded " key={index}>
           <Button
             variant="primary"
             onClick={() => {

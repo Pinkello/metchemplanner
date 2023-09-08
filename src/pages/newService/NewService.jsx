@@ -1,5 +1,6 @@
 import "./newService.scss";
-
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
@@ -77,13 +78,20 @@ const NewService = ({ inputs, title }) => {
     setData({ ...data, [id]: value });
   };
 
-  const handleAdd = async (e) => {
+  const handleAddService = async (e) => {
     e.preventDefault();
+    if (!data["rowPlace"]) {
+      toast.error("Podaj miejsce w rzędzie dla obsługi!");
+      return;
+    }
     try {
       await addDoc(collection(db, "services"), {
         ...data,
       });
-      navigate(-1);
+      toast.success("Dodaje nową maszyne..");
+
+      document.getElementById("name").value = ""; // Przykład dla pola "name"
+      document.getElementById("rowPlace").value = ""; // Przykład dla pola "row"
     } catch (err) {
       console.log(err);
     }
@@ -93,6 +101,7 @@ const NewService = ({ inputs, title }) => {
     <div className="new">
       <div className="newContainer">
         <NavigationBar />
+        <ToastContainer />
         <div className="top">
           <h1>{title}</h1>
         </div>
@@ -108,7 +117,7 @@ const NewService = ({ inputs, title }) => {
             />
           </div>
           <div className="right">
-            <form onSubmit={handleAdd}>
+            <form onSubmit={handleAddService}>
               <div className="formInput">
                 <label htmlFor="file">
                   Zdjęcie: <DriveFolderUploadOutlinedIcon className="icon" />
@@ -140,9 +149,11 @@ const NewService = ({ inputs, title }) => {
                   />
                 </div>
               ))}
-              <button disabled={perc !== null && perc < 100} type="submit">
-                Dodaj obsługę
-              </button>
+              <div className="formInput">
+                <button disabled={perc !== null && perc < 100} type="submit">
+                  Dodaj obsługę
+                </button>
+              </div>
             </form>
           </div>
         </div>

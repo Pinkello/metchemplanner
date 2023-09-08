@@ -122,7 +122,6 @@ const NewMachine = ({ inputs, title }) => {
 
       document.getElementById("name").value = ""; // Przykład dla pola "name"
       document.getElementById("row").value = ""; // Przykład dla pola "row"
-      document.getElementById("rowPlace").value = "";
       // navigate(-1);
     } catch (err) {
       console.log(err);
