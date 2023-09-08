@@ -154,7 +154,7 @@ const DatatableSchedules = () => {
           }, 2000);
           console.log("Lista maszyn z dnia");
           console.log(list);
-          console.log("Lista usług z dnia");
+          console.log("Lista obsługi z dnia");
           console.log(list2);
 
           setMachines(thirdList);

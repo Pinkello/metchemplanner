@@ -69,6 +69,8 @@ const Home = () => {
     { value: "II", label: "II" },
     { value: "III", label: "III" },
   ];
+  const [tempDate, setTempDate] = useState(currentDate);
+  const [tempShift, setTempShift] = useState(currentShift);
 
   useEffect(() => {
     //LISTEN
@@ -246,100 +248,111 @@ const Home = () => {
   }, [currentShift, currentDate]);
 
   const handleInputSelectShift = (selectedOption) => {
-    setCurrentShift(selectedOption.value);
+    setTempShift(selectedOption.value);
   };
 
-  const loadShift = (someDate, someShift) => {
-    console.log("load shift");
-    const q = query(collection(db, "dates"));
-    const docsArray = [];
-
-    const unsub = onSnapshot(
-      q,
-      async (snapShot) => {
-        snapShot.docs.forEach((doc) => {
-          docsArray.push(doc.id);
-        });
-        if (docsArray.includes(someDate)) {
-          console.log("jest w tabeli");
-        } else {
-          console.log("nie jest w tabeli");
-          handleAddDate();
-        }
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-
-    const handleAddDate = async () => {
-      console.log("dodawanie");
-
-      var machinesToAdd = {};
-      let tempMachine = {};
-
-      const q2 = query(collection(db, "machines"));
-      const querySnapshot2 = await getDocs(q2);
-      querySnapshot2.forEach((doc) => {
-        // idMachinesList.push(doc.id);
-        tempMachine = {
-          referencja: doc.id,
-          status: "STOP",
-          operator: "",
-          startTime: "",
-          retooling: "",
-          retoolingTime: "",
-          transition: "",
-          transitionTime: "",
-          form: "--",
-          connection: "Brak",
-          numberOfPeople: "1",
-        };
-
-        machinesToAdd[doc.data().name] = tempMachine;
-      });
-
-      let tempService = {};
-      const servicesToAdd = {};
-
-      const q3 = query(collection(db, "services"));
-      const querySnapshot3 = await getDocs(q3);
-      querySnapshot3.forEach((doc) => {
-        // idMachinesList.push(doc.id);
-        tempService = {
-          referencja: doc.id,
-          praca: "Nie",
-        };
-
-        servicesToAdd[doc.data().name] = tempService;
-      });
-
-      console.log(machinesToAdd);
-      const docData = {
-        I: {
-          machinesToAdd,
-          servicesToAdd,
-        },
-        II: {
-          machinesToAdd,
-          servicesToAdd,
-        },
-        III: {
-          machinesToAdd,
-          servicesToAdd,
-        },
-      };
-
-      try {
-        await setDoc(doc(db, "dates", someDate), docData);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    return () => {
-      unsub();
-    };
+  const handleInputSelectDate = (e) => {
+    e.preventDefault();
+    // setCurrentDate(e.target.value);
+    setTempDate(e.target.value);
   };
+
+  const handleButtonClick = () => {
+    setCurrentDate(tempDate);
+    setCurrentShift(tempShift);
+  };
+
+  // const loadShift = (someDate, someShift) => {
+  //   console.log("load shift");
+  //   const q = query(collection(db, "dates"));
+  //   const docsArray = [];
+
+  //   const unsub = onSnapshot(
+  //     q,
+  //     async (snapShot) => {
+  //       snapShot.docs.forEach((doc) => {
+  //         docsArray.push(doc.id);
+  //       });
+  //       if (docsArray.includes(someDate)) {
+  //         console.log("jest w tabeli");
+  //       } else {
+  //         console.log("nie jest w tabeli");
+  //         handleAddDate();
+  //       }
+  //     },
+  //     (error) => {
+  //       console.log(error);
+  //     }
+  //   );
+
+  //   const handleAddDate = async () => {
+  //     console.log("dodawanie");
+
+  //     var machinesToAdd = {};
+  //     let tempMachine = {};
+
+  //     const q2 = query(collection(db, "machines"));
+  //     const querySnapshot2 = await getDocs(q2);
+  //     querySnapshot2.forEach((doc) => {
+  //       // idMachinesList.push(doc.id);
+  //       tempMachine = {
+  //         referencja: doc.id,
+  //         status: "STOP",
+  //         operator: "",
+  //         startTime: "",
+  //         retooling: "",
+  //         retoolingTime: "",
+  //         transition: "",
+  //         transitionTime: "",
+  //         form: "--",
+  //         connection: "Brak",
+  //         numberOfPeople: "1",
+  //       };
+
+  //       machinesToAdd[doc.data().name] = tempMachine;
+  //     });
+
+  //     let tempService = {};
+  //     const servicesToAdd = {};
+
+  //     const q3 = query(collection(db, "services"));
+  //     const querySnapshot3 = await getDocs(q3);
+  //     querySnapshot3.forEach((doc) => {
+  //       // idMachinesList.push(doc.id);
+  //       tempService = {
+  //         referencja: doc.id,
+  //         praca: "Nie",
+  //       };
+
+  //       servicesToAdd[doc.data().name] = tempService;
+  //     });
+
+  //     console.log(machinesToAdd);
+  //     const docData = {
+  //       I: {
+  //         machinesToAdd,
+  //         servicesToAdd,
+  //       },
+  //       II: {
+  //         machinesToAdd,
+  //         servicesToAdd,
+  //       },
+  //       III: {
+  //         machinesToAdd,
+  //         servicesToAdd,
+  //       },
+  //     };
+
+  //     try {
+  //       await setDoc(doc(db, "dates", someDate), docData);
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   return () => {
+  //     unsub();
+  //   };
+  // };
 
   function MyVerticallyCenteredModalService(props) {
     const [praca, setPraca] = useState(currentService.praca);
@@ -379,12 +392,12 @@ const Home = () => {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Edycja usługi
+            Edycja obsługi
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="rowInputs">
-            <label>Nazwa usługi</label>
+            <label>Nazwa obsługi</label>
             <input
               className="formInput"
               type="text"
@@ -482,6 +495,20 @@ const Home = () => {
     };
 
     const updateDoc2 = async (e) => {
+      if (status !== "STOP" && (form === "" || form === "--")) {
+        toast.error("Brak podanej formy!");
+        return;
+      }
+
+      if (retooling !== "" && retoolingTime === "") {
+        toast.error("Brak podanej godziny dla przezbrojenia!");
+        return;
+      }
+      if (transition !== "" && transitionTime === "") {
+        toast.error("Brak podanej godziny dla przejścia!");
+        return;
+      }
+
       //zmiana miejsca w rzedzie innych maszyn
       const batch = writeBatch(db);
       if (rowPlace !== rowPlaceOld || row !== rowOld)
@@ -547,6 +574,7 @@ const Home = () => {
             });
           });
         }
+
       await batch.commit();
 
       const machineRef1 = doc(db, "machines", currentMachine.referencja);
@@ -843,11 +871,6 @@ const Home = () => {
   // funkcja do załadowania z innego dnia
   function MyVerticallyCenteredModalLoad(props) {
     const [currentDateLoad, setCurrentDateLoad] = useState(currentDate);
-    const [currentShiftLoad, setCurrentShiftLoad] = useState(currentShift);
-
-    const handleInputSelectShiftLoad = (selectedOption) => {
-      setCurrentShiftLoad(selectedOption.value);
-    };
 
     const updateDoc2 = async (e) => {
       // await updateDoc(datesRef, {
@@ -856,12 +879,11 @@ const Home = () => {
 
       const docRef = doc(db, "dates", currentDateLoad);
       const date = await getDoc(docRef);
-      console.log("daty");
       try {
-        console.log(date.data().I);
-        console.log(currentDate);
-        console.log(currentDateLoad);
-
+        if (currentDate == currentDateLoad) {
+          toast.error("Nie możesz ładować danych z tego samego dnia");
+          return;
+        }
         const dateToReplace = doc(db, "dates", currentDate);
 
         await updateDoc(dateToReplace, {
@@ -869,7 +891,7 @@ const Home = () => {
           II: date.data().II,
           III: date.data().III,
         });
-        toast.success("Aktualizuje...");
+        toast.success("Ładuje dane...");
       } catch (error) {
         toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
       }
@@ -888,7 +910,7 @@ const Home = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="rowInputs">
+          <div className="rowInputs ">
             <div className="dateShow">
               <label htmlFor="date"> Data:</label>
               <input
@@ -966,7 +988,10 @@ const Home = () => {
     servicesRow.sort((a, b) => a.rowPlace - b.rowPlace);
     return servicesRow.map((element, index) => {
       return (
-        <div className="machine" key={index}>
+        <div
+          className="machine border shadow p-3 mb-5 bg-white rounded "
+          key={index}
+        >
           <Button
             variant="primary"
             onClick={() => {
@@ -993,7 +1018,7 @@ const Home = () => {
     row.sort((a, b) => a.rowPlace - b.rowPlace);
     return row.map((element, index) => {
       return (
-        <div className="machine" key={index}>
+        <div className="machine border-info shadow rounded" key={index}>
           <Button
             variant="primary"
             onClick={() => {
@@ -1023,7 +1048,14 @@ const Home = () => {
             {element.status}
           </h5>
           <div style={{ marginTop: "10px" }}>
-            Start: <b>{element.startTime}</b> <br />
+            {element.startTime !== "" ? (
+              <>
+                {" "}
+                Start: <b>{element.startTime}</b> <br />
+              </>
+            ) : (
+              ""
+            )}
             Forma: <b>{element.form}</b>
             {element.retooling !== "" ? (
               <>
@@ -1079,7 +1111,7 @@ const Home = () => {
         {modalService}
         {modalLoad}
         <div className="containerMain">
-          <div className="dateShow">
+          <div className="dateShow border border-primary shadow rounded">
             <label htmlFor="date"> Data:</label>
             <input
               className="formInput"
@@ -1087,37 +1119,52 @@ const Home = () => {
               type="date"
               name="date"
               placeholder="Data"
-              value={currentDate}
+              value={tempDate}
               onChange={(e) => {
-                loadShift(e.target.value, currentShift);
-                setCurrentDate(e.target.value);
+                handleInputSelectDate(e);
+                // loadShift(e.target.value, currentShift);
+                // setCurrentDate(e.target.value);
               }}
             />
             <label htmlFor="shift" className="shift-label">
               Zmiana:
             </label>
             <div className="select-container">
-              <Select
-                className="formInput"
-                options={optionsShift}
-                id="shift"
-                name="shift"
-                defaultValue={{ label: currentShift, value: currentShift }}
-                onChange={(value) => {
-                  loadShift(currentDate, value.value);
-                  handleInputSelectShift(value);
-                }}
-              />
-              {/* <button className="formButton">Wczytaj dane</button> */}
-              <Button
-                variant="primary"
-                className="formButton"
-                onClick={() => {
-                  setModalLoadShow(true);
-                }}
-              >
-                <b> Wczytaj dane</b>
-              </Button>
+              <div className="selects">
+                <Select
+                  className="formInput"
+                  options={optionsShift}
+                  id="shift"
+                  name="shift"
+                  defaultValue={{ label: tempShift, value: tempShift }}
+                  onChange={(value) => {
+                    // loadShift(currentDate, value.value);
+                    handleInputSelectShift(value);
+                  }}
+                />
+                {/* <button onClick={handleButtonClick}>Wybierz zmianę</button> */}
+              </div>
+              <div className="buttonsDate">
+                <Button
+                  variant="dark"
+                  className="formButton"
+                  onClick={() => {
+                    handleButtonClick();
+                  }}
+                >
+                  <b> Wybierz zmianę</b>
+                </Button>
+
+                <Button
+                  variant="secondary"
+                  className="formButton"
+                  onClick={() => {
+                    setModalLoadShow(true);
+                  }}
+                >
+                  <b> Wczytaj dane</b>
+                </Button>
+              </div>
             </div>
           </div>
           <div className="rows">

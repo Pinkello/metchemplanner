@@ -2,7 +2,7 @@
   display: flex;
 
   .homeContainer {
-    background-color: #bccbf8;
+    background-color: #3d5b80;
     flex: 6;
     height: 100vh;
     width: 100vw;
@@ -20,7 +20,6 @@
 
       .rows {
         display: flex;
-        border-bottom: 1px solid black;
       }
 
       .dateShow {
@@ -44,21 +43,32 @@
         .select-container {
           display: flex;
           align-items: center;
+
+          .selects {
+            min-width: 7vw;
+          }
+          .buttonsDate {
+            padding-left: 1vw;
+            display: flex;
+            width: 100%;
+            min-width: 25vw;
+            justify-content: space-between;
+
+            .formButton {
+              margin: 0px;
+            }
+          }
         }
 
         .formButton {
           margin-left: 5rem;
           padding: 0.5rem 1rem;
-          background-color: #6c63ff;
+          // background-color: #6c63ff;
           color: #fff;
           border: none;
           border-radius: 4px;
           font-size: 1rem;
           cursor: pointer;
-
-          &:hover {
-            background-color: #5b53db;
-          }
         }
 
         .formInput {

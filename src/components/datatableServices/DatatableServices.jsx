@@ -54,7 +54,7 @@ const DatatableServices = () => {
               className="deleteButton"
               onClick={() => handleDelete(params.row.id)}
             >
-              Usuń usługę
+              Usuń obsługę
             </div>
           </div>
         );
@@ -64,9 +64,9 @@ const DatatableServices = () => {
   return (
     <div className="datatableServices">
       <div className="datatableTitle">
-        Lista maszyn
+        Lista obsługi
         <Link to="/services/new" className="link">
-          Dodaj nową usługę
+          Dodaj nową obsługę
         </Link>
       </div>
       <DataGrid

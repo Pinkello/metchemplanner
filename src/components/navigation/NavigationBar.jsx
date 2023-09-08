@@ -30,7 +30,7 @@ const NavigationBar = () => {
               <Nav.Link href="../schedule">Grafik</Nav.Link>
               <Nav.Link href="../workers">Pracownicy</Nav.Link>
               <Nav.Link href="../machines">Maszyny</Nav.Link>
-              <Nav.Link href="../services">Usługi</Nav.Link>
+              <Nav.Link href="../services">Obsługa</Nav.Link>
             </Nav>
             <Nav>
               <Button

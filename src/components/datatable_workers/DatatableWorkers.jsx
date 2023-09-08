@@ -54,7 +54,7 @@ const DatatableServices = () => {
               className="deleteButton"
               onClick={() => handleDelete(params.row.id)}
             >
-              Usuń usługę
+              Usuń obsługę
             </div>
           </div>
         );

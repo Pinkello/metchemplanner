@@ -121,7 +121,7 @@ const NewService = ({ inputs, title }) => {
                 />
               </div>
               <div className="formInput">
-                <label>Wybierz rząd usługi</label>
+                <label>Wybierz rząd obsługi</label>
                 <Select
                   options={options}
                   id="row"
@@ -141,7 +141,7 @@ const NewService = ({ inputs, title }) => {
                 </div>
               ))}
               <button disabled={perc !== null && perc < 100} type="submit">
-                Dodaj usługę
+                Dodaj obsługę
               </button>
             </form>
           </div>

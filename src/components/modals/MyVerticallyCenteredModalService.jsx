@@ -62,12 +62,12 @@ function MyVerticallyCenteredModalService(props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Edycja usługi
+          Edycja obsługi
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="rowInputs">
-          <label>Nazwa usługi</label>
+          <label>Nazwa obsługi</label>
           <input
             className="formInput"
             type="text"
