@@ -117,13 +117,16 @@ function renderName(row, machines, machinesAll) {
   if (connectedMachine) {
     return (
       <div className="small-column">
-        <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
+        <b style={{ color: "#0066ff" }}>
+          {currentMachine.name} - {currentMachine.form}
+        </b>
         {currentMachine.startTime !== "" ? (
           <> o {currentMachine.startTime} + </>
         ) : (
           " + "
         )}
-        <b style={{ color: "#009933" }}>{connectedMachine.name}</b>{" "}
+        <b style={{ color: "#009933" }}>{connectedMachine.name}</b> -{" "}
+        {currentMachine.form}{" "}
         {connectedMachine.startTime !== "" ? (
           <> o {connectedMachine.startTime} </>
         ) : (
@@ -134,7 +137,8 @@ function renderName(row, machines, machinesAll) {
   }
   return (
     <div className="small-column">
-      <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>{" "}
+      <b style={{ color: "#0066ff" }}>{currentMachine.name} </b> -{" "}
+      {currentMachine.form}{" "}
       {currentMachine.startTime !== "" ? (
         <>o {currentMachine.startTime} </>
       ) : (
