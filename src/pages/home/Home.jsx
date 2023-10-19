@@ -850,23 +850,33 @@ const Home = () => {
           return;
         }
         const dateToReplace = doc(db, "dates", currentDate);
+
+        // if (currentShiftLoad === "I") {
+        //   console.log("do 1");
+        //   console.log(date.data().I);
+        //   const jeden = "I";
+        //   await updateDoc(dateToReplace, {
+        //     I: date.data()[currentShiftLoad],
+        //   });
+        // }
+        // if (currentShiftLoad === "II") {
+        //   await updateDoc(dateToReplace, {
+        //     II: date.data()[currentShiftLoad],
+        //   });
+        // }
+        // if (currentShiftLoad === "III") {
+        //   await updateDoc(dateToReplace, {
+        //     III: date.data()[currentShiftLoad],
+        //   });
+        // }
+        console.log(currentShift);
         console.log(currentShiftLoad);
-        if (currentShiftLoad === "I") {
-          await updateDoc(dateToReplace, {
-            I: date.data().I,
-          });
-        }
-        if (currentShiftLoad === "II") {
-          await updateDoc(dateToReplace, {
-            II: date.data().II,
-          });
-        }
-        if (currentShiftLoad === "III") {
-          await updateDoc(dateToReplace, {
-            III: date.data().III,
-          });
-        }
-        console.log("test");
+        console.log(currentDateLoad);
+        console.log(currentDate);
+        await updateDoc(dateToReplace, {
+          [currentShift]: date.data()[currentShiftLoad],
+        });
+
         toast.success("Ładuje dane...");
       } catch (error) {
         toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
