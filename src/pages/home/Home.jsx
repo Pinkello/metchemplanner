@@ -866,7 +866,7 @@ const Home = () => {
             III: date.data().III,
           });
         }
-
+        console.log("test");
         toast.success("Ładuje dane...");
       } catch (error) {
         toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
