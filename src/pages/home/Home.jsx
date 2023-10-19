@@ -13,6 +13,7 @@ import {
   getDocs,
   where,
   writeBatch,
+  deleteField,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
@@ -113,7 +114,7 @@ const Home = () => {
               retoolingTime: "",
               transition: "",
               transitionTime: "",
-              form: "--",
+              form: "",
               connection: "Brak",
               numberOfPeople: "1",
             };
@@ -128,6 +129,7 @@ const Home = () => {
             tempService = {
               referencja: doc.id,
               praca: "Nie",
+              opis: "",
             };
 
             servicesToAdd[doc.data().name] = tempService;
@@ -262,104 +264,12 @@ const Home = () => {
     setCurrentShift(tempShift);
   };
 
-  // const loadShift = (someDate, someShift) => {
-  //   console.log("load shift");
-  //   const q = query(collection(db, "dates"));
-  //   const docsArray = [];
-
-  //   const unsub = onSnapshot(
-  //     q,
-  //     async (snapShot) => {
-  //       snapShot.docs.forEach((doc) => {
-  //         docsArray.push(doc.id);
-  //       });
-  //       if (docsArray.includes(someDate)) {
-  //         console.log("jest w tabeli");
-  //       } else {
-  //         console.log("nie jest w tabeli");
-  //         handleAddDate();
-  //       }
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
-
-  //   const handleAddDate = async () => {
-  //     console.log("dodawanie");
-
-  //     var machinesToAdd = {};
-  //     let tempMachine = {};
-
-  //     const q2 = query(collection(db, "machines"));
-  //     const querySnapshot2 = await getDocs(q2);
-  //     querySnapshot2.forEach((doc) => {
-  //       // idMachinesList.push(doc.id);
-  //       tempMachine = {
-  //         referencja: doc.id,
-  //         status: "STOP",
-  //         operator: "",
-  //         startTime: "",
-  //         retooling: "",
-  //         retoolingTime: "",
-  //         transition: "",
-  //         transitionTime: "",
-  //         form: "--",
-  //         connection: "Brak",
-  //         numberOfPeople: "1",
-  //       };
-
-  //       machinesToAdd[doc.data().name] = tempMachine;
-  //     });
-
-  //     let tempService = {};
-  //     const servicesToAdd = {};
-
-  //     const q3 = query(collection(db, "services"));
-  //     const querySnapshot3 = await getDocs(q3);
-  //     querySnapshot3.forEach((doc) => {
-  //       // idMachinesList.push(doc.id);
-  //       tempService = {
-  //         referencja: doc.id,
-  //         praca: "Nie",
-  //       };
-
-  //       servicesToAdd[doc.data().name] = tempService;
-  //     });
-
-  //     console.log(machinesToAdd);
-  //     const docData = {
-  //       I: {
-  //         machinesToAdd,
-  //         servicesToAdd,
-  //       },
-  //       II: {
-  //         machinesToAdd,
-  //         servicesToAdd,
-  //       },
-  //       III: {
-  //         machinesToAdd,
-  //         servicesToAdd,
-  //       },
-  //     };
-
-  //     try {
-  //       await setDoc(doc(db, "dates", someDate), docData);
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   };
-  //   return () => {
-  //     unsub();
-  //   };
-  // };
-
   function MyVerticallyCenteredModalService(props) {
     const [praca, setPraca] = useState(currentService.praca);
     const [name, setName] = useState(currentService.name);
     const [row, setRow] = useState(currentService.row);
     const [rowPlace, setRowPlace] = useState(currentService.rowPlace);
-
+    const [description, setDescription] = useState(currentService.opis);
     const handleInputSelectRow = (selectedOption) => {
       setRow(selectedOption.value);
     };
@@ -367,19 +277,39 @@ const Home = () => {
       setPraca(selectedOption.value);
     };
 
-    const updateDoc2 = async (e) => {
-      const serviceRef1 = doc(db, "services", currentService.referencja);
-      await updateDoc(serviceRef1, {
-        name: name,
-        row: row,
-        rowPlace: rowPlace,
-      });
-
+    const updateDoc2 = async () => {
       const machineRef = doc(db, "dates", currentDate);
-      await updateDoc(machineRef, {
-        [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-      });
+      //jesli trzeba zmienic service
+      if (
+        name !== currentService.name ||
+        row !== currentService.row ||
+        rowPlace !== currentService.rowPlace
+      ) {
+        const serviceRef1 = doc(db, "services", currentService.referencja);
+        await updateDoc(serviceRef1, {
+          name: name,
+          row: row,
+          rowPlace: rowPlace,
+        });
+      }
+      //jesli trzeba zmienic nazwe - usun i dodaj nową mape
+      if (name !== currentService.name) {
+        await updateDoc(machineRef, {
+          [`${currentShift}.servicesToAdd.${currentService.name}`]: deleteField(),
+        });
 
+        await updateDoc(machineRef, {
+          [`${currentShift}.servicesToAdd.${name}.referencja`]: currentService.referencja,
+          [`${currentShift}.servicesToAdd.${name}.praca`]: praca,
+          [`${currentShift}.servicesToAdd.${name}.opis`]: description,
+        });
+        //jesli tylko update pracy/opisu
+      } else {
+        await updateDoc(machineRef, {
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
+        });
+      }
       toast.success("Aktualizuje...");
     };
 
@@ -407,7 +337,6 @@ const Home = () => {
               onChange={(e) => setName(e.target.value)}
             />
             <label>Praca</label>
-
             <Select
               className="formInput"
               options={optionsPracaService}
@@ -416,7 +345,17 @@ const Home = () => {
               defaultValue={{ label: praca, value: praca }}
               onChange={handleInputSelectPraca}
             />
-
+            <label>Opis</label>
+            <input
+              className="formInput"
+              type="text"
+              name="form"
+              placeholder="Forma"
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+              }}
+            />
             <label>Rząd</label>
             <Select
               className="formInput"
@@ -924,24 +863,6 @@ const Home = () => {
                   setCurrentDateLoad(e.target.value);
                 }}
               />
-              {/* <label for="shift" className="shift-label">
-                Zmiana:
-              </label>
-              <div className="select-container">
-                <Select
-                  className="formInput"
-                  options={optionsShift}
-                  id="shiftLoad"
-                  name="shiftLoad"
-                  defaultValue={{
-                    label: currentShiftLoad,
-                    value: currentShiftLoad,
-                  }}
-                  onChange={(value) => {
-                    handleInputSelectShiftLoad(value);
-                  }}
-                />
-              </div> */}
             </div>
 
             <Button
@@ -1006,6 +927,11 @@ const Home = () => {
             {" "}
             {element.praca}
           </h5>
+          {element.opis !== "" ? (
+            <div style={{ marginTop: "10px" }}>Opis: {element.opis}</div>
+          ) : (
+            <></>
+          )}
         </div>
       );
     });
@@ -1089,8 +1015,8 @@ const Home = () => {
   };
 
   return (
-    <div className="home">
-      <div className="homeContainer">
+    <div className="home ">
+      <div className="homeContainer ">
         <Modal show={loading} centered>
           <Modal.Body className="d-flex justify-content-center ">
             <div>
@@ -1107,7 +1033,7 @@ const Home = () => {
         {modal}
         {modalService}
         {modalLoad}
-        <div className="containerMain">
+        <div className="containerMain container">
           <div className="dateShow border border-primary shadow rounded">
             <label htmlFor="date"> Data:</label>
             <input
@@ -1164,16 +1090,20 @@ const Home = () => {
               </div>
             </div>
           </div>
-          <div className="rows">
-            <div className="mainRow">{showRow(sideRow)}</div>
-            <div className="mainRow">{showRow(leftRow)}</div>
-            <div className="mainRow">{showRow(middleRow)}</div>
-            <div className="mainRow">{showRow(rightRow)}</div>
+          <div className="rows row">
+            <div className="mainRow col-lg-6 col-xl-3">{showRow(sideRow)}</div>
+            <div className="mainRow col-lg-6 col-xl-3">{showRow(leftRow)}</div>
+            <div className="mainRow col-lg-6 col-xl-3">
+              {showRow(middleRow)}
+            </div>
+            <div className="mainRow col-lg-6 col-xl-3">{showRow(rightRow)}</div>
           </div>
-          <div className="rows">
-            <div className="mainRow">{showRowService(leftRow2)}</div>
-            <div className="mainRow">{showRowService(middleRow2)}</div>
-            <div className="mainRow">{showRowService(rightRow2)}</div>
+          <div className="rows row">
+            <div className="mainRow col-lg-4  ">{showRowService(leftRow2)}</div>
+            <div className="mainRow col-lg-4 ">
+              {showRowService(middleRow2)}
+            </div>
+            <div className="mainRow col-lg-4 ">{showRowService(rightRow2)}</div>
           </div>
         </div>
       </div>

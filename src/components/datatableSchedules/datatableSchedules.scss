@@ -3,7 +3,6 @@
   flex-direction: column;
   padding: 10px 30px;
   .dateShow {
-    width: 30vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,6 +10,13 @@
     background-color: #f4f4f4;
     padding: 1rem;
     font-size: 15px;
+
+    .buttonsDate {
+      padding-left: 3vw;
+      display: flex;
+      min-width: 15vw;
+      justify-content: space-between;
+    }
 
     label {
       margin-right: 1rem;
@@ -46,7 +52,7 @@
   .datagrid {
     flex: 1;
     border: none;
-    font-size: 12px;
+    font-size: 18px;
     .MuiDataGrid-columnsContainer {
       background-color: #f4f4f4;
     }
@@ -63,7 +69,7 @@
       align-items: center;
       max-height: 32px !important;
       min-height: 32px !important;
-      font-size: 12px;
+      font-size: 15px;
     }
     .MuiDataGrid-columnHeaderDraggableContainer {
       height: 50% !important;
@@ -95,9 +101,14 @@
     font-size: 15px;
     color: rgb(2, 2, 69);
     margin-bottom: 5px;
-    display: flex;
-    align-items: center;
+    display: flex !important;
+    align-items: center !important;
     justify-content: center !important;
+
+    .titleh2 {
+      width: 100%;
+      text-align: center;
+    }
 
     .currentShift,
     .currentDate {

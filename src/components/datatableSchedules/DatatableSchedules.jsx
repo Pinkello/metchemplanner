@@ -30,16 +30,14 @@ const DatatableSchedules = () => {
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState("");
   const [modalNotesShow, setModalNotesShow] = useState(false);
+  const [tempDate, setTempDate] = useState(currentDate);
+  const [tempShift, setTempShift] = useState(currentShift);
 
   const optionsShift = [
     { value: "I", label: "I" },
     { value: "II", label: "II" },
     { value: "III", label: "III" },
   ];
-
-  const handleInputSelectShift = (selectedOption) => {
-    setCurrentShift(selectedOption.value);
-  };
 
   useEffect(() => {
     //LISTEN
@@ -199,8 +197,18 @@ const DatatableSchedules = () => {
       return (
         <div className="singleService" key={index}>
           {element.praca === "Tak" ? (
-            <div>
-              <b>{element.name}</b> |&nbsp;
+            <div
+              style={{
+                maxWidth: "200px",
+                wordWrap: "break-word",
+                overflowWrap: "break-word",
+                borderRight: "black solid 1px",
+                padding: "5px",
+              }}
+            >
+              &nbsp; &nbsp;<i>{element.name}</i>&nbsp;&nbsp;
+              {/* <b>||</b> */}
+              <div style={{ textAlign: "center" }}>{element.opis}</div>
             </div>
           ) : (
             <></>
@@ -208,6 +216,21 @@ const DatatableSchedules = () => {
         </div>
       );
     });
+  };
+
+  const handleButtonClick = () => {
+    setCurrentDate(tempDate);
+    setCurrentShift(tempShift);
+  };
+
+  const handleInputSelectShift = (selectedOption) => {
+    setTempShift(selectedOption.value);
+  };
+
+  const handleInputSelectDate = (e) => {
+    e.preventDefault();
+    // setCurrentDate(e.target.value);
+    setTempDate(e.target.value);
   };
 
   function MyVerticallyCenteredModalNotes(props) {
@@ -281,7 +304,7 @@ const DatatableSchedules = () => {
   const columns = scheduleColumns(machines, machinesAll);
 
   return (
-    <div className="datatableSchedules ">
+    <div className="datatableSchedules container">
       <Modal show={loading} centered>
         <Modal.Body className="d-flex justify-content-center ">
           <div>
@@ -295,40 +318,55 @@ const DatatableSchedules = () => {
       </Modal>
       <ToastContainer />
       {modalNotes}
-      <div className="dateShow print-hide ">
-        <label htmlFor="date"> Data:</label>
-        <input
-          className="formInput"
-          id="date"
-          type="date"
-          name="date"
-          placeholder="Data"
-          value={currentDate}
-          onChange={(e) => {
-            loadShift(e.target.value, currentShift);
-            setCurrentDate(e.target.value);
-          }}
-        />
-        <label htmlFor="shift" className="shift-label">
-          Zmiana:
-        </label>
-        <Select
-          className="formInput"
-          options={optionsShift}
-          id="shift"
-          name="shift"
-          defaultValue={{ label: currentShift, value: currentShift }}
-          onChange={(value) => {
-            loadShift(currentDate, value.value);
-            handleInputSelectShift(value);
-          }}
-        />
+      <div className="row">
+        <div className="dateShow print-hide col-sm-12 col-lg-7">
+          <label htmlFor="date"> Data:</label>
+          <input
+            className="formInput"
+            id="date"
+            type="date"
+            name="date"
+            placeholder="Data"
+            value={tempDate}
+            onChange={(e) => {
+              // loadShift(e.target.value, currentShift);
+              handleInputSelectDate(e);
+            }}
+          />
+          <label htmlFor="shift" className="shift-label">
+            Zmiana:
+          </label>
+          <Select
+            className="formInput"
+            options={optionsShift}
+            id="shift"
+            name="shift"
+            defaultValue={{ label: tempShift, value: tempShift }}
+            onChange={(value) => {
+              // loadShift(currentDate, value.value);
+              handleInputSelectShift(value);
+            }}
+          />
+          <div className="buttonsDate">
+            <Button
+              variant="dark"
+              className="formButton"
+              onClick={() => {
+                handleButtonClick();
+              }}
+            >
+              <b> Wybierz zmianę</b>
+            </Button>
+          </div>
+        </div>
       </div>
-
       <div className="datatableTitleSchedules ">
-        Grafik - zmiana &nbsp;
-        <span className="currentShift">{currentShift}</span> &nbsp; dnia &nbsp;
-        <span className="currentDate">{currentDate}</span>
+        <h2 className="titleh2">
+          Grafik - zmiana &nbsp;
+          <span className="currentShift">{currentShift}</span> &nbsp; dnia
+          &nbsp;
+          <span className="currentDate">{currentDate}</span>
+        </h2>
         <div className="buttonPrinter print-hide">
           {" "}
           <button onClick={() => window.print()}>Drukuj</button>
