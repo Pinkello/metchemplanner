@@ -113,7 +113,9 @@ function renderName(row, machines, machinesAll) {
   const connectedMachine = machinesAll.find(
     (machine) => machine.name === connectedMachineName
   );
-
+  console.log(currentMachine.form);
+  console.log(currentMachine.name);
+  console.log(machines);
   if (connectedMachine) {
     return (
       <div className="small-column">
@@ -125,7 +127,7 @@ function renderName(row, machines, machinesAll) {
           " + "
         )}
         <b style={{ color: "#009933" }}>{connectedMachine.name}</b> -{" "}
-        {currentMachine.form}{" "}
+        {connectedMachine.form}{" "}
         {connectedMachine.startTime !== "" ? (
           <> o {connectedMachine.startTime} </>
         ) : (

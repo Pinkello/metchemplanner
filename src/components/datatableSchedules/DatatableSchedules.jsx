@@ -206,7 +206,11 @@ const DatatableSchedules = () => {
                 padding: "5px",
               }}
             >
-              &nbsp; &nbsp;<i>{element.name}</i>&nbsp;&nbsp;
+              &nbsp; &nbsp;
+              <i>
+                <b>{element.name}</b>
+              </i>
+              &nbsp;&nbsp;
               {/* <b>||</b> */}
               <div style={{ textAlign: "center" }}>{element.opis}</div>
             </div>
