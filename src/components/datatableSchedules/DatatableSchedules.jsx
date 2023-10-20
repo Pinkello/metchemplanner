@@ -323,8 +323,8 @@ const DatatableSchedules = () => {
       </Modal>
       <ToastContainer />
       {modalNotes}
-      <div className="row">
-        <div className="dateShow print-hide col-sm-12 col-lg-7">
+      <div className="row row1">
+        <div className="dateShow print-hide col-12 col-xl-7 ">
           <label htmlFor="date"> Data:</label>
           <input
             className="formInput"
@@ -404,7 +404,7 @@ const DatatableSchedules = () => {
         <br />
         <div className="notes">
           <div className="datatableTitleSchedules">
-            Uwagi:
+            <h2 className="serviceTitle">Uwagi:</h2>
             <div className="buttonNotes print-hide">
               <Button
                 variant="primary"
@@ -419,6 +419,8 @@ const DatatableSchedules = () => {
           <hr />
 
           <div className="notesArea">{notes}</div>
+          <br />
+          <br />
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@
   flex-direction: column;
   padding: 10px 30px;
   .dateShow {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,6 +11,14 @@
     background-color: #f4f4f4;
     padding: 1rem;
     font-size: 15px;
+    margin: 10px;
+
+    .row1 {
+      display: flex;
+      width: 100%;
+      justify-content: center;
+      align-items: center;
+    }
 
     .buttonsDate {
       padding-left: 3vw;
@@ -98,12 +107,20 @@
 
   .datatableTitleSchedules {
     width: 100%;
-    font-size: 15px;
     color: rgb(2, 2, 69);
     margin-bottom: 5px;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+
+    .serviceTitle {
+      width: 100%;
+      color: rgb(2, 2, 69);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .titleh2 {
       width: 100%;
@@ -176,7 +193,7 @@
 .datagridContainer {
   .serviceList {
     .serviceTitle {
-      width: 100%;
+      width: 98%;
       color: rgb(2, 2, 69);
       margin-bottom: 10px;
       display: flex;
