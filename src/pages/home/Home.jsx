@@ -294,13 +294,11 @@ const Home = () => {
       //jesli trzeba zmienic nazwe - usun i dodaj nową mape
       if (name !== currentService.name) {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}`]:
-            deleteField(),
+          [`${currentShift}.servicesToAdd.${currentService.name}`]: deleteField(),
         });
 
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${name}.referencja`]:
-            currentService.referencja,
+          [`${currentShift}.servicesToAdd.${name}.referencja`]: currentService.referencja,
           [`${currentShift}.servicesToAdd.${name}.praca`]: praca,
           [`${currentShift}.servicesToAdd.${name}.opis`]: description,
         });
@@ -308,8 +306,7 @@ const Home = () => {
       } else {
         await updateDoc(machineRef, {
           [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
-            description,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
         });
       }
       toast.success("Aktualizuje...");
@@ -524,24 +521,16 @@ const Home = () => {
       //update maszyny
       const machineRef = doc(db, "dates", currentDate);
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]:
-          referencja,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]:
-          startTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]:
-          retooling,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-          retoolingTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]:
-          transition,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]:
-          transitionTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]: startTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: transition,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: transitionTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: status,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]:
-          connection,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]:
-          numberOfPeople,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]: numberOfPeople,
       });
       const docSnap = await getDoc(machineRef);
 
@@ -551,8 +540,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -563,8 +551,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -576,8 +563,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -591,8 +577,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -607,8 +592,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -622,8 +606,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -640,18 +623,15 @@ const Home = () => {
           });
 
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
       } else if (
         connection === "Brak" &&
         currentMachine.connection !== "Brak"
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-            "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]:
-            "STOP",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
       } else if (
         connection !== "Brak" &&
@@ -659,14 +639,11 @@ const Home = () => {
         connection !== currentMachine.connection
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-            "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]:
-            "STOP",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
       }
 
@@ -1093,59 +1070,61 @@ const Home = () => {
         {modalService}
         {modalLoad}
         <div className="containerMain container">
-          <div className="dateShow border border-primary shadow rounded">
-            <label htmlFor="date"> Data:</label>
-            <input
-              className="formInput"
-              id="date"
-              type="date"
-              name="date"
-              placeholder="Data"
-              value={tempDate}
-              onChange={(e) => {
-                handleInputSelectDate(e);
-                // loadShift(e.target.value, currentShift);
-                // setCurrentDate(e.target.value);
-              }}
-            />
-            <label htmlFor="shift" className="shift-label">
-              Zmiana:
-            </label>
-            <div className="select-container">
-              <div className="selects">
-                <Select
-                  className="formInput"
-                  options={optionsShift}
-                  id="shift"
-                  name="shift"
-                  defaultValue={{ label: tempShift, value: tempShift }}
-                  onChange={(value) => {
-                    // loadShift(currentDate, value.value);
-                    handleInputSelectShift(value);
-                  }}
-                />
-                {/* <button onClick={handleButtonClick}>Wybierz zmianę</button> */}
-              </div>
-              <div className="buttonsDate">
-                <Button
-                  variant="dark"
-                  className="formButton"
-                  onClick={() => {
-                    handleButtonClick();
-                  }}
-                >
-                  <b> Wybierz zmianę</b>
-                </Button>
+          <div className="row rows">
+            <div className="dateShow border border-primary shadow rounded  col-xl-6 col-10">
+              <label htmlFor="date"> Data:</label>
+              <input
+                className="formInput"
+                id="date"
+                type="date"
+                name="date"
+                placeholder="Data"
+                value={tempDate}
+                onChange={(e) => {
+                  handleInputSelectDate(e);
+                  // loadShift(e.target.value, currentShift);
+                  // setCurrentDate(e.target.value);
+                }}
+              />
+              <label htmlFor="shift" className="shift-label">
+                Zmiana:
+              </label>
+              <div className="select-container">
+                <div className="selects">
+                  <Select
+                    className="formInput"
+                    options={optionsShift}
+                    id="shift"
+                    name="shift"
+                    defaultValue={{ label: tempShift, value: tempShift }}
+                    onChange={(value) => {
+                      // loadShift(currentDate, value.value);
+                      handleInputSelectShift(value);
+                    }}
+                  />
+                  {/* <button onClick={handleButtonClick}>Wybierz zmianę</button> */}
+                </div>
+                <div className="buttonsDate">
+                  <Button
+                    variant="dark"
+                    className="formButton"
+                    onClick={() => {
+                      handleButtonClick();
+                    }}
+                  >
+                    <b> Wybierz zmianę</b>
+                  </Button>
 
-                <Button
-                  variant="secondary"
-                  className="formButton"
-                  onClick={() => {
-                    setModalLoadShow(true);
-                  }}
-                >
-                  <b> Wczytaj dane</b>
-                </Button>
+                  <Button
+                    variant="secondary"
+                    className="formButton"
+                    onClick={() => {
+                      setModalLoadShow(true);
+                    }}
+                  >
+                    <b> Wczytaj dane</b>
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

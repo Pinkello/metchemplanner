@@ -138,9 +138,10 @@ function renderName(row, machines, machinesAll) {
   }
   return (
     <div className="small-column">
-      <b style={{ color: "#0066ff" }}>{currentMachine.name} </b>
+      <b style={{ color: "#0066ff" }}>{currentMachine.name} </b>-{" "}
+      {currentMachine.form}
       {currentMachine.startTime !== "" ? (
-        <>o {currentMachine.startTime} </>
+        <> o {currentMachine.startTime} </>
       ) : (
         ""
       )}
@@ -167,7 +168,7 @@ function renderRetooling(row, machines, machinesAll) {
             <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
           </>
         ) : (
-          <> Brak</>
+          <> --</>
         )}
         {" | "}
         {connectedMachine.retooling !== "" ? (
@@ -178,7 +179,7 @@ function renderRetooling(row, machines, machinesAll) {
             {connectedMachine.retoolingTime}
           </>
         ) : (
-          <>Brak</>
+          <>--</>
         )}
       </div>
     );
@@ -191,7 +192,7 @@ function renderRetooling(row, machines, machinesAll) {
           <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
         </>
       ) : (
-        <>Brak</>
+        <>--</>
       )}
     </div>
   );
@@ -215,7 +216,7 @@ function renderTransition(row, machines, machinesAll) {
             <b>{currentMachine.transition}</b> o {currentMachine.transitionTime}
           </>
         ) : (
-          <>Brak</>
+          <>--</>
         )}
         {" | "}
         {connectedMachine.transition !== "" ? (
@@ -226,7 +227,7 @@ function renderTransition(row, machines, machinesAll) {
             {connectedMachine.transitionTime}
           </>
         ) : (
-          <>Brak</>
+          <>--</>
         )}
       </div>
     );
@@ -239,7 +240,7 @@ function renderTransition(row, machines, machinesAll) {
           <b>{currentMachine.transition}</b> o {currentMachine.transitionTime}
         </>
       ) : (
-        <>Brak</>
+        <>--</>
       )}
     </div>
   );

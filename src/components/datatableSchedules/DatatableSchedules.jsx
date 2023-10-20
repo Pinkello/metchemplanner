@@ -203,12 +203,13 @@ const DatatableSchedules = () => {
                 wordWrap: "break-word",
                 overflowWrap: "break-word",
                 borderRight: "black solid 1px",
-                padding: "5px",
+                padding: "5px 10px 5px 0px",
+                textAlign: "center",
               }}
             >
               &nbsp; &nbsp;
               <i>
-                <b>{element.name}</b>
+                <b style={{ color: "blue" }}>{element.name}</b>
               </i>
               &nbsp;&nbsp;
               {/* <b>||</b> */}
@@ -383,6 +384,7 @@ const DatatableSchedules = () => {
           rows={machines}
           columns={columns}
           autoHeight
+          getRowHeight={() => 33}
           components={{
             Footer: () => null,
             Pagination: () => null,
@@ -392,8 +394,10 @@ const DatatableSchedules = () => {
           }}
         />
         <br />
+        <br />
+        <br />
         <div className="serviceList">
-          <h4 className="serviceTitle">Lista obsługi:</h4>
+          <h2 className="serviceTitle">Lista obsługi:</h2>
           <div className="servicesRow">{showServices(services)}</div>
         </div>{" "}
         <hr />
