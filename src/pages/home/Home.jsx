@@ -25,6 +25,7 @@ import Select from "react-select";
 
 const Home = () => {
   const [machines, setMachines] = useState([]);
+  const [workers, setWorkers] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentMachine, setCurrentMachine] = useState({});
@@ -44,6 +45,7 @@ const Home = () => {
   const [modalServiceShow, setModalServiceShow] = useState(false);
   const [modalLoadShow, setModalLoadShow] = useState(false);
   const optionsConnection = [{ value: "Brak", label: "Brak" }];
+  const optionsWorker = [{ value: "Brak", label: "Brak" }];
   const optionsStatus = [
     { value: "STOP", label: "Stop" },
     { value: "Praca", label: "Praca" },
@@ -74,6 +76,31 @@ const Home = () => {
   const [tempShift, setTempShift] = useState(currentShift);
   const [tempDateLoad, setTempDateLoad] = useState(currentDate);
   const [tempShiftLoad, setTempShiftLoad] = useState(currentShift);
+
+  useEffect(() => {
+    const fetchWorkers = async () => {
+      try {
+        let tempWorker = {};
+        let tempWorkers = [];
+
+        const querySnapshotWorker = await getDocs(collection(db, "workers"));
+        querySnapshotWorker.forEach((doc) => {
+          tempWorker = {
+            name: doc.data().name,
+            surname: doc.data().surname,
+            brigade: doc.data().brigade,
+          };
+          tempWorkers.push(tempWorker);
+        });
+
+        setWorkers(tempWorkers);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchWorkers();
+  }, []);
 
   useEffect(() => {
     //LISTEN
@@ -118,6 +145,7 @@ const Home = () => {
               transitionTime: "",
               form: "",
               connection: "Brak",
+              worker: "Brak",
               numberOfPeople: "1",
             };
 
@@ -294,11 +322,13 @@ const Home = () => {
       //jesli trzeba zmienic nazwe - usun i dodaj nową mape
       if (name !== currentService.name) {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}`]: deleteField(),
+          [`${currentShift}.servicesToAdd.${currentService.name}`]:
+            deleteField(),
         });
 
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${name}.referencja`]: currentService.referencja,
+          [`${currentShift}.servicesToAdd.${name}.referencja`]:
+            currentService.referencja,
           [`${currentShift}.servicesToAdd.${name}.praca`]: praca,
           [`${currentShift}.servicesToAdd.${name}.opis`]: description,
         });
@@ -306,7 +336,8 @@ const Home = () => {
       } else {
         await updateDoc(machineRef, {
           [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
+            description,
         });
       }
       toast.success("Aktualizuje...");
@@ -402,6 +433,7 @@ const Home = () => {
     );
     const [status, setStatus] = useState(currentMachine.status);
     const [connection, setConnection] = useState(currentMachine.connection);
+    const [worker, setWorker] = useState(currentMachine.worker);
     const [numberOfPeople, setNumberOfPeople] = useState(
       currentMachine.numberOfPeople
     );
@@ -414,12 +446,20 @@ const Home = () => {
     const [referencja, setReferencja] = useState(currentMachine.referencja);
 
     useEffect(() => {
-      console.log("obecna maszyna");
-      console.log(currentMachine);
       machines.map((element) => {
         optionsConnection.push({ value: element.name, label: element.name });
       });
+      workers.map((element) => {
+        optionsWorker.push({
+          value: element.name + " " + element.surname,
+          label: element.name + " " + element.surname,
+        });
+      });
     }, []);
+
+    const handleInputSelectWorker = (selectedOption) => {
+      setWorker(selectedOption.value);
+    };
 
     const handleInputSelectConnection = (selectedOption) => {
       setConnection(selectedOption.value);
@@ -521,16 +561,23 @@ const Home = () => {
       //update maszyny
       const machineRef = doc(db, "dates", currentDate);
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]:
+          referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]: startTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: transition,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: transitionTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]:
+          startTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]:
+          retooling,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+          retoolingTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]:
+          transition,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]:
+          transitionTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: status,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.numberOfPeople`]: numberOfPeople,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]:
+          connection,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: worker,
       });
       const docSnap = await getDoc(machineRef);
 
@@ -540,7 +587,8 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+              retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -551,7 +599,8 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+              retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -563,7 +612,8 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+              retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -577,7 +627,8 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+              retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -592,7 +643,8 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+              retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -606,7 +658,8 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+              retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -623,15 +676,18 @@ const Home = () => {
           });
 
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]:
+            currentMachine.name,
         });
       } else if (
         connection === "Brak" &&
         currentMachine.connection !== "Brak"
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
+            "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]:
+            "STOP",
         });
       } else if (
         connection !== "Brak" &&
@@ -639,11 +695,14 @@ const Home = () => {
         connection !== currentMachine.connection
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
+            "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]:
+            "STOP",
         });
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]:
+            currentMachine.name,
         });
       }
 
@@ -758,16 +817,14 @@ const Home = () => {
               defaultValue={{ label: connection, value: connection }}
               onChange={handleInputSelectConnection}
             />
-            <label>Ilość osób</label>
-            <input
+            <label>Pracownik</label>
+            <Select
               className="formInput"
-              type="number"
-              name="numberOfPeople"
-              placeholder="Ilość osób"
-              value={numberOfPeople}
-              onChange={(e) => {
-                setNumberOfPeople(e.target.value);
-              }}
+              options={optionsWorker}
+              id="worker"
+              name="worker"
+              defaultValue={{ label: worker, value: worker }}
+              onChange={handleInputSelectWorker}
             />
             <label>Rząd</label>
             <Select
@@ -1071,7 +1128,7 @@ const Home = () => {
         {modalLoad}
         <div className="containerMain container">
           <div className="row rows">
-            <div className="dateShow border border-primary shadow rounded  col-xl-6 col-10">
+            <div className="dateShow border border-primary shadow rounded  col-xl-8 col-11">
               <label htmlFor="date"> Data:</label>
               <input
                 className="formInput"

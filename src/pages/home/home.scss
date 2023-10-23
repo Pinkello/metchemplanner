@@ -24,6 +24,7 @@
       }
 
       .dateShow {
+        overflow: auto;
         display: flex;
         // justify-content: space-between;
         align-items: center;
@@ -70,6 +71,7 @@
         }
 
         .formInput {
+          min-width: min-content;
           padding: 0.5rem;
           border: 1px solid #ccc;
           border-radius: 4px;

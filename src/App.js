@@ -86,7 +86,10 @@ function App() {
                 path="new"
                 element={
                   <RequireAuth>
-                    <NewWorker inputs={workerInputs} title="Add New Product" />
+                    <NewWorker
+                      inputs={workerInputs}
+                      title="Dodaj nowego pracownika"
+                    />
                   </RequireAuth>
                 }
               />

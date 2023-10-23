@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const DatatableServices = () => {
+const DatatableWorkers = () => {
   const [data, setData] = useState([]);
   console.log(data);
   useEffect(() => {
@@ -54,7 +54,7 @@ const DatatableServices = () => {
               className="deleteButton"
               onClick={() => handleDelete(params.row.id)}
             >
-              Usuń obsługę
+              Usuń pracownika
             </div>
           </div>
         );
@@ -65,7 +65,7 @@ const DatatableServices = () => {
     <div className="datatableWorkers">
       <div className="datatableTitle">
         Lista pracownikow
-        <Link to="/services/new" className="link">
+        <Link to="/workers/new" className="link">
           Dodaj nowego pracownika
         </Link>
       </div>
@@ -73,12 +73,11 @@ const DatatableServices = () => {
         className="datagrid"
         rows={data}
         columns={workerColumns.concat(actionColumn)}
-        pageSize={9}
-        rowsPerPageOptions={[9]}
         checkboxSelection
+        autoHeight
       />
     </div>
   );
 };
 
-export default DatatableServices;
+export default DatatableWorkers;

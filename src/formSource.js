@@ -47,27 +47,21 @@ export const workerInputs = [
     type: "text",
     placeholder: "Brygada",
   },
-  {
-    id: "email",
-    label: "Email",
-    type: "email",
-    placeholder: "Email",
-  },
-  {
-    id: "password",
-    label: "Password",
-    type: "password",
-  },
-  {
-    id: "phone",
-    label: "Numer telefonu",
-    type: "text",
-    placeholder: "Numer telefonu",
-  },
-  {
-    id: "phone",
-    label: "Numer telefonu",
-    type: "text",
-    placeholder: "Numer telefonu",
-  },
+  // {
+  //   id: "email",
+  //   label: "Email",
+  //   type: "email",
+  //   placeholder: "Email",
+  // },
+  // {
+  //   id: "password",
+  //   label: "Password",
+  //   type: "password",
+  // },
+  // {
+  //   id: "phone",
+  //   label: "Numer telefonu",
+  //   type: "text",
+  //   placeholder: "Numer telefonu",
+  // },
 ];

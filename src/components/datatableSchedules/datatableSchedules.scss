@@ -1,7 +1,7 @@
 .datatableSchedules {
   display: flex;
   flex-direction: column;
-  padding: 10px 30px;
+  padding: 0px 30px 10px 30px;
   .dateShow {
     width: 100%;
     display: flex;
@@ -11,7 +11,6 @@
     background-color: #f4f4f4;
     padding: 1rem;
     font-size: 15px;
-    margin: 10px;
 
     .row1 {
       display: flex;

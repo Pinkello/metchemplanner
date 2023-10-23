@@ -2,12 +2,19 @@ import "./new_worker.scss";
 
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  doc,
+  serverTimestamp,
+  setDoc,
+  addDoc,
+  collection,
+} from "firebase/firestore";
 import { auth, db, storage } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/navigation/NavigationBar";
+import { toast, ToastContainer } from "react-toastify";
 
 const New = ({ inputs, title }) => {
   const [file, setFile] = useState("");
@@ -69,18 +76,31 @@ const New = ({ inputs, title }) => {
     e.preventDefault();
     try {
       // zwraca usera
-      const res = await createUserWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
+      // const res = await createUserWithEmailAndPassword(
+      //   auth,
+      //   data.email,
+      //   data.password
+      // );
 
-      await setDoc(doc(db, "workers", res.user.uid), {
-        ...data,
-        timestamp: serverTimestamp(),
+      // await setDoc(doc(db, "workers", res.user.uid), {
+      //   ...data,
+      //   timestamp: serverTimestamp(),
+      // });
+
+      await addDoc(collection(db, "workers"), {
+        name: data.name,
+        surname: data.surname,
+        brigade: data.brigade,
+        img: data.img ? data.img : "photos/default-avatar.jpg",
       });
-      navigate(-1);
+
+      document.getElementById("name").value = ""; // Przykład dla pola "name"
+      document.getElementById("surname").value = ""; // Przykład dla pola "name"
+      document.getElementById("brigade").value = ""; // Przykład dla pola "row"
+
+      toast.success("Dodano nowego pracownika");
     } catch (err) {
+      toast.error("Brak wszystkich danych!");
       console.log(err);
     }
   };
@@ -88,6 +108,7 @@ const New = ({ inputs, title }) => {
   return (
     <div className="new">
       <div className="newContainer">
+        <ToastContainer />
         <NavigationBar />
         <div className="top">
           <h1>{title}</h1>
