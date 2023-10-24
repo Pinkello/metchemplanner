@@ -81,7 +81,7 @@ const NewService = ({ inputs, title }) => {
   const handleAddService = async (e) => {
     e.preventDefault();
     if (!data["rowPlace"]) {
-      toast.error("Podaj miejsce w rzędzie dla obsługi!");
+      toast.error("Podaj miejsce w rzędzie dla montażu!");
       return;
     }
     try {
@@ -130,7 +130,7 @@ const NewService = ({ inputs, title }) => {
                 />
               </div>
               <div className="formInput">
-                <label>Wybierz rząd obsługi</label>
+                <label>Wybierz rząd montażu</label>
                 <Select
                   options={options}
                   id="row"
@@ -151,7 +151,7 @@ const NewService = ({ inputs, title }) => {
               ))}
               <div className="formInput">
                 <button disabled={perc !== null && perc < 100} type="submit">
-                  Dodaj obsługę
+                  Dodaj montaż
                 </button>
               </div>
             </form>

@@ -397,14 +397,14 @@ const DatatableSchedules = () => {
         <br />
         <br />
         <div className="serviceList">
-          <h2 className="serviceTitle">Lista obsługi:</h2>
+          <h2 className="serviceTitle">Montaże</h2>
           <div className="servicesRow">{showServices(services)}</div>
         </div>{" "}
         <hr />
         <br />
         <div className="notes">
           <div className="datatableTitleSchedules">
-            <h2 className="serviceTitle">Uwagi:</h2>
+            <h2 className="serviceTitle">Uwagi</h2>
             <div className="buttonNotes print-hide">
               <Button
                 variant="primary"

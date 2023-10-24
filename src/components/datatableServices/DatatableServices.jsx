@@ -54,7 +54,7 @@ const DatatableServices = () => {
               className="deleteButton"
               onClick={() => handleDelete(params.row.id)}
             >
-              Usuń obsługę
+              Usuń montaż
             </div>
           </div>
         );
@@ -64,17 +64,15 @@ const DatatableServices = () => {
   return (
     <div className="datatableServices">
       <div className="datatableTitle">
-        <span>Lista obsługi</span>
+        <span>Montaże</span>
         <Link to="/services/new" className="link">
-          Dodaj nową obsługę
+          Dodaj nowy montaż
         </Link>
       </div>
       <DataGrid
         className="datagrid"
         rows={data}
         columns={machineColumns.concat(actionColumn)}
-        pageSize={9}
-        rowsPerPageOptions={[9]}
         checkboxSelection
         autoHeight
       />

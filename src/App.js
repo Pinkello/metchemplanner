@@ -117,7 +117,7 @@ function App() {
                   <RequireAuth>
                     <NewService
                       inputs={serviceInputs}
-                      title="Dodaj nową obsługę"
+                      title="Dodaj nowy montaż"
                     />
                   </RequireAuth>
                 }

@@ -322,13 +322,11 @@ const Home = () => {
       //jesli trzeba zmienic nazwe - usun i dodaj nową mape
       if (name !== currentService.name) {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}`]:
-            deleteField(),
+          [`${currentShift}.servicesToAdd.${currentService.name}`]: deleteField(),
         });
 
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${name}.referencja`]:
-            currentService.referencja,
+          [`${currentShift}.servicesToAdd.${name}.referencja`]: currentService.referencja,
           [`${currentShift}.servicesToAdd.${name}.praca`]: praca,
           [`${currentShift}.servicesToAdd.${name}.opis`]: description,
         });
@@ -336,8 +334,7 @@ const Home = () => {
       } else {
         await updateDoc(machineRef, {
           [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
-            description,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
         });
       }
       toast.success("Aktualizuje...");
@@ -352,12 +349,12 @@ const Home = () => {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Edycja obsługi
+            Edycja montażu
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="rowInputs">
-            <label>Nazwa obsługi</label>
+            <label>Nazwa montażu</label>
             <input
               className="formInput"
               type="text"
@@ -561,22 +558,15 @@ const Home = () => {
       //update maszyny
       const machineRef = doc(db, "dates", currentDate);
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]:
-          referencja,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]:
-          startTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]:
-          retooling,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-          retoolingTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]:
-          transition,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]:
-          transitionTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]: startTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: transition,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: transitionTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: status,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]:
-          connection,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: worker,
       });
       const docSnap = await getDoc(machineRef);
@@ -587,8 +577,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -599,8 +588,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -612,8 +600,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -627,8 +614,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -643,8 +629,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -658,8 +643,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -676,18 +660,15 @@ const Home = () => {
           });
 
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
       } else if (
         connection === "Brak" &&
         currentMachine.connection !== "Brak"
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-            "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]:
-            "STOP",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
       } else if (
         connection !== "Brak" &&
@@ -695,14 +676,11 @@ const Home = () => {
         connection !== currentMachine.connection
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-            "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]:
-            "STOP",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
       }
 
