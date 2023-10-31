@@ -132,13 +132,17 @@ const DatatableSchedules = () => {
           const thirdList = [];
 
           for (const machine of secondList) {
-            const { name, connection } = machine;
-
+            const { name, connection, connection2 } = machine;
+            console.log("maszyna");
+            console.log(name);
             if (
               connection === "Brak" ||
-              !thirdList.find((item) => item.name === connection)
+              !thirdList.find(
+                (item) => item.name === connection || item.name === connection2
+              )
             ) {
               thirdList.push(machine);
+              console.log("dodaje maszyne " + name + " - " + connection);
             }
           }
 
@@ -150,10 +154,10 @@ const DatatableSchedules = () => {
           setTimeout(() => {
             setLoading(false);
           }, 2000);
-          console.log("Lista maszyn z dnia");
-          console.log(list);
-          console.log("Lista obsługi z dnia");
-          console.log(list2);
+          // console.log("Lista maszyn z dnia");
+          // console.log(list);
+          // console.log("Lista obsługi z dnia");
+          // console.log(list2);
 
           setMachines(thirdList);
           setMachinesAll(secondList);
@@ -384,7 +388,7 @@ const DatatableSchedules = () => {
           rows={machines}
           columns={columns}
           autoHeight
-          getRowHeight={() => 33}
+          getRowHeight={() => "auto"}
           components={{
             Footer: () => null,
             Pagination: () => null,

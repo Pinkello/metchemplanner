@@ -44,7 +44,8 @@ const Home = () => {
   const [modalShow, setModalShow] = useState(false);
   const [modalServiceShow, setModalServiceShow] = useState(false);
   const [modalLoadShow, setModalLoadShow] = useState(false);
-  const optionsConnection = [{ value: "Brak", label: "Brak" }];
+  let optionsConnection = [{ value: "Brak", label: "Brak" }];
+  let optionsConnection2 = [{ value: "Brak", label: "Brak" }];
   const optionsWorker = [{ value: "Brak", label: "Brak" }];
   const optionsStatus = [
     { value: "STOP", label: "Stop" },
@@ -145,6 +146,7 @@ const Home = () => {
               transitionTime: "",
               form: "",
               connection: "Brak",
+              connection2: "Brak",
               worker: "Brak",
               numberOfPeople: "1",
             };
@@ -430,6 +432,7 @@ const Home = () => {
     );
     const [status, setStatus] = useState(currentMachine.status);
     const [connection, setConnection] = useState(currentMachine.connection);
+    const [connection2, setConnection2] = useState(currentMachine.connection2);
     const [worker, setWorker] = useState(currentMachine.worker);
     const [numberOfPeople, setNumberOfPeople] = useState(
       currentMachine.numberOfPeople
@@ -442,11 +445,40 @@ const Home = () => {
     );
     const [referencja, setReferencja] = useState(currentMachine.referencja);
 
-    useEffect(() => {
-      machines.map((element) => {
-        optionsConnection.push({ value: element.name, label: element.name });
+    const sortTable = (table) => {
+      table.sort((a, b) => {
+        const nameA = a.value;
+        const nameB = b.value;
+
+        // Wyodrębnij numery z napisów (uwzględniając "w-" jako prefix)
+        const numA = parseInt(nameA.substring(2), 10);
+        const numB = parseInt(nameB.substring(2), 10);
+
+        if (numA < numB) {
+          return -1;
+        }
+        if (numA > numB) {
+          return 1;
+        }
+        return 0;
       });
-      workers.map((element) => {
+    };
+
+    useEffect(() => {
+      machines.forEach((element) => {
+        const comparison = element.name.localeCompare(connection);
+        const comparison2 = element.name.localeCompare(connection2);
+
+        if (!(comparison2 === 0))
+          optionsConnection.push({ value: element.name, label: element.name });
+        if (!(comparison === 0))
+          optionsConnection2.push({ value: element.name, label: element.name });
+      });
+
+      sortTable(optionsConnection);
+      sortTable(optionsConnection2);
+
+      workers.forEach((element) => {
         optionsWorker.push({
           value: element.name + " " + element.surname,
           label: element.name + " " + element.surname,
@@ -460,6 +492,26 @@ const Home = () => {
 
     const handleInputSelectConnection = (selectedOption) => {
       setConnection(selectedOption.value);
+
+      optionsConnection2 = [{ value: "Brak", label: "Brak" }];
+      machines.forEach((element) => {
+        if (element.name !== selectedOption.value)
+          optionsConnection2.push({ value: element.name, label: element.name });
+      });
+
+      sortTable(optionsConnection2);
+    };
+
+    const handleInputSelectConnection2 = (selectedOption) => {
+      setConnection2(selectedOption.value);
+
+      optionsConnection = [{ value: "Brak", label: "Brak" }];
+      machines.forEach((element) => {
+        if (element.name !== selectedOption.value)
+          optionsConnection.push({ value: element.name, label: element.name });
+      });
+
+      sortTable(optionsConnection);
     };
 
     const handleInputSelectStatus = (selectedOption) => {
@@ -482,6 +534,13 @@ const Home = () => {
       }
       if (transition !== "" && transitionTime === "") {
         toast.error("Brak podanej godziny dla przejścia!");
+        return;
+      }
+
+      if (connection === "Brak" && connection2 !== "Brak") {
+        toast.error(
+          "Nie możesz podać drugiego połączenia bez podania pierwszego!"
+        );
         return;
       }
 
@@ -567,6 +626,7 @@ const Home = () => {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: transitionTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: status,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection2`]: connection2,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: worker,
       });
       const docSnap = await getDoc(machineRef);
@@ -654,11 +714,11 @@ const Home = () => {
         if (
           docSnap.data()[currentShift]["machinesToAdd"][connection].status !==
           status
-        )
+        ) {
           await updateDoc(machineRef, {
             [`${currentShift}.machinesToAdd.${connection}.status`]: status,
           });
-
+        }
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
@@ -681,6 +741,57 @@ const Home = () => {
         });
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.status`]: status,
+        });
+      }
+
+      //zmiana connection2 i maszyny polaczonej
+
+      if (connection2 !== "Brak" && currentMachine.connection2 === "Brak") {
+        if (
+          docSnap.data()[currentShift]["machinesToAdd"][connection2].status !==
+          status
+        )
+          await updateDoc(machineRef, {
+            [`${currentShift}.machinesToAdd.${connection2}.status`]: status,
+          });
+
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${connection2}.connection`]: currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection2}.connection2`]: connection,
+          [`${currentShift}.machinesToAdd.${connection}.connection2`]: connection2,
+        });
+      } else if (
+        connection2 === "Brak" &&
+        currentMachine.connection2 !== "Brak"
+      ) {
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+        });
+      } else if (
+        connection2 !== "Brak" &&
+        currentMachine.connection2 !== "Brak" &&
+        connection2 !== currentMachine.connection2
+      ) {
+        if (
+          docSnap.data()[currentShift]["machinesToAdd"][
+            currentMachine.connection2
+          ].connection2 === currentMachine.name
+        ) {
+          await updateDoc(machineRef, {
+            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
+            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+          });
+        } else {
+          await updateDoc(machineRef, {
+            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
+            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+          });
+        }
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${connection2}.connection2`]: currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection2}.status`]: status,
         });
       }
 
@@ -795,6 +906,15 @@ const Home = () => {
               defaultValue={{ label: connection, value: connection }}
               onChange={handleInputSelectConnection}
             />
+            <label>Wybierz kolejne połączenie</label>
+            <Select
+              className="formInput"
+              options={optionsConnection2}
+              id="connection2"
+              name="connection2"
+              defaultValue={{ label: connection2, value: connection2 }}
+              onChange={handleInputSelectConnection2}
+            />
             <label>Pracownik</label>
             <Select
               className="formInput"
@@ -847,10 +967,6 @@ const Home = () => {
     };
 
     const updateDoc2 = async (e) => {
-      // await updateDoc(datesRef, {
-      //   [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: "",
-      // });
-
       const docRef = doc(db, "dates", currentDateLoad);
       const date = await getDoc(docRef);
       try {
@@ -863,28 +979,6 @@ const Home = () => {
         }
         const dateToReplace = doc(db, "dates", currentDate);
 
-        // if (currentShiftLoad === "I") {
-        //   console.log("do 1");
-        //   console.log(date.data().I);
-        //   const jeden = "I";
-        //   await updateDoc(dateToReplace, {
-        //     I: date.data()[currentShiftLoad],
-        //   });
-        // }
-        // if (currentShiftLoad === "II") {
-        //   await updateDoc(dateToReplace, {
-        //     II: date.data()[currentShiftLoad],
-        //   });
-        // }
-        // if (currentShiftLoad === "III") {
-        //   await updateDoc(dateToReplace, {
-        //     III: date.data()[currentShiftLoad],
-        //   });
-        // }
-        console.log(currentShift);
-        console.log(currentShiftLoad);
-        console.log(currentDateLoad);
-        console.log(currentDate);
         await updateDoc(dateToReplace, {
           [currentShift]: date.data()[currentShiftLoad],
         });
@@ -1024,7 +1118,7 @@ const Home = () => {
           </Button>{" "}
           {element.connection !== "Brak" && (
             <Button
-              variant="primary"
+              variant="info"
               onClick={() => {
                 setCurrentMachine(
                   machines.find((obj) => {
@@ -1035,6 +1129,21 @@ const Home = () => {
               }}
             >
               <b> {element.connection}</b>
+            </Button>
+          )}{" "}
+          {element.connection2 !== "Brak" && (
+            <Button
+              variant="info"
+              onClick={() => {
+                setCurrentMachine(
+                  machines.find((obj) => {
+                    return obj.name === element.connection2;
+                  })
+                );
+                setModalShow(true);
+              }}
+            >
+              <b> {element.connection2}</b>
             </Button>
           )}
           <h5 className={element.status} style={{ float: "right" }}>
