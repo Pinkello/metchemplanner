@@ -14,6 +14,7 @@ import {
   where,
   writeBatch,
   deleteField,
+  documentId,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
@@ -78,6 +79,34 @@ const Home = () => {
   const [tempDateLoad, setTempDateLoad] = useState(currentDate);
   const [tempShiftLoad, setTempShiftLoad] = useState(currentShift);
 
+  const fetchDataFromDoc = async (machineTab, machineData, id) => {
+    const list = [];
+
+    const q = query(
+      collection(db, "machines"),
+      where(documentId(), "in", machineTab)
+    );
+
+    const machinesDocsSnap = await getDocs(q);
+    let result;
+
+    machinesDocsSnap.forEach((doc) => {
+      result = machineData.find((machine) => machine.referencja === doc.id);
+      if (result) {
+        result = {
+          ...result,
+          name: doc.data().name,
+          row: doc.data().row,
+          rowPlace: doc.data().rowPlace,
+          id: id,
+        };
+        id = id + 1;
+        list.push(result);
+      }
+    });
+    return list;
+  };
+
   useEffect(() => {
     const fetchWorkers = async () => {
       try {
@@ -125,6 +154,13 @@ const Home = () => {
         let listR2 = [];
         let listM2 = [];
         const servicesToAdd = {};
+
+        let tablica = [];
+        let tablica2 = [];
+        let tablicaService = [];
+
+        let id = 1;
+        let id2 = 25;
 
         if (!querySnapshot.data()) {
           console.log("puste na start");
@@ -188,53 +224,117 @@ const Home = () => {
             console.log(err);
           }
         } else {
+          //   const machinesDatabase = Object.values(
+          //     querySnapshot.data()[currentShift]["machinesToAdd"]
+          //   );
+
+          //   for (const machine of machinesDatabase) {
+          //     tempMachine = machine;
+          //     const ref = doc(db, "machines", machine.referencja);
+          //     const docSnap2 = await getDoc(ref);
+          //     // const docRef = doc(db, "dates", "2023-01-01");
+          //     // const docSnap = await getDoc(docRef);
+          //     if (docSnap2.data()) {
+          //       tempMachine = {
+          //         ...tempMachine,
+          //         name: docSnap2.data().name,
+          //         row: docSnap2.data().row,
+          //         rowPlace: docSnap2.data().rowPlace,
+          //       };
+
+          //       list.push(tempMachine);
+          //     }
+          //   }
+
+          //   const servicesDatabase = Object.values(
+          //     querySnapshot.data()[currentShift]["servicesToAdd"]
+          //   );
+
+          //   for (const service of servicesDatabase) {
+          //     tempService = service;
+          //     const ref = doc(db, "services", service.referencja);
+          //     const docSnap2 = await getDoc(ref);
+
+          //     if (docSnap2.data()) {
+          //       tempService = {
+          //         ...tempService,
+          //         name: docSnap2.data().name,
+          //         row: docSnap2.data().row,
+          //         rowPlace: docSnap2.data().rowPlace,
+          //       };
+
+          //       list2.push(tempService);
+          //     }
+          //   }
+          // }
+
           const machinesDatabase = Object.values(
             querySnapshot.data()[currentShift]["machinesToAdd"]
           );
 
           for (const machine of machinesDatabase) {
-            tempMachine = machine;
-            const ref = doc(db, "machines", machine.referencja);
-            const docSnap2 = await getDoc(ref);
-            // const docRef = doc(db, "dates", "2023-01-01");
-            // const docSnap = await getDoc(docRef);
-            if (docSnap2.data()) {
-              tempMachine = {
-                ...tempMachine,
-                name: docSnap2.data().name,
-                row: docSnap2.data().row,
-                rowPlace: docSnap2.data().rowPlace,
-              };
-
-              list.push(tempMachine);
-            }
+            tablica.push(machine.referencja);
           }
+
+          tablica2 = tablica.slice(0, 25);
+          const listPromise = await fetchDataFromDoc(
+            tablica2,
+            machinesDatabase,
+            id
+          );
+
+          tablica2 = tablica.slice(25, 50);
+          const listPromise2 = await fetchDataFromDoc(
+            tablica2,
+            machinesDatabase,
+            id2
+          );
+
+          list = [...listPromise, ...listPromise2];
+
+          const connections = {};
+          list.forEach((machine) => {
+            if (machine.connection !== "Brak") {
+              connections[machine.connection] = machine;
+            }
+          });
 
           const servicesDatabase = Object.values(
             querySnapshot.data()[currentShift]["servicesToAdd"]
           );
 
           for (const service of servicesDatabase) {
-            tempService = service;
-            const ref = doc(db, "services", service.referencja);
-            const docSnap2 = await getDoc(ref);
-
-            if (docSnap2.data()) {
-              tempService = {
-                ...tempService,
-                name: docSnap2.data().name,
-                row: docSnap2.data().row,
-                rowPlace: docSnap2.data().rowPlace,
-              };
-
-              list2.push(tempService);
-            }
+            tablicaService.push(service.referencja);
           }
-        }
 
+          const qService = query(
+            collection(db, "services"),
+            where(documentId(), "in", tablicaService)
+          );
+
+          const servicesDocsSnap = await getDocs(qService);
+          let result;
+
+          servicesDocsSnap.forEach((doc) => {
+            result = servicesDatabase.find(
+              (service) => service.referencja === doc.id
+            );
+            if (result) {
+              result = {
+                ...result,
+                name: doc.data().name,
+                row: doc.data().row,
+                rowPlace: doc.data().rowPlace,
+                id: id,
+              };
+              id = id + 1;
+              list2.push(result);
+            }
+          });
+        }
         setTimeout(() => {
           setLoading(false);
-        }, 3000);
+        }, 500);
 
         setMachines(list);
 
@@ -728,17 +828,28 @@ const Home = () => {
       ) {
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
+          // [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
       } else if (
         connection !== "Brak" &&
         currentMachine.connection !== "Brak" &&
         connection !== currentMachine.connection
       ) {
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
-        });
+        if (
+          docSnap.data()[currentShift]["machinesToAdd"][
+            currentMachine.connection
+          ].connection === currentMachine.name
+        ) {
+          await updateDoc(machineRef, {
+            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+          });
+        } else {
+          await updateDoc(machineRef, {
+            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
+            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+          });
+        }
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
           [`${currentShift}.machinesToAdd.${connection}.status`]: status,
@@ -767,7 +878,7 @@ const Home = () => {
       ) {
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
-          [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+          // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
         });
       } else if (
         connection2 !== "Brak" &&
@@ -781,12 +892,12 @@ const Home = () => {
         ) {
           await updateDoc(machineRef, {
             [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
           });
         } else {
           await updateDoc(machineRef, {
             [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
           });
         }
         await updateDoc(machineRef, {

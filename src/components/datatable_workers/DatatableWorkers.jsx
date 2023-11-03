@@ -8,7 +8,6 @@ import { db } from "../../firebase";
 
 const DatatableWorkers = () => {
   const [data, setData] = useState([]);
-  console.log(data);
   useEffect(() => {
     //LISTEN
     const unsub = onSnapshot(
@@ -18,7 +17,46 @@ const DatatableWorkers = () => {
         snapShot.docs.forEach((doc) => {
           list.push({ id: doc.id, ...doc.data() });
         });
-        setData(list);
+        list.sort(function (a, b) {
+          if (a.brigade < b.brigade) {
+            return -1;
+          }
+          if (a.brigade > b.brigade) {
+            return 1;
+          }
+          // Jeśli brygady są równe, posortuj według nazwiska i imienia
+          if (a.surname < b.surname) {
+            return -1;
+          }
+          if (a.surname > b.surname) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }
+          if (a.name > b.name) {
+            return 1;
+          }
+          return 0;
+        });
+
+        const listWithGasps = [];
+        let currentBrigade = null;
+
+        list.forEach((element) => {
+          if (element.brigade !== currentBrigade) {
+            if (currentBrigade === null)
+              listWithGasps.push({
+                id: `firstgap-${element.brigade}`,
+                img: "",
+              });
+            else listWithGasps.push({ id: `gap-${element.brigade}`, img: "" });
+            currentBrigade = element.brigade;
+          }
+          listWithGasps.push(element);
+        });
+        console.log(listWithGasps);
+        setData(listWithGasps);
       },
       (error) => {
         console.log(error);
@@ -45,11 +83,12 @@ const DatatableWorkers = () => {
       headerName: "Akcje",
       width: 200,
       renderCell: (params) => {
+        if (params.row.id.startsWith("gap")) {
+          // Jeśli brigade jest równa "gap", nie wyświetlamy nic w komórce.
+          return <div className="cellAction"></div>;
+        }
         return (
           <div className="cellAction">
-            {/* <Link to="/users/test" style={{ textDecoration: "none" }}>
-              <div className="viewButton">View</div>
-            </Link> */}
             <div
               className="deleteButton"
               onClick={() => handleDelete(params.row.id)}
@@ -61,6 +100,9 @@ const DatatableWorkers = () => {
       },
     },
   ];
+
+  const dataWithoutFirst = data.slice(1);
+
   return (
     <div className="datatableWorkers">
       <div className="datatableTitle">
@@ -71,10 +113,13 @@ const DatatableWorkers = () => {
       </div>
       <DataGrid
         className="datagrid"
-        rows={data}
+        rows={dataWithoutFirst}
         columns={workerColumns.concat(actionColumn)}
-        checkboxSelection
         autoHeight
+        components={{
+          Footer: () => null,
+          Pagination: () => null,
+        }}
       />
     </div>
   );

@@ -9,6 +9,9 @@ import {
   onSnapshot,
   query,
   updateDoc,
+  getDocs,
+  where,
+  documentId,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import Select from "react-select";
@@ -39,22 +42,58 @@ const DatatableSchedules = () => {
     { value: "III", label: "III" },
   ];
 
+  const fetchDataFromDoc = async (machineTab, machineData, id) => {
+    const list = [];
+
+    const q = query(
+      collection(db, "machines"),
+      where(documentId(), "in", machineTab)
+    );
+
+    const machinesDocsSnap = await getDocs(q);
+    let result;
+
+    machinesDocsSnap.forEach((doc) => {
+      result = machineData.find(
+        (machine) => machine.referencja === doc.id && machine.status !== "STOP"
+      );
+      if (result) {
+        result = {
+          ...result,
+          name: doc.data().name,
+          row: doc.data().row,
+          rowPlace: doc.data().rowPlace,
+          id: id,
+        };
+        id = id + 1;
+        list.push(result);
+      }
+    });
+    return list;
+  };
+
   useEffect(() => {
     //LISTEN
     setLoading(true);
     const unsub = onSnapshot(
       doc(db, "dates", currentDate),
       async (querySnapshot) => {
-        let tempMachine = {};
         let list = [];
-        let id = 1;
 
         let tempService = {};
         let list2 = [];
 
+        let tablica = [];
+        let tablica2 = [];
+        let tablicaService = [];
+
+        let id = 1;
+        let id2 = 25;
+
         if (!querySnapshot.data()) {
           console.log("puste na start");
           //pobierz domyślną liste maszyn
+          setLoading(false);
         } else {
           console.log("nie puste na start");
           const machinesDatabase = Object.values(
@@ -62,23 +101,24 @@ const DatatableSchedules = () => {
           );
 
           for (const machine of machinesDatabase) {
-            tempMachine = machine;
-            const ref = doc(db, "machines", machine.referencja);
-            const docSnap2 = await getDoc(ref);
-
-            if (docSnap2.data() && machine.status !== "STOP") {
-              tempMachine = {
-                ...tempMachine,
-                name: docSnap2.data().name,
-                row: docSnap2.data().row,
-                rowPlace: docSnap2.data().rowPlace,
-                id: id,
-              };
-
-              list.push(tempMachine);
-              id = id + 1;
-            }
+            tablica.push(machine.referencja);
           }
+
+          tablica2 = tablica.slice(0, 25);
+          const listPromise = await fetchDataFromDoc(
+            tablica2,
+            machinesDatabase,
+            id
+          );
+
+          tablica2 = tablica.slice(25, 50);
+          const listPromise2 = await fetchDataFromDoc(
+            tablica2,
+            machinesDatabase,
+            id2
+          );
+
+          list = [...listPromise, ...listPromise2];
 
           const connections = {};
           list.forEach((machine) => {
@@ -87,29 +127,42 @@ const DatatableSchedules = () => {
             }
           });
 
-          console.log("connections");
-          console.log(connections);
-
           const servicesDatabase = Object.values(
             querySnapshot.data()[currentShift]["servicesToAdd"]
           );
 
           for (const service of servicesDatabase) {
-            tempService = service;
-            const ref = doc(db, "services", service.referencja);
-            const docSnap2 = await getDoc(ref);
-
-            if (docSnap2.data()) {
-              tempService = {
-                ...tempService,
-                name: docSnap2.data().name,
-                row: docSnap2.data().row,
-                rowPlace: docSnap2.data().rowPlace,
-              };
-
-              list2.push(tempService);
-            }
+            tablicaService.push(service.referencja);
           }
+
+          const qService = query(
+            collection(db, "services"),
+            where(documentId(), "in", tablicaService)
+          );
+
+          const servicesDocsSnap = await getDocs(qService);
+          let result;
+
+          servicesDocsSnap.forEach((doc) => {
+            result = servicesDatabase.find(
+              (service) =>
+                service.referencja === doc.id && service.praca === "Tak"
+            );
+            if (result) {
+              result = {
+                ...result,
+                name: doc.data().name,
+                row: doc.data().row,
+                rowPlace: doc.data().rowPlace,
+                id: id,
+              };
+              id = id + 1;
+              list2.push(result);
+            }
+          });
+
+          console.log("lista");
+          console.log(list2);
 
           const secondList = list.sort((a, b) => {
             const aNum = parseInt(a.name.replace(/[^\d]/g, ""), 10);
@@ -132,9 +185,7 @@ const DatatableSchedules = () => {
           const thirdList = [];
 
           for (const machine of secondList) {
-            const { name, connection, connection2 } = machine;
-            console.log("maszyna");
-            console.log(name);
+            const { connection, connection2 } = machine;
             if (
               connection === "Brak" ||
               !thirdList.find(
@@ -142,7 +193,6 @@ const DatatableSchedules = () => {
               )
             ) {
               thirdList.push(machine);
-              console.log("dodaje maszyne " + name + " - " + connection);
             }
           }
 
@@ -153,11 +203,7 @@ const DatatableSchedules = () => {
 
           setTimeout(() => {
             setLoading(false);
-          }, 2000);
-          // console.log("Lista maszyn z dnia");
-          // console.log(list);
-          // console.log("Lista obsługi z dnia");
-          // console.log(list2);
+          }, 500);
 
           setMachines(thirdList);
           setMachinesAll(secondList);
@@ -168,34 +214,13 @@ const DatatableSchedules = () => {
         console.log(error);
       }
     );
-
     return () => {
       unsub();
     };
   }, [currentDate, currentShift]);
 
-  const loadShift = (someDate, someShift) => {
-    console.log("load shift");
-    const q = query(collection(db, "dates"));
-    const docsArray = [];
-
-    const unsub = onSnapshot(q, async (snapShot) => {
-      snapShot.docs.forEach((doc) => {
-        docsArray.push(doc.id);
-      });
-      if (docsArray.includes(someDate)) {
-        console.log("jest w tabeli");
-      } else {
-        console.log("nie jest w tabeli");
-      }
-    });
-
-    return () => {
-      unsub();
-    };
-  };
-
   const showServices = (services) => {
+    console.log("sortuje");
     services.sort((a, b) => a.rowPlace - b.rowPlace);
     return services.map((element, index) => {
       return (
@@ -338,7 +363,6 @@ const DatatableSchedules = () => {
             placeholder="Data"
             value={tempDate}
             onChange={(e) => {
-              // loadShift(e.target.value, currentShift);
               handleInputSelectDate(e);
             }}
           />
@@ -352,7 +376,6 @@ const DatatableSchedules = () => {
             name="shift"
             defaultValue={{ label: tempShift, value: tempShift }}
             onChange={(value) => {
-              // loadShift(currentDate, value.value);
               handleInputSelectShift(value);
             }}
           />

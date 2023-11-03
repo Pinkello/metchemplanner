@@ -38,10 +38,12 @@ export const workerColumns = [
     headerName: "Imię i nazwisko",
     width: 300,
     renderCell: (params) => {
+      if (params.row.id.startsWith("gap"))
+        return <div className="cellWithImg"></div>;
       return (
         <div className="cellWithImg">
           <img className="cellImg" src={params.row.img} alt="Brak" />
-          {params.row.name} {params.row.surname}
+          {params.row.surname} {params.row.name}
         </div>
       );
     },
@@ -61,7 +63,7 @@ export const workerColumns = [
 export const scheduleColumns = (machines, machinesAll) => [
   {
     field: "name",
-    headerName: "Maszyna i start",
+    headerName: "Maszyna - forma + start",
     width: 300,
     height: 30,
     renderCell: (params) => {
@@ -125,7 +127,7 @@ function renderName(row, machines, machinesAll) {
     return (
       <div className="small-column">
         <b style={{ color: "#0066ff" }}>{currentMachine.name} </b> -{" "}
-        {currentMachine.form}
+        <b>{currentMachine.form}</b>
         {currentMachine.startTime !== "" ? (
           <> o {currentMachine.startTime} </>
         ) : (
@@ -133,7 +135,7 @@ function renderName(row, machines, machinesAll) {
         )}
         <br />
         <b style={{ color: "#009933" }}>{connectedMachine.name}</b> -{" "}
-        {connectedMachine.form}{" "}
+        <b>{currentMachine.form}</b>{" "}
         {connectedMachine.startTime !== "" ? (
           <> o {connectedMachine.startTime} </>
         ) : (
@@ -141,7 +143,7 @@ function renderName(row, machines, machinesAll) {
         )}
         <br />
         <b style={{ color: "#990099" }}>{connectedMachine2.name} </b> -{" "}
-        {connectedMachine2.form}
+        <b>{currentMachine.form}</b>{" "}
         {connectedMachine2.startTime !== "" ? (
           <> o {connectedMachine2.startTime} </>
         ) : (
@@ -155,7 +157,7 @@ function renderName(row, machines, machinesAll) {
     return (
       <div className="small-column">
         <b style={{ color: "#0066ff" }}>{currentMachine.name} </b>-{" "}
-        {currentMachine.form}
+        <b>{currentMachine.form}</b>{" "}
         {currentMachine.startTime !== "" ? (
           <> o {currentMachine.startTime} </>
         ) : (
@@ -163,7 +165,7 @@ function renderName(row, machines, machinesAll) {
         )}
         <br />
         <b style={{ color: "#009933" }}>{connectedMachine.name}</b>-{" "}
-        {connectedMachine.form}{" "}
+        <b>{currentMachine.form}</b>{" "}
         {connectedMachine.startTime !== "" ? (
           <> o {connectedMachine.startTime} </>
         ) : (
@@ -175,7 +177,7 @@ function renderName(row, machines, machinesAll) {
   return (
     <div className="small-column">
       <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>-{" "}
-      {currentMachine.form}
+      <b>{currentMachine.form}</b>{" "}
       {currentMachine.startTime !== "" ? (
         <> o {currentMachine.startTime} </>
       ) : (
@@ -203,9 +205,8 @@ function renderRetooling(row, machines, machinesAll) {
       <div>
         {currentMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
-            {"->"}
-            <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
+            <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> o{" "}
+            {currentMachine.retoolingTime}
           </>
         ) : (
           <> --</>
@@ -213,9 +214,7 @@ function renderRetooling(row, machines, machinesAll) {
         <br />
         {connectedMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#009933" }}>{currentMachine.connection}</b>
-            {"->"}
-            <b>{connectedMachine.retooling}</b> o{" "}
+            <b style={{ color: "#009933" }}>{connectedMachine.retooling}</b> o{" "}
             {connectedMachine.retoolingTime}
           </>
         ) : (
@@ -224,9 +223,7 @@ function renderRetooling(row, machines, machinesAll) {
         <br />
         {connectedMachine2.retooling !== "" ? (
           <>
-            <b style={{ color: "#990099" }}>{currentMachine.connection2}</b>
-            {"->"}
-            <b>{connectedMachine2.retooling}</b> o{" "}
+            <b style={{ color: "#990099" }}>{connectedMachine2.retooling}</b> o{" "}
             {connectedMachine2.retoolingTime}
           </>
         ) : (
@@ -240,9 +237,8 @@ function renderRetooling(row, machines, machinesAll) {
       <div>
         {currentMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
-            {"->"}
-            <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
+            <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> o{" "}
+            {currentMachine.retoolingTime}
           </>
         ) : (
           <> --</>
@@ -250,9 +246,7 @@ function renderRetooling(row, machines, machinesAll) {
         <br />
         {connectedMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#009933" }}>{currentMachine.connection}</b>
-            {"->"}
-            <b>{connectedMachine.retooling}</b> o{" "}
+            <b style={{ color: "#009933" }}>{connectedMachine.retooling}</b> o{" "}
             {connectedMachine.retoolingTime}
           </>
         ) : (
@@ -265,9 +259,8 @@ function renderRetooling(row, machines, machinesAll) {
     <div>
       {currentMachine.retooling !== "" ? (
         <>
-          <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
-          {"->"}
-          <b>{currentMachine.retooling}</b> o {currentMachine.retoolingTime}
+          <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> o{" "}
+          {currentMachine.retoolingTime}
         </>
       ) : (
         <>--</>
@@ -301,7 +294,7 @@ function renderTransition(row, machines, machinesAll) {
         ) : (
           <>--</>
         )}
-        {" | "}
+        <br />
         {connectedMachine.transition !== "" ? (
           <>
             <b style={{ color: "#009933" }}>{connectedMachine.transition}</b> o{" "}
@@ -310,7 +303,7 @@ function renderTransition(row, machines, machinesAll) {
         ) : (
           <>--</>
         )}
-        {" | "}
+        <br />
         {connectedMachine2.transition !== "" ? (
           <>
             <b style={{ color: "#990099" }}>{connectedMachine2.transition}</b> o{" "}
@@ -327,19 +320,16 @@ function renderTransition(row, machines, machinesAll) {
       <div>
         {currentMachine.transition !== "" ? (
           <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
-            {"->"}
-            <b>{currentMachine.transition}</b> o {currentMachine.transitionTime}
+            <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> o{" "}
+            {currentMachine.transitionTime}
           </>
         ) : (
           <>--</>
         )}
-        {" | "}
+        <br />
         {connectedMachine.transition !== "" ? (
           <>
-            <b style={{ color: "#009933" }}>{currentMachine.connection}</b>
-            {"->"}
-            <b>{connectedMachine.transition}</b> o{" "}
+            <b style={{ color: "#009933" }}>{connectedMachine.transition}</b> o{" "}
             {connectedMachine.transitionTime}
           </>
         ) : (
@@ -352,9 +342,8 @@ function renderTransition(row, machines, machinesAll) {
     <div>
       {currentMachine.transition !== "" ? (
         <>
-          <b style={{ color: "#0066ff" }}>{currentMachine.name}</b>
-          {"->"}
-          <b>{currentMachine.transition}</b> o {currentMachine.transitionTime}
+          <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> o{" "}
+          {currentMachine.transitionTime}
         </>
       ) : (
         <>--</>
