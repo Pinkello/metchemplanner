@@ -135,7 +135,7 @@ function renderName(row, machines, machinesAll) {
         )}
         <br />
         <b style={{ color: "#009933" }}>{connectedMachine.name}</b> -{" "}
-        <b>{currentMachine.form}</b>{" "}
+        <b>{connectedMachine.form}</b>{" "}
         {connectedMachine.startTime !== "" ? (
           <> o {connectedMachine.startTime} </>
         ) : (
@@ -143,7 +143,7 @@ function renderName(row, machines, machinesAll) {
         )}
         <br />
         <b style={{ color: "#990099" }}>{connectedMachine2.name} </b> -{" "}
-        <b>{currentMachine.form}</b>{" "}
+        <b>{connectedMachine2.form}</b>{" "}
         {connectedMachine2.startTime !== "" ? (
           <> o {connectedMachine2.startTime} </>
         ) : (
@@ -165,7 +165,7 @@ function renderName(row, machines, machinesAll) {
         )}
         <br />
         <b style={{ color: "#009933" }}>{connectedMachine.name}</b> -{" "}
-        <b>{currentMachine.form}</b>{" "}
+        <b>{connectedMachine.form}</b>{" "}
         {connectedMachine.startTime !== "" ? (
           <> o {connectedMachine.startTime} </>
         ) : (
@@ -368,7 +368,7 @@ function renderWorker(row, machines, machinesAll) {
   if (connectedMachine && connectedMachine2) {
     return (
       <div>
-        {currentMachine.worker !== "Brak" ? (
+        {currentMachine.worker !== "" ? (
           <>
             <b style={{ color: "#0066ff" }}>{currentMachine.worker}</b>
             <br />
@@ -376,7 +376,7 @@ function renderWorker(row, machines, machinesAll) {
         ) : (
           ""
         )}
-        {connectedMachine.worker !== "Brak" ? (
+        {connectedMachine.worker !== "" ? (
           <>
             <b style={{ color: "#009933" }}>{connectedMachine.worker}</b>
             <br />
@@ -384,7 +384,7 @@ function renderWorker(row, machines, machinesAll) {
         ) : (
           ""
         )}{" "}
-        {connectedMachine2.worker !== "Brak" ? (
+        {connectedMachine2.worker !== "" ? (
           <>
             <b style={{ color: "#990099" }}>{connectedMachine2.worker}</b>
           </>
