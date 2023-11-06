@@ -226,16 +226,7 @@ const DatatableSchedules = () => {
       return (
         <div className="singleService" key={index}>
           {element.praca === "Tak" ? (
-            <div
-              style={{
-                maxWidth: "200px",
-                wordWrap: "break-word",
-                overflowWrap: "break-word",
-                borderRight: "black solid 1px",
-                padding: "5px 10px 5px 0px",
-                textAlign: "center",
-              }}
-            >
+            <div>
               &nbsp; &nbsp;
               <i>
                 <b style={{ color: "blue" }}>{element.name}</b>

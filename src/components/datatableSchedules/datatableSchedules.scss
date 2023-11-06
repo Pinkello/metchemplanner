@@ -204,10 +204,17 @@
     }
     .servicesRow {
       display: flex;
-      align-items: start;
-      justify-content: start;
+      align-items: stretch;
+      justify-content: flex-start;
 
       .singleService {
+        max-width: 200px;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        border-right: black solid 1px;
+        padding: 5px 10px;
+        text-align: center;
+
         .serviceWork {
           color: green;
         }

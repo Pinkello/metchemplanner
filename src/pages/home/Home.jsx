@@ -21,8 +21,10 @@ import { db } from "../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import Spinner from "react-bootstrap/Spinner";
 import Select from "react-select";
+import Spinner from "react-bootstrap/Spinner";
+import ModalLoad from "../../components/modals/ModalLoad";
+import ModalService from "../../components/modals/ModalService";
 
 const Home = () => {
   const [machines, setMachines] = useState([]);
@@ -76,8 +78,6 @@ const Home = () => {
   ];
   const [tempDate, setTempDate] = useState(currentDate);
   const [tempShift, setTempShift] = useState(currentShift);
-  const [tempDateLoad, setTempDateLoad] = useState(currentDate);
-  const [tempShiftLoad, setTempShiftLoad] = useState(currentShift);
 
   const fetchDataFromDoc = async (machineTab, machineData, id) => {
     const list = [];
@@ -1068,92 +1068,92 @@ const Home = () => {
     );
   }
 
-  // funkcja do załadowania z innego dnia
-  function MyVerticallyCenteredModalLoad(props) {
-    const [currentDateLoad, setCurrentDateLoad] = useState(currentDate);
-    const [currentShiftLoad, setCurrentShiftLoad] = useState(currentShift);
+  // // funkcja do załadowania z innego dnia
+  // function MyVerticallyCenteredModalLoad(props) {
+  //   const [currentDateLoad, setCurrentDateLoad] = useState(currentDate);
+  //   const [currentShiftLoad, setCurrentShiftLoad] = useState(currentShift);
 
-    const handleInputSelectShiftLoad = (selectedOption) => {
-      setCurrentShiftLoad(selectedOption.value);
-    };
+  //   const handleInputSelectShiftLoad = (selectedOption) => {
+  //     setCurrentShiftLoad(selectedOption.value);
+  //   };
 
-    const updateDoc2 = async (e) => {
-      const docRef = doc(db, "dates", currentDateLoad);
-      const date = await getDoc(docRef);
-      try {
-        if (
-          currentDate === currentDateLoad &&
-          currentShift === currentShiftLoad
-        ) {
-          toast.error("Nie możesz ładować danych z tego samego dnia i zmiany");
-          return;
-        }
-        const dateToReplace = doc(db, "dates", currentDate);
+  //   const updateDoc2 = async (e) => {
+  //     const docRef = doc(db, "dates", currentDateLoad);
+  //     const date = await getDoc(docRef);
+  //     try {
+  //       if (
+  //         currentDate === currentDateLoad &&
+  //         currentShift === currentShiftLoad
+  //       ) {
+  //         toast.error("Nie możesz ładować danych z tego samego dnia i zmiany");
+  //         return;
+  //       }
+  //       const dateToReplace = doc(db, "dates", currentDate);
 
-        await updateDoc(dateToReplace, {
-          [currentShift]: date.data()[currentShiftLoad],
-        });
+  //       await updateDoc(dateToReplace, {
+  //         [currentShift]: date.data()[currentShiftLoad],
+  //       });
 
-        toast.success("Ładuje dane...");
-      } catch (error) {
-        toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
-      }
-    };
+  //       toast.success("Ładuje dane...");
+  //     } catch (error) {
+  //       toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
+  //     }
+  //   };
 
-    return (
-      <Modal
-        {...props}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Wybierz datę oraz zmianę, z której chcesz załadować dane
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="rowInputs ">
-            <div className="dateShow">
-              <label htmlFor="date">Data:</label>
-              <input
-                className="formInput"
-                id="dateLoad"
-                type="date"
-                name="dateLoad"
-                placeholder="Data"
-                value={currentDateLoad}
-                onChange={(e) => {
-                  setCurrentDateLoad(e.target.value);
-                }}
-              />
-              <label htmlFor="date">Zmiana:</label>
+  //   return (
+  //     <Modal
+  //       {...props}
+  //       size="lg"
+  //       aria-labelledby="contained-modal-title-vcenter"
+  //       centered
+  //     >
+  //       <Modal.Header closeButton>
+  //         <Modal.Title id="contained-modal-title-vcenter">
+  //           Wybierz datę oraz zmianę, z której chcesz załadować dane
+  //         </Modal.Title>
+  //       </Modal.Header>
+  //       <Modal.Body>
+  //         <div className="rowInputs ">
+  //           <div className="dateShow">
+  //             <label htmlFor="date">Data:</label>
+  //             <input
+  //               className="formInput"
+  //               id="dateLoad"
+  //               type="date"
+  //               name="dateLoad"
+  //               placeholder="Data"
+  //               value={currentDateLoad}
+  //               onChange={(e) => {
+  //                 setCurrentDateLoad(e.target.value);
+  //               }}
+  //             />
+  //             <label htmlFor="date">Zmiana:</label>
 
-              <Select
-                className="formInput"
-                options={optionsShift}
-                id="shift"
-                name="shift"
-                defaultValue={{ label: tempShift, value: tempShift }}
-                onChange={(value) => {
-                  // loadShift(currentDate, value.value);
-                  handleInputSelectShiftLoad(value);
-                }}
-              />
-            </div>
+  //             <Select
+  //               className="formInput"
+  //               options={optionsShift}
+  //               id="shift"
+  //               name="shift"
+  //               defaultValue={{ label: tempShift, value: tempShift }}
+  //               onChange={(value) => {
+  //                 // loadShift(currentDate, value.value);
+  //                 handleInputSelectShiftLoad(value);
+  //               }}
+  //             />
+  //           </div>
 
-            <Button
-              className="buttonForm"
-              variant="success"
-              onClick={updateDoc2}
-            >
-              Załaduj dane
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
-    );
-  }
+  //           <Button
+  //             className="buttonForm"
+  //             variant="success"
+  //             onClick={updateDoc2}
+  //           >
+  //             Załaduj dane
+  //           </Button>
+  //         </div>
+  //       </Modal.Body>
+  //     </Modal>
+  //   );
+  // }
 
   const modal = useMemo(() => {
     return (
@@ -1163,6 +1163,18 @@ const Home = () => {
       />
     );
   }, [modalShow]);
+
+  // const modalService = useMemo(() => {
+  //   return (
+  //     <ModalService
+  //       currentService={currentService}
+  //       currentDate={currentDate}
+  //       currentShift={currentShift}
+  //       show={modalServiceShow}
+  //       onHide={() => setModalServiceShow(false)}
+  //     />
+  //   );
+  // }, [modalServiceShow]);
 
   const modalService = useMemo(() => {
     return (
@@ -1175,7 +1187,9 @@ const Home = () => {
 
   const modalLoad = useMemo(() => {
     return (
-      <MyVerticallyCenteredModalLoad
+      <ModalLoad
+        currentDate={currentDate}
+        currentShift={currentShift}
         show={modalLoadShow}
         onHide={() => setModalLoadShow(false)}
       />

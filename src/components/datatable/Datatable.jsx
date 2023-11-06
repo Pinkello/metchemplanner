@@ -8,7 +8,26 @@ import { db } from "../../firebase";
 
 const Datatable = () => {
   const [data, setData] = useState([]);
-  console.log(data);
+
+  const sortTable = (table) => {
+    table.sort((a, b) => {
+      const nameA = a.name;
+      const nameB = b.name;
+
+      // Wyodrębnij numery z napisów (uwzględniając "w-" jako prefix)
+      const numA = parseInt(nameA.substring(2), 10);
+      const numB = parseInt(nameB.substring(2), 10);
+
+      if (numA < numB) {
+        return -1;
+      }
+      if (numA > numB) {
+        return 1;
+      }
+      return 0;
+    });
+  };
+
   useEffect(() => {
     //LISTEN
     const unsub = onSnapshot(
@@ -18,6 +37,7 @@ const Datatable = () => {
         snapShot.docs.forEach((doc) => {
           list.push({ id: doc.id, ...doc.data() });
         });
+        sortTable(list);
         setData(list);
       },
       (error) => {
