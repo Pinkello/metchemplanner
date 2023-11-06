@@ -13,7 +13,8 @@ const ModalLoad = (props) => {
   const [currentShiftLoad, setCurrentShiftLoad] = useState(props.currentShift);
   const [tempDate, setTempDate] = useState(props.currentDate);
   const [tempShift, setTempShift] = useState(props.currentShift);
-
+  console.log(currentDateLoad);
+  console.log(props.currentDate);
   const optionsShift = [
     { value: "I", label: "I" },
     { value: "II", label: "II" },
@@ -49,7 +50,8 @@ const ModalLoad = (props) => {
 
   return (
     <Modal
-      {...props}
+      show={props.show}
+      onHide={props.onHide}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered

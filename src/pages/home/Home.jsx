@@ -1164,26 +1164,26 @@ const Home = () => {
     );
   }, [modalShow]);
 
-  // const modalService = useMemo(() => {
-  //   return (
-  //     <ModalService
-  //       currentService={currentService}
-  //       currentDate={currentDate}
-  //       currentShift={currentShift}
-  //       show={modalServiceShow}
-  //       onHide={() => setModalServiceShow(false)}
-  //     />
-  //   );
-  // }, [modalServiceShow]);
-
   const modalService = useMemo(() => {
     return (
-      <MyVerticallyCenteredModalService
+      <ModalService
+        currentService={currentService}
+        currentDate={currentDate}
+        currentShift={currentShift}
         show={modalServiceShow}
         onHide={() => setModalServiceShow(false)}
       />
     );
   }, [modalServiceShow]);
+
+  // const modalService = useMemo(() => {
+  //   return (
+  //     <MyVerticallyCenteredModalService
+  //       show={modalServiceShow}
+  //       onHide={() => setModalServiceShow(false)}
+  //     />
+  //   );
+  // }, [modalServiceShow]);
 
   const modalLoad = useMemo(() => {
     return (
@@ -1194,7 +1194,7 @@ const Home = () => {
         onHide={() => setModalLoadShow(false)}
       />
     );
-  }, [modalLoadShow]);
+  }, [modalLoadShow, currentDate, currentShift]);
 
   const showRowService = (servicesRow) => {
     servicesRow.sort((a, b) => a.rowPlace - b.rowPlace);

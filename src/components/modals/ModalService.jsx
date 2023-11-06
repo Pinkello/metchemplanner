@@ -16,12 +16,14 @@ const ModalService = ({
   onHide,
   show,
 }) => {
-  const [praca, setPraca] = useState(currentService.praca);
-  const [name, setName] = useState(currentService.name);
-  const [row, setRow] = useState(currentService.row);
-  const [rowPlace, setRowPlace] = useState(currentService.rowPlace);
-  const [description, setDescription] = useState(currentService.opis);
-
+  const [praca, setPraca] = useState(null);
+  const [name, setName] = useState(null);
+  const [row, setRow] = useState(null);
+  const [rowPlace, setRowPlace] = useState(null);
+  const [description, setDescription] = useState(null);
+  console.log(currentService);
+  console.log(currentService.row);
+  console.log(row);
   const optionsPracaService = [
     { value: "Tak", label: "Tak" },
     { value: "Nie", label: "Nie" },
@@ -33,23 +35,26 @@ const ModalService = ({
     { value: "Prawy rząd", label: "Prawy rząd" },
   ];
 
+  useEffect(() => {
+    setPraca(currentService.praca);
+    setName(currentService.name);
+    setRow(currentService.row);
+    setRowPlace(currentService.rowPlace);
+    setDescription(currentService.opis);
+  }, [
+    currentService.praca,
+    currentService.name,
+    currentService.row,
+    currentService.rowPlace,
+    currentService.opis,
+  ]);
+
   const handleInputSelectRow = (selectedOption) => {
     setRow(selectedOption.value);
   };
   const handleInputSelectPraca = (selectedOption) => {
     setPraca(selectedOption.value);
   };
-
-  useEffect(() => {
-    console.log("praca");
-    console.log(praca);
-    console.log("row");
-    console.log(row);
-    console.log("rowPlace");
-    console.log(rowPlace);
-    console.log("name");
-    console.log(name);
-  }, [praca]);
 
   const updateDoc2 = async () => {
     const machineRef = doc(db, "dates", currentDate);
@@ -140,7 +145,10 @@ const ModalService = ({
             options={optionsRowService}
             id="row"
             name="row"
-            defaultValue={{ label: row, value: row }}
+            defaultValue={{
+              label: currentService.row,
+              value: currentService.row,
+            }}
             onChange={handleInputSelectRow}
           />
           <label>Miejsce w rzędzie</label>

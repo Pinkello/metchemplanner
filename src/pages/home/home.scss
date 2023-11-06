@@ -24,9 +24,8 @@
       }
 
       .dateShow {
-        overflow: auto;
+        overflow: visible;
         display: flex;
-        // justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
         background-color: #f4f4f4;
