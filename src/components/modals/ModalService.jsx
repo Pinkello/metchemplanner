@@ -21,19 +21,6 @@ const ModalService = ({
   const [row, setRow] = useState(null);
   const [rowPlace, setRowPlace] = useState(null);
   const [description, setDescription] = useState(null);
-  console.log(currentService);
-  console.log(currentService.row);
-  console.log(row);
-  const optionsPracaService = [
-    { value: "Tak", label: "Tak" },
-    { value: "Nie", label: "Nie" },
-  ];
-
-  const optionsRowService = [
-    { value: "Lewy rząd", label: "Lewy rząd" },
-    { value: "Środkowy rząd", label: "Środkowy rząd" },
-    { value: "Prawy rząd", label: "Prawy rząd" },
-  ];
 
   useEffect(() => {
     setPraca(currentService.praca);
@@ -48,6 +35,17 @@ const ModalService = ({
     currentService.rowPlace,
     currentService.opis,
   ]);
+
+  const optionsPracaService = [
+    { value: "Tak", label: "Tak" },
+    { value: "Nie", label: "Nie" },
+  ];
+
+  const optionsRowService = [
+    { value: "Lewy rząd", label: "Lewy rząd" },
+    { value: "Środkowy rząd", label: "Środkowy rząd" },
+    { value: "Prawy rząd", label: "Prawy rząd" },
+  ];
 
   const handleInputSelectRow = (selectedOption) => {
     setRow(selectedOption.value);
