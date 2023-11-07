@@ -84,10 +84,10 @@ const Datatable = () => {
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        <span>Lista maszyn</span>
+        <h3 className="titleMachines">Lista maszyn</h3>
 
         <div>
-          <Link to="/machines/new" className="link">
+          <Link to="/machines/new" className="newMachine">
             Dodaj nową maszynę
           </Link>
         </div>

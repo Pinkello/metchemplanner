@@ -13,7 +13,6 @@ import {
   getDocs,
   where,
   writeBatch,
-  deleteField,
   documentId,
 } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -49,7 +48,7 @@ const Home = () => {
   const [modalLoadShow, setModalLoadShow] = useState(false);
   let optionsConnection = [{ value: "Brak", label: "Brak" }];
   let optionsConnection2 = [{ value: "Brak", label: "Brak" }];
-  const optionsWorker = [{ value: "Brak", label: "Brak" }];
+  const optionsWorker = [{ value: "", label: "Brak" }];
   const optionsStatus = [
     { value: "STOP", label: "Stop" },
     { value: "Praca", label: "Praca" },
@@ -61,15 +60,6 @@ const Home = () => {
     { value: "Lewy rząd", label: "Lewy rząd" },
     { value: "Środkowy rząd", label: "Środkowy rząd" },
     { value: "Prawy rząd", label: "Prawy rząd" },
-  ];
-  const optionsRowService = [
-    { value: "Lewy rząd", label: "Lewy rząd" },
-    { value: "Środkowy rząd", label: "Środkowy rząd" },
-    { value: "Prawy rząd", label: "Prawy rząd" },
-  ];
-  const optionsPracaService = [
-    { value: "Tak", label: "Tak" },
-    { value: "Nie", label: "Nie" },
   ];
   const optionsShift = [
     { value: "I", label: "I" },
@@ -198,6 +188,7 @@ const Home = () => {
               referencja: doc.id,
               praca: "Nie",
               opis: "",
+              worker: "",
             };
 
             servicesToAdd[doc.data().name] = tempService;
@@ -224,50 +215,6 @@ const Home = () => {
             console.log(err);
           }
         } else {
-          //   const machinesDatabase = Object.values(
-          //     querySnapshot.data()[currentShift]["machinesToAdd"]
-          //   );
-
-          //   for (const machine of machinesDatabase) {
-          //     tempMachine = machine;
-          //     const ref = doc(db, "machines", machine.referencja);
-          //     const docSnap2 = await getDoc(ref);
-          //     // const docRef = doc(db, "dates", "2023-01-01");
-          //     // const docSnap = await getDoc(docRef);
-          //     if (docSnap2.data()) {
-          //       tempMachine = {
-          //         ...tempMachine,
-          //         name: docSnap2.data().name,
-          //         row: docSnap2.data().row,
-          //         rowPlace: docSnap2.data().rowPlace,
-          //       };
-
-          //       list.push(tempMachine);
-          //     }
-          //   }
-
-          //   const servicesDatabase = Object.values(
-          //     querySnapshot.data()[currentShift]["servicesToAdd"]
-          //   );
-
-          //   for (const service of servicesDatabase) {
-          //     tempService = service;
-          //     const ref = doc(db, "services", service.referencja);
-          //     const docSnap2 = await getDoc(ref);
-
-          //     if (docSnap2.data()) {
-          //       tempService = {
-          //         ...tempService,
-          //         name: docSnap2.data().name,
-          //         row: docSnap2.data().row,
-          //         rowPlace: docSnap2.data().rowPlace,
-          //       };
-
-          //       list2.push(tempService);
-          //     }
-          //   }
-          // }
-
           const machinesDatabase = Object.values(
             querySnapshot.data()[currentShift]["machinesToAdd"]
           );
@@ -393,134 +340,6 @@ const Home = () => {
     setCurrentShift(tempShift);
   };
 
-  function MyVerticallyCenteredModalService(props) {
-    const [praca, setPraca] = useState(currentService.praca);
-    const [name, setName] = useState(currentService.name);
-    const [row, setRow] = useState(currentService.row);
-    const [rowPlace, setRowPlace] = useState(currentService.rowPlace);
-    const [description, setDescription] = useState(currentService.opis);
-    const handleInputSelectRow = (selectedOption) => {
-      setRow(selectedOption.value);
-    };
-    const handleInputSelectPraca = (selectedOption) => {
-      setPraca(selectedOption.value);
-    };
-
-    const updateDoc2 = async () => {
-      const machineRef = doc(db, "dates", currentDate);
-      //jesli trzeba zmienic service
-      if (
-        name !== currentService.name ||
-        row !== currentService.row ||
-        rowPlace !== currentService.rowPlace
-      ) {
-        const serviceRef1 = doc(db, "services", currentService.referencja);
-        await updateDoc(serviceRef1, {
-          name: name,
-          row: row,
-          rowPlace: rowPlace,
-        });
-      }
-      //jesli trzeba zmienic nazwe - usun i dodaj nową mape
-      if (name !== currentService.name) {
-        await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}`]:
-            deleteField(),
-        });
-
-        await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${name}.referencja`]:
-            currentService.referencja,
-          [`${currentShift}.servicesToAdd.${name}.praca`]: praca,
-          [`${currentShift}.servicesToAdd.${name}.opis`]: description,
-        });
-        //jesli tylko update pracy/opisu
-      } else {
-        await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
-            description,
-        });
-      }
-      toast.success("Aktualizuje...");
-    };
-
-    return (
-      <Modal
-        {...props}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Edycja montażu
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="rowInputs">
-            <label>Nazwa montażu</label>
-            <input
-              className="formInput"
-              type="text"
-              name="name"
-              placeholder="Nazwa"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <label>Praca</label>
-            <Select
-              className="formInput"
-              options={optionsPracaService}
-              id="praca"
-              name="praca"
-              defaultValue={{ label: praca, value: praca }}
-              onChange={handleInputSelectPraca}
-            />
-            <label>Opis</label>
-            <input
-              className="formInput"
-              type="text"
-              name="form"
-              placeholder="Forma"
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-            />
-            <label>Rząd</label>
-            <Select
-              className="formInput"
-              options={optionsRowService}
-              id="row"
-              name="row"
-              defaultValue={{ label: row, value: row }}
-              onChange={handleInputSelectRow}
-            />
-            <label>Miejsce w rzędzie</label>
-            <input
-              className="formInput"
-              type="number"
-              name="rowPlace"
-              placeholder="Miejsce"
-              value={rowPlace}
-              onChange={(e) => {
-                setRowPlace(e.target.value);
-              }}
-            />
-            <Button
-              className="buttonForm"
-              variant="success"
-              onClick={updateDoc2}
-            >
-              Aktualizuj
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
-    );
-  }
-
   function MyVerticallyCenteredModal(props) {
     const [name, setName] = useState(currentMachine.name);
     const [form, setForm] = useState(currentMachine.form);
@@ -587,7 +406,7 @@ const Home = () => {
           label: element.name + " " + element.surname,
         });
       });
-    }, []);
+    }, [connection, connection2]);
 
     const handleInputSelectWorker = (selectedOption) => {
       setWorker(selectedOption.value);
@@ -720,24 +539,16 @@ const Home = () => {
       //update maszyny
       const machineRef = doc(db, "dates", currentDate);
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]:
-          referencja,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]:
-          startTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]:
-          retooling,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-          retoolingTime,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]:
-          transition,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]:
-          transitionTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]: startTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: transition,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: transitionTime,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: status,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]:
-          connection,
-        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection2`]:
-          connection2,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: connection,
+        [`${currentShift}.machinesToAdd.${currentMachine.name}.connection2`]: connection2,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: worker,
       });
       const docSnap = await getDoc(machineRef);
@@ -748,8 +559,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -760,8 +570,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -773,8 +582,7 @@ const Home = () => {
           await updateDoc(machineRef, {
             [`III.machinesToAdd.${currentMachine.name}.form`]: form,
             [`III.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`III.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -788,8 +596,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -804,8 +611,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`I.machinesToAdd.${currentMachine.name}.form`]: form,
             [`I.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`I.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -819,8 +625,7 @@ const Home = () => {
           await updateDoc(machineRef2, {
             [`II.machinesToAdd.${currentMachine.name}.form`]: form,
             [`II.machinesToAdd.${currentMachine.name}.retooling`]: retooling,
-            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
-              retoolingTime,
+            [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: retoolingTime,
             [`II.machinesToAdd.${currentMachine.name}.status`]: status,
           });
         }
@@ -837,16 +642,14 @@ const Home = () => {
           });
         }
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
         });
       } else if (
         connection === "Brak" &&
         currentMachine.connection !== "Brak"
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-            "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
           // [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
         });
       } else if (
@@ -860,20 +663,17 @@ const Home = () => {
           ].connection === currentMachine.name
         ) {
           await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
-              "Brak",
+            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
             // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
           });
         } else {
           await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]:
-              "Brak",
+            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
             // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
           });
         }
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
           [`${currentShift}.machinesToAdd.${connection}.status`]: status,
         });
       }
@@ -890,20 +690,16 @@ const Home = () => {
           });
 
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection2}.connection`]:
-            currentMachine.name,
-          [`${currentShift}.machinesToAdd.${connection2}.connection2`]:
-            connection,
-          [`${currentShift}.machinesToAdd.${connection}.connection2`]:
-            connection2,
+          [`${currentShift}.machinesToAdd.${connection2}.connection`]: currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection2}.connection2`]: connection,
+          [`${currentShift}.machinesToAdd.${connection}.connection2`]: connection2,
         });
       } else if (
         connection2 === "Brak" &&
         currentMachine.connection2 !== "Brak"
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]:
-            "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
           // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
         });
       } else if (
@@ -917,20 +713,17 @@ const Home = () => {
           ].connection2 === currentMachine.name
         ) {
           await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]:
-              "Brak",
+            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
             // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
           });
         } else {
           await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]:
-              "Brak",
+            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
             // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
           });
         }
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection2}.connection2`]:
-            currentMachine.name,
+          [`${currentShift}.machinesToAdd.${connection2}.connection2`]: currentMachine.name,
           [`${currentShift}.machinesToAdd.${connection2}.status`]: status,
         });
       }
@@ -1061,7 +854,11 @@ const Home = () => {
               options={optionsWorker}
               id="worker"
               name="worker"
-              defaultValue={{ label: worker, value: worker }}
+              defaultValue={
+                worker
+                  ? { label: worker, value: worker }
+                  : { label: "Brak", value: worker }
+              }
               onChange={handleInputSelectWorker}
             />
             <label>Rząd</label>
@@ -1097,93 +894,6 @@ const Home = () => {
     );
   }
 
-  // // funkcja do załadowania z innego dnia
-  // function MyVerticallyCenteredModalLoad(props) {
-  //   const [currentDateLoad, setCurrentDateLoad] = useState(currentDate);
-  //   const [currentShiftLoad, setCurrentShiftLoad] = useState(currentShift);
-
-  //   const handleInputSelectShiftLoad = (selectedOption) => {
-  //     setCurrentShiftLoad(selectedOption.value);
-  //   };
-
-  //   const updateDoc2 = async (e) => {
-  //     const docRef = doc(db, "dates", currentDateLoad);
-  //     const date = await getDoc(docRef);
-  //     try {
-  //       if (
-  //         currentDate === currentDateLoad &&
-  //         currentShift === currentShiftLoad
-  //       ) {
-  //         toast.error("Nie możesz ładować danych z tego samego dnia i zmiany");
-  //         return;
-  //       }
-  //       const dateToReplace = doc(db, "dates", currentDate);
-
-  //       await updateDoc(dateToReplace, {
-  //         [currentShift]: date.data()[currentShiftLoad],
-  //       });
-
-  //       toast.success("Ładuje dane...");
-  //     } catch (error) {
-  //       toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
-  //     }
-  //   };
-
-  //   return (
-  //     <Modal
-  //       {...props}
-  //       size="lg"
-  //       aria-labelledby="contained-modal-title-vcenter"
-  //       centered
-  //     >
-  //       <Modal.Header closeButton>
-  //         <Modal.Title id="contained-modal-title-vcenter">
-  //           Wybierz datę oraz zmianę, z której chcesz załadować dane
-  //         </Modal.Title>
-  //       </Modal.Header>
-  //       <Modal.Body>
-  //         <div className="rowInputs ">
-  //           <div className="dateShow">
-  //             <label htmlFor="date">Data:</label>
-  //             <input
-  //               className="formInput"
-  //               id="dateLoad"
-  //               type="date"
-  //               name="dateLoad"
-  //               placeholder="Data"
-  //               value={currentDateLoad}
-  //               onChange={(e) => {
-  //                 setCurrentDateLoad(e.target.value);
-  //               }}
-  //             />
-  //             <label htmlFor="date">Zmiana:</label>
-
-  //             <Select
-  //               className="formInput"
-  //               options={optionsShift}
-  //               id="shift"
-  //               name="shift"
-  //               defaultValue={{ label: tempShift, value: tempShift }}
-  //               onChange={(value) => {
-  //                 // loadShift(currentDate, value.value);
-  //                 handleInputSelectShiftLoad(value);
-  //               }}
-  //             />
-  //           </div>
-
-  //           <Button
-  //             className="buttonForm"
-  //             variant="success"
-  //             onClick={updateDoc2}
-  //           >
-  //             Załaduj dane
-  //           </Button>
-  //         </div>
-  //       </Modal.Body>
-  //     </Modal>
-  //   );
-  // }
-
   const modal = useMemo(() => {
     return (
       <MyVerticallyCenteredModal
@@ -1199,20 +909,12 @@ const Home = () => {
         currentService={currentService}
         currentDate={currentDate}
         currentShift={currentShift}
+        // optionsWorker={optionsWorker}
         show={modalServiceShow}
         onHide={() => setModalServiceShow(false)}
       />
     );
-  }, [modalServiceShow]);
-
-  // const modalService = useMemo(() => {
-  //   return (
-  //     <MyVerticallyCenteredModalService
-  //       show={modalServiceShow}
-  //       onHide={() => setModalServiceShow(false)}
-  //     />
-  //   );
-  // }, [modalServiceShow]);
+  }, [modalServiceShow, currentService, currentDate, currentShift]);
 
   const modalLoad = useMemo(() => {
     return (
@@ -1405,7 +1107,7 @@ const Home = () => {
                 <div className="buttonsDate">
                   <Button
                     variant="dark"
-                    className="formButton"
+                    className="css-button-sharp--black"
                     onClick={() => {
                       handleButtonClick();
                     }}
@@ -1415,7 +1117,7 @@ const Home = () => {
 
                   <Button
                     variant="secondary"
-                    className="formButton"
+                    className="css-button-rounded--grey"
                     onClick={() => {
                       setModalLoadShow(true);
                     }}

@@ -1,6 +1,17 @@
 .datatableServices {
-  height: 600px;
   padding: 20px;
+  margin-left: 50px;
+  height: 90vh !important;
+  width: 90vw !important;
+
+  .MuiDataGrid-columnHeaderTitleContainerContent {
+    font-size: 20px;
+  }
+
+  .serviceNames {
+    font-size: 18px;
+    color: rgb(6, 6, 160);
+  }
 
   .datatableTitle {
     width: 100%;
@@ -11,22 +22,25 @@
     align-items: center;
     justify-content: space-between;
 
-    .link {
-      text-decoration: none;
-      color: green;
-      font-size: 16px;
-      font-weight: 400;
-      border: 1px solid green;
-      padding: 5px;
-      border-radius: 5px;
+    .newService {
+      color: #fff;
+      padding: 5px 10px;
+      font-size: 20px;
+      font-weight: 500;
       cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      display: inline-block;
+      outline: none;
+      border-radius: 5px;
+      border: 2px solid #57cc99;
+      background: green;
+      text-decoration: none;
     }
 
-    .link:hover {
-      background-color: green;
-      color: white;
-      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    .newService:hover {
+      background: #fff;
+      color: green;
     }
   }
 
@@ -75,18 +89,20 @@
     }
 
     .deleteButton {
-      padding: 2px 5px;
-      border-radius: 5px;
-      color: crimson;
-      border: 1px dotted rgba(220, 20, 60, 0.6);
+      color: #fff;
+      padding: 5px 10px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      display: inline-block;
+      outline: none;
+      border-radius: 5px;
+      border: 2px solid #d90429;
+      background: #d90429;
     }
-
     .deleteButton:hover {
-      background-color: crimson;
-      color: white;
-      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-        border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      background: #fff;
+      color: #d90429;
     }
   }
 }

@@ -1,7 +1,13 @@
 import React from "react";
 
-import { useState, useEffect } from "react";
-import { doc, updateDoc, deleteField } from "firebase/firestore";
+import { useState, useEffect, useMemo } from "react";
+import {
+  doc,
+  updateDoc,
+  deleteField,
+  getDocs,
+  collection,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
@@ -16,25 +22,16 @@ const ModalService = ({
   onHide,
   show,
 }) => {
-  const [praca, setPraca] = useState(null);
-  const [name, setName] = useState(null);
-  const [row, setRow] = useState(null);
-  const [rowPlace, setRowPlace] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [praca, setPraca] = useState("");
+  const [name, setName] = useState("");
+  const [row, setRow] = useState("");
+  const [rowPlace, setRowPlace] = useState("");
+  const [description, setDescription] = useState("");
+  const [worker, setWorker] = useState("");
 
-  useEffect(() => {
-    setPraca(currentService.praca);
-    setName(currentService.name);
-    setRow(currentService.row);
-    setRowPlace(currentService.rowPlace);
-    setDescription(currentService.opis);
-  }, [
-    currentService.praca,
-    currentService.name,
-    currentService.row,
-    currentService.rowPlace,
-    currentService.opis,
-  ]);
+  const optionsWorker = useMemo(() => {
+    return [{ value: "", label: "Brak" }];
+  }, []);
 
   const optionsPracaService = [
     { value: "Tak", label: "Tak" },
@@ -53,6 +50,50 @@ const ModalService = ({
   const handleInputSelectPraca = (selectedOption) => {
     setPraca(selectedOption.value);
   };
+  const handleInputSelectWorker = (selectedOption) => {
+    setWorker(selectedOption.value);
+  };
+
+  useEffect(() => {
+    setPraca(currentService.praca);
+    setName(currentService.name);
+    setRow(currentService.row);
+    setRowPlace(currentService.rowPlace);
+    setDescription(currentService.opis);
+    setWorker(currentService.worker);
+  }, [
+    currentService.praca,
+    currentService.name,
+    currentService.row,
+    currentService.rowPlace,
+    currentService.opis,
+    currentService.worker,
+  ]);
+
+  useEffect(() => {
+    const fetchWorkers = async () => {
+      try {
+        let tempWorker = {};
+
+        const querySnapshotWorker = await getDocs(collection(db, "workers"));
+        querySnapshotWorker.forEach((doc) => {
+          tempWorker = {
+            name: doc.data().name,
+            surname: doc.data().surname,
+            brigade: doc.data().brigade,
+          };
+          optionsWorker.push({
+            value: tempWorker.name + " " + tempWorker.surname,
+            label: tempWorker.name + " " + tempWorker.surname,
+          });
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchWorkers();
+  }, [optionsWorker]);
 
   const updateDoc2 = async () => {
     const machineRef = doc(db, "dates", currentDate);
@@ -79,17 +120,26 @@ const ModalService = ({
         [`${currentShift}.servicesToAdd.${name}.referencja`]: currentService.referencja,
         [`${currentShift}.servicesToAdd.${name}.praca`]: praca,
         [`${currentShift}.servicesToAdd.${name}.opis`]: description,
+        [`${currentShift}.servicesToAdd.${name}.worker`]: worker,
       });
       //jesli tylko update pracy/opisu
     } else {
-      await updateDoc(machineRef, {
-        [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-        [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
-      });
+      if (worker) {
+        await updateDoc(machineRef, {
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
+          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: worker,
+        });
+      } else {
+        await updateDoc(machineRef, {
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
+          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: "",
+        });
+      }
     }
     toast.success("Aktualizuje...");
   };
-
   return (
     <Modal
       show={show}
@@ -111,7 +161,7 @@ const ModalService = ({
             type="text"
             name="name"
             placeholder="Nazwa"
-            value={name}
+            value={name || ""}
             onChange={(e) => setName(e.target.value)}
           />
           <label>Praca</label>
@@ -120,10 +170,17 @@ const ModalService = ({
             options={optionsPracaService}
             id="praca"
             name="praca"
-            defaultValue={{
-              label: currentService.praca,
-              value: currentService.praca,
-            }}
+            defaultValue={
+              currentService.praca
+                ? {
+                    label: currentService.praca,
+                    value: currentService.praca,
+                  }
+                : {
+                    label: "Brak",
+                    value: "",
+                  }
+            }
             onChange={handleInputSelectPraca}
           />
           <label>Opis</label>
@@ -132,10 +189,23 @@ const ModalService = ({
             type="text"
             name="form"
             placeholder="Forma"
-            value={description}
+            value={description || ""}
             onChange={(e) => {
               setDescription(e.target.value);
             }}
+          />
+          <label>Pracownik</label>
+          <Select
+            className="formInput"
+            options={optionsWorker}
+            id="worker"
+            name="worker"
+            defaultValue={
+              currentService.worker
+                ? { label: currentService.worker, value: currentService.worker }
+                : { label: "Brak", value: "" }
+            }
+            onChange={handleInputSelectWorker}
           />
           <label>Rząd</label>
           <Select
@@ -143,10 +213,17 @@ const ModalService = ({
             options={optionsRowService}
             id="row"
             name="row"
-            defaultValue={{
-              label: currentService.row,
-              value: currentService.row,
-            }}
+            defaultValue={
+              currentService.row
+                ? {
+                    label: currentService.row,
+                    value: currentService.row,
+                  }
+                : {
+                    label: "Brak",
+                    value: "",
+                  }
+            }
             onChange={handleInputSelectRow}
           />
           <label>Miejsce w rzędzie</label>
@@ -155,7 +232,7 @@ const ModalService = ({
             type="number"
             name="rowPlace"
             placeholder="Miejsce"
-            value={rowPlace}
+            value={rowPlace || ""}
             onChange={(e) => {
               setRowPlace(e.target.value);
             }}

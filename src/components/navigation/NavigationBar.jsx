@@ -22,15 +22,27 @@ const NavigationBar = () => {
         className="example-navbar print-hide"
       >
         <Container className="print-hide">
-          <Navbar.Brand href="/">Metchem Planner</Navbar.Brand>
+          <Navbar.Brand className="navbar-header" href="/">
+            Metchem Planner
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav" className="example-bg">
             <Nav className="me-auto">
-              <Nav.Link href="/">Widok hali</Nav.Link>
-              <Nav.Link href="../schedule">Grafik</Nav.Link>
-              <Nav.Link href="../workers">Pracownicy</Nav.Link>
-              <Nav.Link href="../machines">Maszyny</Nav.Link>
-              <Nav.Link href="../services">Montaże</Nav.Link>
+              <Nav.Link className="navbar-link" href="/">
+                Widok hali
+              </Nav.Link>
+              <Nav.Link className="navbar-link" href="../schedule">
+                Grafik
+              </Nav.Link>
+              <Nav.Link className="navbar-link" href="../workers">
+                Pracownicy
+              </Nav.Link>
+              <Nav.Link className="navbar-link" href="../machines">
+                Maszyny
+              </Nav.Link>
+              <Nav.Link className="navbar-link" href="../services">
+                Montaże
+              </Nav.Link>
             </Nav>
             <Nav>
               <Button
@@ -46,6 +58,7 @@ const NavigationBar = () => {
                     });
                 }}
                 variant="outline-light"
+                className="navbar-logout"
               >
                 Wyloguj
               </Button>

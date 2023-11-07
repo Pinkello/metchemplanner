@@ -233,7 +233,12 @@ const DatatableSchedules = () => {
               </i>
               &nbsp;&nbsp;
               {/* <b>||</b> */}
-              <div style={{ textAlign: "center" }}>{element.opis}</div>
+              <div style={{ textAlign: "center" }}>
+                {element.opis ? element.opis : <br />}
+              </div>
+              <div style={{ textAlign: "center", color: "green" }}>
+                {element.worker ? element.worker : <br />}
+              </div>
             </div>
           ) : (
             <></>
@@ -373,7 +378,7 @@ const DatatableSchedules = () => {
           <div className="buttonsDate">
             <Button
               variant="dark"
-              className="formButton"
+              className="css-button-sharp--black"
               onClick={() => {
                 handleButtonClick();
               }}
@@ -384,12 +389,12 @@ const DatatableSchedules = () => {
         </div>
       </div>
       <div className="datatableTitleSchedules ">
-        <h2 className="titleh2">
+        <h4 className="titleh2">
           Grafik - zmiana &nbsp;
           <span className="currentShift">{currentShift}</span> &nbsp; dnia
           &nbsp;
           <span className="currentDate">{currentDate}</span>
-        </h2>
+        </h4>
         <div className="buttonPrinter print-hide">
           {" "}
           <button onClick={() => window.print()}>Drukuj</button>
@@ -415,14 +420,14 @@ const DatatableSchedules = () => {
         <br />
         <br />
         <div className="serviceList">
-          <h2 className="serviceTitle">Montaże</h2>
+          <h4 className="serviceTitle">Montaże</h4>
           <div className="servicesRow">{showServices(services)}</div>
         </div>{" "}
         <hr />
         <br />
         <div className="notes">
           <div className="datatableTitleSchedules">
-            <h2 className="serviceTitle">Uwagi</h2>
+            <h4 className="serviceTitle">Uwagi</h4>
             <div className="buttonNotes print-hide">
               <Button
                 variant="primary"

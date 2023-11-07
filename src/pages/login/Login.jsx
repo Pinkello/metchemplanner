@@ -26,7 +26,7 @@ const Login = () => {
       })
       .catch((error) => {
         setError(true);
-        // ..
+        console.log(error);
       });
   };
 
@@ -46,7 +46,12 @@ const Login = () => {
             placeholder="password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button type="submit">Login</button>
+          <button
+            className="css-button-shadow-border-sliding--sky"
+            type="submit"
+          >
+            Login
+          </button>
           {error && <span>Wrong email or password</span>}
         </form>
       </div>

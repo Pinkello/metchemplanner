@@ -55,16 +55,39 @@
             width: 100%;
             justify-content: space-between;
 
-            .formButton {
-              margin-left: 5rem;
-              padding: 0.5rem 1rem;
-              // background-color: #6c63ff;
+            .css-button-rounded--grey {
               color: #fff;
-              border: none;
-              border-radius: 4px;
+              padding: 0.5rem 1rem;
               font-size: 1rem;
-              margin: 0px;
               cursor: pointer;
+              transition: all 0.3s ease;
+              position: relative;
+              display: inline-block;
+              outline: none;
+              border-radius: 5px;
+              border: 2px solid #495057;
+              background: #495057;
+            }
+            .css-button-rounded--grey:hover {
+              background: #fff;
+              color: #495057;
+            }
+
+            .css-button-sharp--black {
+              color: #fff;
+              padding: 0.5rem 1rem;
+              font-size: 1rem;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              position: relative;
+              display: inline-block;
+              outline: none;
+              border: 2px solid #212529;
+              background: #212529;
+            }
+            .css-button-sharp--black:hover {
+              background: #ffffff;
+              color: #212529;
             }
           }
         }

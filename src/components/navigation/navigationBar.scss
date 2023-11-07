@@ -6,4 +6,17 @@
 
 .container {
   max-width: none !important;
+
+  .navbar-header {
+    font-size: 23px;
+  }
+
+  .navbar-link {
+    font-size: 18px;
+    padding: 10px 9px !important;
+  }
+
+  .navbar-logout {
+    font-size: 20px;
+  }
 }

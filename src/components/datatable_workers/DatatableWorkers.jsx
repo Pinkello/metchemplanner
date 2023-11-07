@@ -107,7 +107,7 @@ const DatatableWorkers = () => {
     <div className="datatableWorkers">
       <div className="datatableTitle">
         Lista pracownikow
-        <Link to="/workers/new" className="link">
+        <Link to="/workers/new" className="newWorker">
           Dodaj nowego pracownika
         </Link>
       </div>

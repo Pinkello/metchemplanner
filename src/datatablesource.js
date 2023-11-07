@@ -1,34 +1,23 @@
 export const machineColumns = [
-  { field: "name", headerName: "Nazwa", width: 400 },
-  // { field: "form", headerName: "Forma", width: 150 },
-  // { field: "operator", headerName: "Operator", width: 200 },
-  // { field: "retooling", headerName: "Przezbrojenie na", width: 100 },
-  // { field: "retoolingTime", headerName: "Przezbrojenie o", width: 100 },
-  // {
-  //   field: "user",
-  //   headerName: "User",
-  //   width: 230,
-  //   renderCell: (params) => {
-  //     return (
-  //       <div className="cellWithImg">
-  //         <img className="cellImg" src={params.row.img} alt="avatar" />
-  //         {params.row.username}
-  //       </div>
-  //     );
-  //   },
-  // },
-  // {
-  //   field: "status",
-  //   headerName: "Status",
-  //   width: 160,
-  //   renderCell: (params) => {
-  //     return (
-  //       <div className={`cellWithStatus ${params.row.status}`}>
-  //         {params.row.status}
-  //       </div>
-  //     );
-  //   },
-  // },
+  {
+    field: "name",
+    headerName: "Nazwa",
+    width: 600,
+    renderCell: (params) => {
+      return <div className="machineNames">{params.row.name}</div>;
+    },
+  },
+];
+
+export const serviceColumns = [
+  {
+    field: "name",
+    headerName: "Nazwa",
+    width: 600,
+    renderCell: (params) => {
+      return <div className="serviceNames">{params.row.name}</div>;
+    },
+  },
 ];
 
 export const workerColumns = [
@@ -36,12 +25,12 @@ export const workerColumns = [
   {
     field: "user",
     headerName: "Imię i nazwisko",
-    width: 300,
+    width: 400,
     renderCell: (params) => {
       if (params.row.id.startsWith("gap"))
         return <div className="cellWithImg"></div>;
       return (
-        <div className="cellWithImg">
+        <div className="cellWithImg workerNames">
           <img className="cellImg" src={params.row.img} alt="Brak" />
           {params.row.surname} {params.row.name}
         </div>
@@ -56,7 +45,10 @@ export const workerColumns = [
   {
     field: "brigade",
     headerName: "Brygada",
-    width: 200,
+    width: 400,
+    renderCell: (params) => {
+      return <div className="brigadeNames">{params.row.brigade}</div>;
+    },
   },
 ];
 

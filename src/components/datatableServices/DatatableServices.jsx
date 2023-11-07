@@ -1,6 +1,6 @@
 import "./datatableServices.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { machineColumns } from "../../datatablesource";
+import { serviceColumns } from "../../datatablesource";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
@@ -64,15 +64,15 @@ const DatatableServices = () => {
   return (
     <div className="datatableServices">
       <div className="datatableTitle">
-        <span>Montaże</span>
-        <Link to="/services/new" className="link">
+        <h3 className="titleServices">Montaże</h3>
+        <Link to="/services/new" className="newService">
           Dodaj nowy montaż
         </Link>
       </div>
       <DataGrid
         className="datagrid"
         rows={data}
-        columns={machineColumns.concat(actionColumn)}
+        columns={serviceColumns.concat(actionColumn)}
         checkboxSelection
         autoHeight
       />

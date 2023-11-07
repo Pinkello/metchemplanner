@@ -20,10 +20,24 @@
     }
 
     .buttonsDate {
-      padding-left: 3vw;
-      display: flex;
-      min-width: 15vw;
-      justify-content: space-between;
+      padding-left: 1vw;
+
+      .css-button-sharp--black {
+        color: #fff;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        display: inline-block;
+        outline: none;
+        border: 2px solid #212529;
+        background: #212529;
+      }
+      .css-button-sharp--black:hover {
+        background: #ffffff;
+        color: #212529;
+      }
     }
 
     label {
@@ -208,6 +222,7 @@
       justify-content: flex-start;
 
       .singleService {
+        font-size: 15px;
         max-width: 200px;
         word-break: break-word;
         overflow-wrap: break-word;
@@ -227,6 +242,10 @@
   }
 
   .notes {
+    .notesArea {
+      white-space: pre-wrap;
+    }
+
     .notesTitle {
       width: 50%;
     }
