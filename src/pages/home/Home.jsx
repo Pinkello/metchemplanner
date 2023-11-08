@@ -28,7 +28,6 @@ import ModalService from "../../components/modals/ModalService";
 const Home = () => {
   const [machines, setMachines] = useState([]);
   const [workers, setWorkers] = useState([]);
-  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentMachine, setCurrentMachine] = useState({});
   const [currentService, setCurrentService] = useState({});
@@ -97,29 +96,29 @@ const Home = () => {
     return list;
   };
 
+  const fetchData = async () => {
+    try {
+      let tempWorker = {};
+      let tempWorkers = [];
+
+      const querySnapshotWorker = await getDocs(collection(db, "workers"));
+      querySnapshotWorker.forEach((doc) => {
+        tempWorker = {
+          name: doc.data().name,
+          surname: doc.data().surname,
+          brigade: doc.data().brigade,
+        };
+        tempWorkers.push(tempWorker);
+      });
+
+      setWorkers(tempWorkers);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
-    const fetchWorkers = async () => {
-      try {
-        let tempWorker = {};
-        let tempWorkers = [];
-
-        const querySnapshotWorker = await getDocs(collection(db, "workers"));
-        querySnapshotWorker.forEach((doc) => {
-          tempWorker = {
-            name: doc.data().name,
-            surname: doc.data().surname,
-            brigade: doc.data().brigade,
-          };
-          tempWorkers.push(tempWorker);
-        });
-
-        setWorkers(tempWorkers);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchWorkers();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -301,7 +300,6 @@ const Home = () => {
         setMiddleRow(listM);
         setRightRow(listR);
 
-        setServices(list2);
         list2.forEach((element) => {
           if (element.row === "Prawy rząd") {
             listR2.push(element);
@@ -387,6 +385,14 @@ const Home = () => {
     };
 
     useEffect(() => {
+      optionsConnection2 = [{ value: "Brak", label: "Brak" }];
+      optionsConnection = [{ value: "Brak", label: "Brak" }];
+      console.log("connections");
+      console.log(optionsConnection);
+      console.log("machines");
+      console.log(machines);
+
+      //porownaj nazwe wybranego elementu i dodaj do tablicy jezeli jest inna niz wybrana
       machines.forEach((element) => {
         const comparison = element.name.localeCompare(connection);
         const comparison2 = element.name.localeCompare(connection2);
@@ -414,8 +420,8 @@ const Home = () => {
 
     const handleInputSelectConnection = (selectedOption) => {
       setConnection(selectedOption.value);
-
       optionsConnection2 = [{ value: "Brak", label: "Brak" }];
+
       machines.forEach((element) => {
         if (element.name !== selectedOption.value)
           optionsConnection2.push({ value: element.name, label: element.name });
@@ -426,8 +432,8 @@ const Home = () => {
 
     const handleInputSelectConnection2 = (selectedOption) => {
       setConnection2(selectedOption.value);
-
       optionsConnection = [{ value: "Brak", label: "Brak" }];
+
       machines.forEach((element) => {
         if (element.name !== selectedOption.value)
           optionsConnection.push({ value: element.name, label: element.name });
@@ -456,13 +462,6 @@ const Home = () => {
       }
       if (transition !== "" && transitionTime === "") {
         toast.error("Brak podanej godziny dla przejścia!");
-        return;
-      }
-
-      if (connection === "Brak" && connection2 !== "Brak") {
-        toast.error(
-          "Nie możesz podać drugiego połączenia bez podania pierwszego!"
-        );
         return;
       }
 
@@ -538,6 +537,187 @@ const Home = () => {
 
       //update maszyny
       const machineRef = doc(db, "dates", currentDate);
+      const docSnap = await getDoc(machineRef);
+
+      //POŁĄCZENIA MASZYn
+      if (
+        currentMachine.connection === "Brak" &&
+        currentMachine.connection2 === "Brak"
+      ) {
+        if (connection !== "Brak") {
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection][
+              "connection"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
+            });
+          } else if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection][
+              "connection2"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection}.connection2`]: currentMachine.name,
+            });
+          } else {
+            toast.error("Brak wolnego miejsca na maszynie " + connection);
+            return;
+          }
+        }
+
+        if (connection2 !== "Brak") {
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection2][
+              "connection"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection2}.connection`]: currentMachine.name,
+            });
+          } else if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection2][
+              "connection2"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection2}.connection2`]: currentMachine.name,
+            });
+          } else {
+            toast.error("Brak wolnego miejsca na maszynie " + connection2);
+            return;
+          }
+        }
+      }
+      //jeśli na początku maszyna miała połączenie1 lub połączenie2
+      else if (
+        currentMachine.connection !== "Brak" ||
+        currentMachine.connection2 !== "Brak"
+      ) {
+        //jeśli było połączenie1 a teraz go nie ma
+        if (currentMachine.connection !== "Brak" && connection === "Brak") {
+          //sprawdź który connection miała maszyna od której się odłączasz
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][
+              currentMachine.connection
+            ]["connection"] === currentMachine.name
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+            });
+            //jeśli to nie było connection1 to musi byc connection2
+          } else {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
+            });
+          }
+        } else if (
+          currentMachine.connection !== "Brak" &&
+          connection === "Brak" &&
+          currentMachine.connection !== connection
+        ) {
+          //sprawdz ktore connection miala i odłącz od starej
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][
+              currentMachine.connection
+            ]["connection"] === currentMachine.name
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+            });
+            //jeśli to nie było connection1 to musi byc connection2
+          } else {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
+            });
+          }
+
+          //podłącz nową do wolnej connection
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection][
+              "connection"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
+            });
+          } else if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection][
+              "connection2"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection}.connection2`]: currentMachine.name,
+            });
+          } else {
+            toast.error("Brak wolnego miejsca na maszynie " + connection);
+            return;
+          }
+        }
+
+        //jeśli było połączenie2 a teraz go nie ma
+        if (currentMachine.connection2 !== "Brak" && connection2 === "Brak") {
+          //sprawdź który connection miała maszyna od której się odłączasz
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][
+              currentMachine.connection2
+            ]["connection"] === currentMachine.name
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
+            });
+            //jeśli to nie było connection1 to musi byc connection2
+          } else {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
+            });
+          }
+        } else if (
+          currentMachine.connection2 !== "Brak" &&
+          connection2 === "Brak" &&
+          currentMachine.connection2 !== connection2
+        ) {
+          //sprawdz ktore connection miala i odłącz od starej
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][
+              currentMachine.connection2
+            ]["connection"] === currentMachine.name
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
+            });
+            //jeśli to nie było connection1 to musi byc connection2
+          } else {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
+            });
+          }
+
+          //podłącz nową do wolnej connection
+          if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection2][
+              "connection"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection2}.connection`]: currentMachine.name,
+            });
+          } else if (
+            docSnap.data()[currentShift]["machinesToAdd"][connection2][
+              "connection2"
+            ] === "Brak"
+          ) {
+            await updateDoc(machineRef, {
+              [`${currentShift}.machinesToAdd.${connection2}.connection2`]: currentMachine.name,
+            });
+          } else {
+            toast.error("Brak wolnego miejsca na maszynie " + connection2);
+            return;
+          }
+        }
+      }
+
       await updateDoc(machineRef, {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: referencja,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: form,
@@ -551,7 +731,6 @@ const Home = () => {
         [`${currentShift}.machinesToAdd.${currentMachine.name}.connection2`]: connection2,
         [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: worker,
       });
-      const docSnap = await getDoc(machineRef);
 
       //jeżeli retooling wjedzie na nową zmiane, to dodaj na tej nowej zmianie
       if (currentShift === "I") {
@@ -631,105 +810,103 @@ const Home = () => {
         }
       }
 
-      //zmiana connection i maszyny polaczonej
-      if (connection !== "Brak" && currentMachine.connection === "Brak") {
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][connection].status !==
-          status
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${connection}.status`]: status,
-          });
-        }
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
-        });
-      } else if (
-        connection === "Brak" &&
-        currentMachine.connection !== "Brak"
-      ) {
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-          // [`${currentShift}.machinesToAdd.${currentMachine.connection}.status`]: "STOP",
-        });
-      } else if (
-        connection !== "Brak" &&
-        currentMachine.connection !== "Brak" &&
-        connection !== currentMachine.connection
-      ) {
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][
-            currentMachine.connection
-          ].connection === currentMachine.name
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
-          });
-        } else {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
-            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
-          });
-        }
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
-          [`${currentShift}.machinesToAdd.${connection}.status`]: status,
-        });
-      }
-
-      //zmiana connection2 i maszyny polaczonej
-
-      if (connection2 !== "Brak" && currentMachine.connection2 === "Brak") {
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][connection2].status !==
-          status
-        )
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${connection2}.status`]: status,
-          });
-
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection2}.connection`]: currentMachine.name,
-          [`${currentShift}.machinesToAdd.${connection2}.connection2`]: connection,
-          [`${currentShift}.machinesToAdd.${connection}.connection2`]: connection2,
-        });
-      } else if (
-        connection2 === "Brak" &&
-        currentMachine.connection2 !== "Brak"
-      ) {
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
-          // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
-        });
-      } else if (
-        connection2 !== "Brak" &&
-        currentMachine.connection2 !== "Brak" &&
-        connection2 !== currentMachine.connection2
-      ) {
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][
-            currentMachine.connection2
-          ].connection2 === currentMachine.name
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
-            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
-          });
-        } else {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
-            // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
-          });
-        }
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${connection2}.connection2`]: currentMachine.name,
-          [`${currentShift}.machinesToAdd.${connection2}.status`]: status,
-        });
-      }
-
       toast.success("Aktualizuje...");
     };
+    // //zmiana connection i maszyny polaczonej
+    // if (connection !== "Brak" && currentMachine.connection === "Brak") {
+    //   if (
+    //     docSnap.data()[currentShift]["machinesToAdd"][connection].status !==
+    //     status
+    //   ) {
+    //     await updateDoc(machineRef, {
+    //       [`${currentShift}.machinesToAdd.${connection}.status`]: status,
+    //     });
+    //   }
+    //   await updateDoc(machineRef, {
+    //     [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
+    //   });
+    // } else if (
+    //   connection === "Brak" &&
+    //   currentMachine.connection !== "Brak"
+    // ) {
+    //   await updateDoc(machineRef, {
+    //     [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+    //   });
+    // } else if (
+    //   connection !== "Brak" &&
+    //   currentMachine.connection !== "Brak" &&
+    //   connection !== currentMachine.connection
+    // ) {
+    //   if (
+    //     docSnap.data()[currentShift]["machinesToAdd"][
+    //       currentMachine.connection
+    //     ].connection === currentMachine.name
+    //   ) {
+    //     await updateDoc(machineRef, {
+    //       [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+    //       // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+    //     });
+    //   } else {
+    //     await updateDoc(machineRef, {
+    //       [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
+    //       // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+    //     });
+    //   }
+    //   await updateDoc(machineRef, {
+    //     [`${currentShift}.machinesToAdd.${connection}.connection`]: currentMachine.name,
+    //     [`${currentShift}.machinesToAdd.${connection}.status`]: status,
+    //   });
+    // }
+
+    // //zmiana connection2 i maszyny polaczonej
+
+    // if (connection2 !== "Brak" && currentMachine.connection2 === "Brak") {
+    //   if (
+    //     docSnap.data()[currentShift]["machinesToAdd"][connection2].status !==
+    //     status
+    //   )
+    //     await updateDoc(machineRef, {
+    //       [`${currentShift}.machinesToAdd.${connection2}.status`]: status,
+    //     });
+
+    //   await updateDoc(machineRef, {
+    //     [`${currentShift}.machinesToAdd.${connection2}.connection`]: currentMachine.name,
+    //     [`${currentShift}.machinesToAdd.${connection2}.connection2`]: connection,
+    //     [`${currentShift}.machinesToAdd.${connection}.connection2`]: connection2,
+    //   });
+    // } else if (
+    //   connection2 === "Brak" &&
+    //   currentMachine.connection2 !== "Brak"
+    // ) {
+    //   await updateDoc(machineRef, {
+    //     [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
+    //     // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+    //   });
+    // } else if (
+    //   connection2 !== "Brak" &&
+    //   currentMachine.connection2 !== "Brak" &&
+    //   connection2 !== currentMachine.connection2
+    // ) {
+    //   if (
+    //     docSnap.data()[currentShift]["machinesToAdd"][
+    //       currentMachine.connection2
+    //     ].connection2 === currentMachine.name
+    //   ) {
+    //     await updateDoc(machineRef, {
+    //       [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
+    //       // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+    //     });
+    //   } else {
+    //     await updateDoc(machineRef, {
+    //       [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
+    //       // [`${currentShift}.machinesToAdd.${currentMachine.connection2}.status`]: "STOP",
+    //     });
+    //   }
+    //   await updateDoc(machineRef, {
+    //     [`${currentShift}.machinesToAdd.${connection2}.connection2`]: currentMachine.name,
+    //     [`${currentShift}.machinesToAdd.${connection2}.status`]: status,
+    //   });
+    // }
 
     return (
       <Modal
