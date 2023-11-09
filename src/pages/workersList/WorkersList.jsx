@@ -1,5 +1,5 @@
 import "./workersList.scss";
-import DatatableWorkers from "../../components/datatable_workers/DatatableWorkers";
+import Workers from "../../components/workers/Workers";
 import NavigationBar from "../../components/navigation/NavigationBar";
 import { ToastContainer } from "react-toastify";
 const List = () => {
@@ -8,7 +8,7 @@ const List = () => {
       <div className="listContainer">
         <ToastContainer />
         <NavigationBar />
-        <DatatableWorkers />
+        <Workers />
       </div>
     </div>
   );

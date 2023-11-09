@@ -1,4 +1,4 @@
-import "./datatableWorkers.scss";
+import "./workers.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { workerColumns } from "../../datatablesource";
 import { Link } from "react-router-dom";

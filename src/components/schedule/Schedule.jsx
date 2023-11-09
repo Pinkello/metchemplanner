@@ -1,11 +1,10 @@
-import "./datatableSchedules.scss";
+import "./schedule.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { scheduleColumns } from "../../datatablesource";
 import { useEffect, useMemo, useState } from "react";
 import {
   collection,
   doc,
-  getDoc,
   onSnapshot,
   query,
   updateDoc,
@@ -22,7 +21,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const DatatableSchedules = () => {
-  const [data, setData] = useState([]);
   const [machines, setMachines] = useState([]);
   const [machinesAll, setMachinesAll] = useState([]);
   const [services, setServices] = useState([]);
@@ -79,8 +77,6 @@ const DatatableSchedules = () => {
       doc(db, "dates", currentDate),
       async (querySnapshot) => {
         let list = [];
-
-        let tempService = {};
         let list2 = [];
 
         let tablica = [];

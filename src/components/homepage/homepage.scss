@@ -1,0 +1,182 @@
+.home {
+  display: flex;
+
+  .homeContainer {
+    background-color: #3d5b80;
+    flex: 6;
+    height: 100%;
+    min-height: 100vh;
+    width: 100%;
+    overflow: auto;
+
+    .containerMain {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: 50px;
+
+      .rows {
+        width: 100%;
+        display: flex;
+        padding: 5px;
+        justify-content: center;
+      }
+
+      .dateShow {
+        overflow: visible;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        background-color: #f4f4f4;
+        padding: 1rem;
+
+        label {
+          margin-right: 1rem;
+          font-size: 1.2rem;
+          font-weight: bold;
+
+          &.shift-label {
+            margin-left: 1rem;
+          }
+        }
+
+        .select-container {
+          display: flex;
+          align-items: center;
+          width: 100%;
+
+          .selects {
+            min-width: 7vw;
+          }
+          .buttonsDate {
+            padding-left: 1vw;
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+
+            .css-button-rounded--grey {
+              color: #fff;
+              padding: 0.5rem 1rem;
+              font-size: 1rem;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              position: relative;
+              display: inline-block;
+              outline: none;
+              border-radius: 5px;
+              border: 2px solid #495057;
+              background: #495057;
+            }
+            .css-button-rounded--grey:hover {
+              background: #fff;
+              color: #495057;
+            }
+
+            .css-button-sharp--black {
+              color: #fff;
+              padding: 0.5rem 1rem;
+              font-size: 1rem;
+              cursor: pointer;
+              transition: all 0.3s ease;
+              position: relative;
+              display: inline-block;
+              outline: none;
+              border: 2px solid #212529;
+              background: #212529;
+            }
+            .css-button-sharp--black:hover {
+              background: #ffffff;
+              color: #212529;
+            }
+          }
+        }
+
+        .formInput {
+          min-width: min-content;
+          padding: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          font-size: 1rem;
+          color: #333;
+          background-color: #fff;
+          outline: none;
+          box-shadow: none;
+          transition: border-color 0.2s ease-in-out;
+
+          &.date-input {
+            width: 50%;
+          }
+
+          &:focus {
+            border-color: #6c63ff;
+          }
+        }
+      }
+
+      .machine {
+        background-color: white;
+        margin: 10px;
+        padding: 10px;
+        min-width: 350px;
+        min-height: 70px;
+      }
+
+      .mainRow {
+        display: flex;
+        flex-direction: column;
+
+        .STOP {
+          color: rgb(240, 241, 243);
+          background-color: rgb(176, 5, 5);
+          padding: 4px 10px 4px 10px;
+          border: 1px solid rgb(19, 2, 2);
+        }
+
+        .Praca {
+          color: rgb(240, 241, 243);
+          background-color: green;
+          padding: 4px 10px 4px 10px;
+          border: 1px solid rgb(1, 19, 1);
+        }
+
+        .Rozruch {
+          color: rgb(204, 185, 12);
+          background-color: rgb(240, 241, 243);
+          padding: 4px;
+          border: 1px solid rgb(175, 159, 12);
+        }
+
+        .Uruchomienie {
+          color: rgb(255, 123, 0);
+          background-color: rgb(240, 241, 243);
+          padding: 4px;
+          border: 1px solid rgb(255, 123, 0);
+        }
+      }
+    }
+  }
+}
+
+.rowInputs {
+  .formInput {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: rgb(193, 238, 236);
+    border: none;
+    border-bottom: 1px solid gray;
+    align-items: center;
+    justify-content: center;
+  }
+
+  label {
+    font-weight: bold;
+  }
+
+  .buttonForm {
+    margin-top: 20px;
+    float: right;
+  }
+}

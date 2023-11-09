@@ -1,6 +1,6 @@
 import "./schedulesList.scss";
 
-import DatatableSchedules from "../../components/datatableSchedules/DatatableSchedules";
+import Schedule from "../../components/schedule/Schedule";
 import NavigationBar from "../../components/navigation/NavigationBar";
 
 const SchedulesList = () => {
@@ -8,7 +8,7 @@ const SchedulesList = () => {
     <div className="list">
       <div className="listContainer">
         <NavigationBar />
-        <DatatableSchedules />
+        <Schedule />
       </div>
     </div>
   );

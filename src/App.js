@@ -1,12 +1,12 @@
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import MachinesList from "./pages/machinesList/MachinesList";
-import WorkersList from "./pages/workers_list/WorkersList";
+import WorkersList from "./pages/workersList/WorkersList.jsx";
 import ServicesList from "./pages/servicesList/ServicesList.jsx";
 import SchedulesList from "./pages/schedulesList/SchedulesList.jsx";
 import Single from "./pages/single/Single";
 import New from "./pages/new/NewMachine";
-import NewWorker from "./pages/new_worker/NewWorker";
+import NewWorker from "./pages/newWorker/NewWorker";
 import NewService from "./pages/newService/NewService";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { workerInputs, machineInputs, serviceInputs } from "./formSource";

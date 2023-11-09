@@ -7,6 +7,9 @@ import {
   deleteField,
   getDocs,
   collection,
+  writeBatch,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,12 +25,18 @@ const ModalService = ({
   onHide,
   show,
 }) => {
-  const [praca, setPraca] = useState("");
-  const [name, setName] = useState("");
-  const [row, setRow] = useState("");
-  const [rowPlace, setRowPlace] = useState("");
-  const [description, setDescription] = useState("");
-  const [worker, setWorker] = useState("");
+  const [service, setService] = useState(currentService);
+  // const [praca, setPraca] = useState("");
+  // const [name, setName] = useState("");
+  // const [row, setRow] = useState("");
+  // const [rowPlace, setRowPlace] = useState("");
+  // const [description, setDescription] = useState("");
+  // const [worker, setWorker] = useState("");
+
+  const [rowOld, setRowOld] = useState(currentService.row);
+  const [rowPlaceOld, setRowPlaceOld] = useState(
+    parseInt(currentService.rowPlace)
+  );
 
   const optionsWorker = useMemo(() => {
     return [{ value: "", label: "Brak" }];
@@ -45,30 +54,29 @@ const ModalService = ({
   ];
 
   const handleInputSelectRow = (selectedOption) => {
-    setRow(selectedOption.value);
+    setService((prevServ) => ({
+      ...prevServ,
+      row: selectedOption.value,
+    }));
   };
   const handleInputSelectPraca = (selectedOption) => {
-    setPraca(selectedOption.value);
+    setService((prevServ) => ({
+      ...prevServ,
+      praca: selectedOption.value,
+    }));
   };
   const handleInputSelectWorker = (selectedOption) => {
-    setWorker(selectedOption.value);
+    setService((prevServ) => ({
+      ...prevServ,
+      worker: selectedOption.value,
+    }));
   };
 
   useEffect(() => {
-    setPraca(currentService.praca);
-    setName(currentService.name);
-    setRow(currentService.row);
-    setRowPlace(currentService.rowPlace);
-    setDescription(currentService.opis);
-    setWorker(currentService.worker);
-  }, [
-    currentService.praca,
-    currentService.name,
-    currentService.row,
-    currentService.rowPlace,
-    currentService.opis,
-    currentService.worker,
-  ]);
+    setService(currentService);
+    setRowOld(currentService.row);
+    setRowPlaceOld(currentService.rowPlace);
+  }, [currentService]);
 
   useEffect(() => {
     const fetchWorkers = async () => {
@@ -94,50 +102,129 @@ const ModalService = ({
 
     fetchWorkers();
   }, [optionsWorker]);
-
   const updateDoc2 = async () => {
     const machineRef = doc(db, "dates", currentDate);
     //jesli trzeba zmienic service
     if (
-      name !== currentService.name ||
-      row !== currentService.row ||
-      rowPlace !== currentService.rowPlace
+      service.name !== currentService.name ||
+      service.row !== currentService.row ||
+      service.rowPlace !== currentService.rowPlace
     ) {
       const serviceRef1 = doc(db, "services", currentService.referencja);
       await updateDoc(serviceRef1, {
-        name: name,
-        row: row,
-        rowPlace: rowPlace,
+        name: service.name,
+        row: service.row,
+        rowPlace: service.rowPlace,
       });
     }
+
     //jesli trzeba zmienic nazwe - usun i dodaj nową mape
-    if (name !== currentService.name) {
+    if (service.name !== currentService.name) {
       await updateDoc(machineRef, {
         [`${currentShift}.servicesToAdd.${currentService.name}`]: deleteField(),
       });
 
       await updateDoc(machineRef, {
-        [`${currentShift}.servicesToAdd.${name}.referencja`]: currentService.referencja,
-        [`${currentShift}.servicesToAdd.${name}.praca`]: praca,
-        [`${currentShift}.servicesToAdd.${name}.opis`]: description,
-        [`${currentShift}.servicesToAdd.${name}.worker`]: worker,
+        [`${currentShift}.servicesToAdd.${service.name}.referencja`]: currentService.referencja,
+        [`${currentShift}.servicesToAdd.${service.name}.praca`]: service.praca,
+        [`${currentShift}.servicesToAdd.${service.name}.opis`]: service.opis,
+        [`${currentShift}.servicesToAdd.${service.name}.worker`]: service.worker,
       });
       //jesli tylko update pracy/opisu
     } else {
-      if (worker) {
+      if (service.worker) {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
-          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: worker,
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: service.praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: service.opis,
+          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: service.worker,
         });
       } else {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: description,
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: service.praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: service.opis,
           [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: "",
         });
       }
     }
+
+    //zmiana miejsca w rzedzie innych maszyn
+    const batch = writeBatch(db);
+
+    if (service.rowPlace !== rowPlaceOld || service.row !== rowOld)
+      if (service.row === rowOld) {
+        console.log("tutaj1");
+        if (service.rowPlace > rowPlaceOld) {
+          const q = query(
+            collection(db, "services"),
+            where("row", "==", service.row),
+            where("rowPlace", "<=", parseInt(service.rowPlace)),
+            where("rowPlace", ">", parseInt(rowPlaceOld))
+          );
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            const currentRowPlace = doc.data().rowPlace;
+            batch.update(doc.ref, {
+              rowPlace: parseInt(currentRowPlace) - 1,
+            });
+          });
+        } else {
+          const q = query(
+            collection(db, "services"),
+            where("row", "==", service.row),
+            where("rowPlace", ">=", parseInt(service.rowPlace)),
+            where("rowPlace", "<", parseInt(rowPlaceOld))
+          );
+
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+            const currentRowPlace = parseInt(doc.data().rowPlace);
+            batch.update(doc.ref, {
+              rowPlace: currentRowPlace + 1,
+            });
+          });
+        }
+      } else {
+        console.log("tutaj2");
+        console.log(service.row);
+        console.log(service.rowPlace);
+        const q = query(
+          collection(db, "services"),
+          where("row", "==", service.row),
+          where("rowPlace", ">=", parseInt(service.rowPlace))
+        );
+
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          console.log("działam + 1 ");
+          const currentRowPlace = parseInt(doc.data().rowPlace);
+          batch.update(doc.ref, {
+            rowPlace: currentRowPlace + 1,
+          });
+        });
+        const q2 = query(
+          collection(db, "services"),
+          where("row", "==", rowOld),
+          where("rowPlace", ">", parseInt(rowPlaceOld))
+        );
+        const querySnapshot2 = await getDocs(q2);
+        querySnapshot2.forEach((doc) => {
+          console.log("działam - 1 ");
+          console.log(doc.data());
+          const currentRowPlace = parseInt(doc.data().rowPlace);
+          batch.update(doc.ref, {
+            rowPlace: currentRowPlace - 1,
+          });
+        });
+      }
+
+    await batch.commit();
+    const machineRef1 = doc(db, "services", currentService.referencja);
+    await updateDoc(machineRef1, {
+      name: service.name,
+      row: service.row,
+      rowPlace: parseInt(service.rowPlace),
+    });
+
     toast.success("Aktualizuje...");
   };
   return (
@@ -161,8 +248,13 @@ const ModalService = ({
             type="text"
             name="name"
             placeholder="Nazwa"
-            value={name || ""}
-            onChange={(e) => setName(e.target.value)}
+            value={service.name || ""}
+            onChange={(e) =>
+              setService((prevMachine) => ({
+                ...prevMachine,
+                name: e.target.value,
+              }))
+            }
           />
           <label>Praca</label>
           <Select
@@ -189,9 +281,12 @@ const ModalService = ({
             type="text"
             name="form"
             placeholder="Forma"
-            value={description || ""}
+            value={service.opis || ""}
             onChange={(e) => {
-              setDescription(e.target.value);
+              setService((prevMachine) => ({
+                ...prevMachine,
+                opis: e.target.value,
+              }));
             }}
           />
           <label>Pracownik</label>
@@ -201,8 +296,8 @@ const ModalService = ({
             id="worker"
             name="worker"
             defaultValue={
-              currentService.worker
-                ? { label: currentService.worker, value: currentService.worker }
+              service.worker
+                ? { label: service.worker, value: service.worker }
                 : { label: "Brak", value: "" }
             }
             onChange={handleInputSelectWorker}
@@ -214,10 +309,10 @@ const ModalService = ({
             id="row"
             name="row"
             defaultValue={
-              currentService.row
+              service.row
                 ? {
-                    label: currentService.row,
-                    value: currentService.row,
+                    label: service.row,
+                    value: service.row,
                   }
                 : {
                     label: "Brak",
@@ -232,10 +327,13 @@ const ModalService = ({
             type="number"
             name="rowPlace"
             placeholder="Miejsce"
-            value={rowPlace || ""}
-            onChange={(e) => {
-              setRowPlace(e.target.value);
-            }}
+            value={service.rowPlace || ""}
+            onChange={(e) =>
+              setService((prevMachine) => ({
+                ...prevMachine,
+                rowPlace: e.target.value,
+              }))
+            }
           />
           <Button className="buttonForm" variant="success" onClick={updateDoc2}>
             Aktualizuj

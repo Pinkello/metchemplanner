@@ -1,6 +1,6 @@
 import "./servicesList.scss";
 
-import DatatableServices from "../../components/datatableServices/DatatableServices";
+import Services from "../../components/services/Services";
 import NavigationBar from "../../components/navigation/NavigationBar";
 
 const ServicesList = () => {
@@ -8,7 +8,7 @@ const ServicesList = () => {
     <div className="list">
       <div className="listContainer">
         <NavigationBar />
-        <DatatableServices />
+        <Services />
       </div>
     </div>
   );
