@@ -39,7 +39,7 @@ const ModalService = ({
   );
 
   const optionsWorker = useMemo(() => {
-    return [{ value: "", label: "Brak" }];
+    return [{ value: "Brak", label: "Brak" }];
   }, []);
 
   const optionsPracaService = [
@@ -125,23 +125,30 @@ const ModalService = ({
       });
 
       await updateDoc(machineRef, {
-        [`${currentShift}.servicesToAdd.${service.name}.referencja`]: currentService.referencja,
+        [`${currentShift}.servicesToAdd.${service.name}.referencja`]:
+          currentService.referencja,
         [`${currentShift}.servicesToAdd.${service.name}.praca`]: service.praca,
         [`${currentShift}.servicesToAdd.${service.name}.opis`]: service.opis,
-        [`${currentShift}.servicesToAdd.${service.name}.worker`]: service.worker,
+        [`${currentShift}.servicesToAdd.${service.name}.worker`]:
+          service.worker,
       });
       //jesli tylko update pracy/opisu
     } else {
       if (service.worker) {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: service.praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: service.opis,
-          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: service.worker,
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]:
+            service.praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
+            service.opis,
+          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]:
+            service.worker,
         });
       } else {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: service.praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: service.opis,
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]:
+            service.praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
+            service.opis,
           [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: "",
         });
       }
@@ -281,7 +288,7 @@ const ModalService = ({
             type="text"
             name="form"
             placeholder="Forma"
-            value={service.opis || ""}
+            value={service.opis}
             onChange={(e) => {
               setService((prevMachine) => ({
                 ...prevMachine,
@@ -295,10 +302,11 @@ const ModalService = ({
             options={optionsWorker}
             id="worker"
             name="worker"
+            value={{ label: service.worker, value: service.worker }}
             defaultValue={
               service.worker
                 ? { label: service.worker, value: service.worker }
-                : { label: "Brak", value: "" }
+                : { label: "Brak", value: "Brak" }
             }
             onChange={handleInputSelectWorker}
           />
@@ -308,6 +316,7 @@ const ModalService = ({
             options={optionsRowService}
             id="row"
             name="row"
+            value={{ label: service.row, value: service.row }}
             defaultValue={
               service.row
                 ? {
@@ -327,7 +336,7 @@ const ModalService = ({
             type="number"
             name="rowPlace"
             placeholder="Miejsce"
-            value={service.rowPlace || ""}
+            value={service.rowPlace}
             onChange={(e) =>
               setService((prevMachine) => ({
                 ...prevMachine,
