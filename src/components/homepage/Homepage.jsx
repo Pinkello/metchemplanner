@@ -385,7 +385,9 @@ const Homepage = () => {
             {element.praca}
           </h5>
           {element.opis !== "" ? (
-            <div style={{ marginTop: "10px" }}>Opis: {element.opis}</div>
+            <div style={{ marginTop: "10px" }}>
+              Opis: <b>{element.opis}</b>
+            </div>
           ) : (
             <></>
           )}
