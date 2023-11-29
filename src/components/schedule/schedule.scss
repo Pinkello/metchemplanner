@@ -187,6 +187,7 @@
     }
 
     .buttonNotes button {
+      width: 90px;
       font-size: 15px;
       padding: 10px 20px;
       background-color: #2e72cc;
@@ -209,7 +210,7 @@
 .datagridContainer {
   .serviceList {
     .serviceTitle {
-      width: 98%;
+      width: calc(100% - 90px);
       color: rgb(2, 2, 69);
       margin-bottom: 10px;
       display: flex;
@@ -294,6 +295,9 @@
   @media print {
     .print-hide {
       display: none !important;
+    }
+    .serviceTitle {
+      width: 100% !important;
     }
   }
 }

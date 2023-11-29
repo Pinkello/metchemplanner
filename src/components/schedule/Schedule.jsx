@@ -158,7 +158,7 @@ const DatatableSchedules = () => {
           });
 
           console.log("lista");
-          console.log(list2);
+          console.log(list);
 
           const secondList = list.sort((a, b) => {
             const aNum = parseInt(a.name.replace(/[^\d]/g, ""), 10);
@@ -413,14 +413,11 @@ const DatatableSchedules = () => {
           }}
         />
         <br />
-        <br />
-        <br />
         <div className="serviceList">
           <h4 className="serviceTitle">Montaże</h4>
           <div className="servicesRow">{showServices(services)}</div>
         </div>{" "}
         <hr />
-        <br />
         <div className="notes">
           <div className="datatableTitleSchedules">
             <h4 className="serviceTitle">Uwagi</h4>
@@ -438,7 +435,6 @@ const DatatableSchedules = () => {
           <hr />
 
           <div className="notesArea">{notes}</div>
-          <br />
           <br />
         </div>
       </div>
