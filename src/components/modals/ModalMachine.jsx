@@ -32,10 +32,10 @@ const ModalMachine = ({
     parseInt(currentMachine.rowPlace)
   );
   const [machine, setMachine] = useState(currentMachine);
-  const [opt, setOpt] = useState([]);
-  const [optConn, setOptConn] = useState([]);
-  const [optAdd1, setOptAdd1] = useState([]);
-  const [optAdd2, setOptAdd2] = useState([]);
+  const [opt, setOpt] = useState([{ value: "Brak", label: "Brak" }]);
+  const [optConn, setOptConn] = useState([{ value: "Brak", label: "Brak" }]);
+  const [optAdd1, setOptAdd1] = useState([{ value: "Brak", label: "Brak" }]);
+  const [optAdd2, setOptAdd2] = useState([{ value: "Brak", label: "Brak" }]);
   const [showRetooling, setShowRetooling] = useState(false);
   const [showTransition, setShowTransition] = useState(false);
   const [showAddition, setShowAddition] = useState(false);
@@ -54,7 +54,6 @@ const ModalMachine = ({
   ];
 
   const sortTable = (table) => {
-    console.log("dzialam");
     table.sort((a, b) => {
       const nameA = a.value;
       const nameB = b.value;
@@ -73,17 +72,40 @@ const ModalMachine = ({
     });
   };
 
+  const sortTable2 = (table) => {
+    
+    table.sort((a, b) => {
+      const nameA = a.value;
+      const nameB = b.value;
+
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+
+    table.unshift({ value: "Brak", label: "Brak" });
+  };
+
   useEffect(() => {
     setMachine(currentMachine);
     setRowOld(currentMachine.row);
     setRowPlaceOld(currentMachine.rowPlace);
+    setShowAddition(currentMachine.isAddition)
   }, [currentMachine]);
 
   useEffect(() => {
+    
+    setOptAdd1(([{ value: "Brak", label: "Brak" }]));
+    setOptAdd2(([{ value: "Brak", label: "Brak" }]));
     //porownaj nazwe wybranego elementu i dodaj do tablicy jezeli jest inna niz wybrana
     machines.forEach((element) => {
       const comparison = element.name.localeCompare(machine.addition1);
       const comparison2 = element.name.localeCompare(machine.addition2);
+
 
       if (!(comparison2 === 0))
         setOptAdd1((prevOptAdd1) => [
@@ -97,8 +119,6 @@ const ModalMachine = ({
         ]);
     });
 
-    sortTable(optAdd1);
-    sortTable(optAdd2);
   }, [machine.addition1, machine.addition2, machines]);
 
   useEffect(() => {
@@ -106,29 +126,43 @@ const ModalMachine = ({
       value: element.name + " " + element.surname,
       label: element.name + " " + element.surname,
     }));
-
+    setOpt(([]));
     setOpt((prevOpt) => [...prevOpt, ...newOpt]);
 
-    sortTable(opt);
   }, [workers]);
 
   useEffect(() => {
+   
     const newOptConn = machines.map((element) => ({
       value: element.name,
       label: element.name,
     }));
-
-    setOptConn((prevOptConn) => [...prevOptConn, ...newOptConn]);
-
-    console.log("opt conn");
-    console.log(optConn);
-    sortTable(optConn);
-    console.log("opt conn 2");
-    console.log(optConn);
+    setOptConn(([{ value: "Brak", label: "Brak" }]));
+    setOptConn((prevOpt) => {
+      const updatedState = [...prevOpt, ...newOptConn];
+      return updatedState;
+    });
   }, [machines]);
 
+  useEffect(() => {
+    sortTable(optConn);
+  }, [optConn]);
+
+  useEffect(() => {
+    sortTable(optAdd1);
+  }, [optAdd1]);
+
+  useEffect(() => {
+    sortTable(optAdd2);
+  }, [optAdd2]);
+
+  useEffect(() => {
+    sortTable2(opt);
+  }, [opt]);
+  
+
+
   const handleInputSelectWorker = (selectedOption) => {
-    // setWorker(selectedOption.value);
     setMachine((prevMachine) => ({
       ...prevMachine,
       worker: selectedOption.value,
@@ -136,15 +170,27 @@ const ModalMachine = ({
   };
 
   const handleInputSelectConnection = (selectedOption) => {
-    // setConnection(selectedOption.value);
     setMachine((prevMachine) => ({
       ...prevMachine,
       connection: selectedOption.value,
     }));
   };
 
+  const handleInputSelectAddition1 = (selectedOption) => {
+    setMachine((prevMachine) => ({
+      ...prevMachine,
+      addition1: selectedOption.value,
+    }));
+  };
+
+  const handleInputSelectAddition2 = (selectedOption) => {
+    setMachine((prevMachine) => ({
+      ...prevMachine,
+      addition2: selectedOption.value,
+    }));
+  };
+
   const handleInputSelectStatus = (selectedOption) => {
-    // setStatus(selectedOption.value);
     setMachine((prevMachine) => ({
       ...prevMachine,
       status: selectedOption.value,
@@ -152,7 +198,6 @@ const ModalMachine = ({
   };
 
   const handleInputSelectRow = (selectedOption) => {
-    // setRow(selectedOption.value);
     setMachine((prevMachine) => ({
       ...prevMachine,
       row: selectedOption.value,
@@ -169,6 +214,10 @@ const ModalMachine = ({
 
   const handleToogleAdditionInput = () => {
     setShowAddition((prevShowAddition) => !prevShowAddition);
+    setMachine((prevMachine) => ({
+      ...prevMachine,
+      isAddition: !machine.isAddition,
+    }));
   };
 
   const updateDoc2 = async (e) => {
@@ -186,6 +235,12 @@ const ModalMachine = ({
     }
     if (machine.transition !== "" && machine.transitionTime === "") {
       toast.error("Brak podanej godziny dla przejścia!");
+      return;
+    }
+    console.log("machine.isAddition")
+    console.log(machine.isAddition)
+    if(machine.isAddition === true && (machine.addition1 === "Brak" || machine.addition2 === "Brak" )){
+      toast.error("Brak podanych maszyn dla dokładki!");
       return;
     }
 
@@ -309,6 +364,18 @@ const ModalMachine = ({
           [`${currentShift}.machinesToAdd.${machine.connection}.status`]: machine.status,
         });
 
+    //dokładka
+    if(machine.isAddition === true){
+
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${machine.addition1}.connectionAdd`]: machine.name,
+      });
+
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${machine.addition2}.connectionAdd`]: machine.name,
+      });
+    }
+
     await updateDoc(machineRef, {
       [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: machine.referencja,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: machine.form,
@@ -319,10 +386,11 @@ const ModalMachine = ({
       [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: machine.transitionTime,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: machine.status,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: machine.connection,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.connectionAdd`]: machine.connectionAdd,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: machine.worker,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.addition1`]: machine.addition1,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.addition2`]: machine.addition2,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.isAddition`]: machine.isAddition,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.isAddition`]: showAddition,
     });
 
     //jeżeli retooling wjedzie na nową zmiane, to dodaj na tej nowej zmianie
@@ -497,8 +565,8 @@ const ModalMachine = ({
                 }))
               }
             />
-          </div>
 
+          </div>
           {showRetooling && (
             <div className="inputsRow">
               <div className="inputContainer-50">
@@ -535,6 +603,7 @@ const ModalMachine = ({
               </div>
             </div>
           )}
+          
           {showTransition && (
             <div className="inputsRow">
               <div className="inputContainer-50">
@@ -571,6 +640,7 @@ const ModalMachine = ({
               </div>
             </div>
           )}
+         
           <div className="inputsRow">
             <div className="inputContainer-50">
               <label>Status</label>
@@ -579,12 +649,11 @@ const ModalMachine = ({
                 options={optionsStatus}
                 id="status"
                 name="status"
-                value={{ label: machine.status, value: machine.status }}
-                defaultValue={
-                  machine.status
-                    ? { label: machine.status, value: machine.status }
+                value={
+                   machine.status
+                   ? { label: machine.status, value: machine.status }
                     : { label: "STOP", value: "STOP" }
-                }
+                   }
                 onChange={handleInputSelectStatus}
               />
             </div>
@@ -597,19 +666,15 @@ const ModalMachine = ({
                 name="connection"
                 isDisabled={showAddition ? true : false}
                 value={
-                  machine.connection
-                    ? { label: machine.connection, value: machine.connection }
-                    : { label: "Brak", value: "" }
-                }
-                defaultValue={
-                  machine.connection
-                    ? { label: machine.connection, value: machine.connection }
-                    : { label: "Brak", value: "" }
-                }
+                   machine.connection
+                   ? { label: machine.connection, value: machine.connection }
+                    : { label: "STOP", value: "STOP" }
+                   }
                 onChange={handleInputSelectConnection}
               />
             </div>
           </div>
+            
           {showAddition && (
             <div className="inputsRow">
               <div className="inputContainer-50">
@@ -619,19 +684,13 @@ const ModalMachine = ({
                   options={optAdd1}
                   id="addition1"
                   name="addition1"
-                  value={{
-                    label: machine.addition1,
-                    value: machine.addition1,
-                  }}
-                  defaultValue={
-                    machine.addition1
-                      ? {
-                          label: machine.addition1,
-                          value: machine.addition1,
-                        }
-                      : { label: "Brak", value: "Brak" }
-                  }
-                  onChange={true}
+                  value={
+                   machine.addition1
+                   ? { label: machine.addition1, value: machine.addition1 }
+                    : { label: "Brak", value: "Brak" }
+                   }
+                  
+                  onChange={handleInputSelectAddition1}
                 />
               </div>
               <div className="inputContainer-50">
@@ -641,19 +700,12 @@ const ModalMachine = ({
                   options={optAdd2}
                   id="addition2"
                   name="addition2"
-                  value={{
-                    label: machine.addition2,
-                    value: machine.addition2,
-                  }}
-                  defaultValue={
-                    machine.addition2
-                      ? {
-                          label: machine.addition2,
-                          value: machine.addition2,
-                        }
-                      : { label: "Brak", value: "Brak" }
-                  }
-                  onChange={true}
+                  value={
+                   machine.addition2
+                   ? { label: machine.addition2, value: machine.addition2 }
+                    : { label: "Brak", value: "Brak" }
+                   }
+                  onChange={handleInputSelectAddition2}
                 />
               </div>
             </div>
@@ -666,15 +718,10 @@ const ModalMachine = ({
               id="worker"
               name="worker"
               value={
-                machine.worker
-                  ? { label: machine.worker, value: machine.worker }
-                  : { label: "Brak", value: "" }
-              }
-              defaultValue={
-                machine.worker
-                  ? { label: machine.worker, value: machine.worker }
-                  : { label: "Brak", value: "" }
-              }
+                   machine.worker
+                   ? { label: machine.worker, value: machine.worker }
+                    : { label: "Brak", value: "" }
+                   }
               onChange={handleInputSelectWorker}
             />
           </div>
@@ -686,12 +733,7 @@ const ModalMachine = ({
                 options={optionsRow}
                 id="row"
                 name="row"
-                value={{ label: machine.row, value: machine.row }}
-                defaultValue={
-                  machine.row
-                    ? { label: machine.row, value: machine.row }
-                    : { label: "Lewy rząd", value: "Lewy rząd" }
-                }
+                value={machine.row ? { label: machine.row, value: machine.row }   : { label: "1", value: "1" }}
                 onChange={handleInputSelectRow}
               />
             </div>
@@ -702,7 +744,7 @@ const ModalMachine = ({
                 type="number"
                 name="rowPlace"
                 placeholder="Miejsce"
-                value={machine.rowPlace}
+                value={machine.rowPlace ? machine.rowPlace : 1}
                 onChange={(e) =>
                   setMachine((prevMachine) => ({
                     ...prevMachine,
@@ -710,8 +752,8 @@ const ModalMachine = ({
                   }))
                 }
               />
-            </div>
-          </div>
+          </div> 
+          </div> 
           <Button className="buttonForm" variant="success" onClick={updateDoc2}>
             Aktualizuj
           </Button>

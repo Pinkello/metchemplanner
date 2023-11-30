@@ -158,6 +158,7 @@ const Homepage = () => {
               transitionTime: "",
               form: "",
               connection: "Brak",
+              connectionAdd: "Brak",
               isAddition: false,
               addition1: "Brak",
               addition2: "Brak",
@@ -414,7 +415,7 @@ const Homepage = () => {
           </Button>{" "}
           {element.connection !== "Brak" && (
             <Button
-              variant="info"
+              variant="success"
               onClick={() => {
                 setCurrentMachine(
                   machines.find((obj) => {
@@ -425,6 +426,21 @@ const Homepage = () => {
               }}
             >
               <b> {element.connection}</b>
+            </Button>
+          )}{" "}
+          {element.connectionAdd !== "Brak" && (
+            <Button
+              variant="info"
+              onClick={() => {
+                setCurrentMachine(
+                  machines.find((obj) => {
+                    return obj.name === element.connectionAdd;
+                  })
+                );
+                setModalShow(true);
+              }}
+            >
+              <b> {element.connectionAdd}</b>
             </Button>
           )}{" "}
           <h5 className={element.status} style={{ float: "right" }}>
