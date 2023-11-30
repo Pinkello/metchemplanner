@@ -27,34 +27,19 @@ const ModalMachine = ({
   show,
   onHide,
 }) => {
-  // const [name, setName] = useState(currentMachine.name);
-  // const [form, setForm] = useState(currentMachine.form);
-  // const [startTime, setStartTime] = useState(currentMachine.startTime);
-  // const [retooling, setRetooling] = useState(currentMachine.retooling);
-  // const [retoolingTime, setRetoolingTime] = useState(
-  //   currentMachine.retoolingTime
-  // );
-  // const [transition, setTransition] = useState(currentMachine.transition);
-  // const [transitionTime, setTransitionTime] = useState(
-  //   currentMachine.transitionTime
-  // );
-  // const [status, setStatus] = useState(currentMachine.status);
-  // const [connection, setConnection] = useState("Brak");
-  // const [connection2, setConnection2] = useState(currentMachine.connection2);
-  // const [worker, setWorker] = useState(currentMachine.worker);
-  // const [row, setRow] = useState(currentMachine.row);
-  // const [rowPlace, setRowPlace] = useState(parseInt(currentMachine.rowPlace));
-  // const [referencja, setReferencja] = useState(currentMachine.referencja);
   const [rowOld, setRowOld] = useState(currentMachine.row);
   const [rowPlaceOld, setRowPlaceOld] = useState(
     parseInt(currentMachine.rowPlace)
   );
   const [machine, setMachine] = useState(currentMachine);
   const [opt, setOpt] = useState([]);
+  const [optConn, setOptConn] = useState([]);
+  const [optAdd1, setOptAdd1] = useState([]);
+  const [optAdd2, setOptAdd2] = useState([]);
+  const [showRetooling, setShowRetooling] = useState(false);
+  const [showTransition, setShowTransition] = useState(false);
+  const [showAddition, setShowAddition] = useState(false);
 
-  let optionsConnection = [{ value: "Brak", label: "Brak" }];
-  let optionsConnection2 = [{ value: "Brak", label: "Brak" }];
-  const optionsWorker = [{ value: "", label: "Brak" }];
   const optionsStatus = [
     { value: "STOP", label: "Stop" },
     { value: "Praca", label: "Praca" },
@@ -69,6 +54,7 @@ const ModalMachine = ({
   ];
 
   const sortTable = (table) => {
+    console.log("dzialam");
     table.sort((a, b) => {
       const nameA = a.value;
       const nameB = b.value;
@@ -96,18 +82,24 @@ const ModalMachine = ({
   useEffect(() => {
     //porownaj nazwe wybranego elementu i dodaj do tablicy jezeli jest inna niz wybrana
     machines.forEach((element) => {
-      const comparison = element.name.localeCompare(machine.connection);
-      const comparison2 = element.name.localeCompare(machine.connection2);
+      const comparison = element.name.localeCompare(machine.addition1);
+      const comparison2 = element.name.localeCompare(machine.addition2);
 
       if (!(comparison2 === 0))
-        optionsConnection.push({ value: element.name, label: element.name });
+        setOptAdd1((prevOptAdd1) => [
+          ...prevOptAdd1,
+          { value: element.name, label: element.name },
+        ]);
       if (!(comparison === 0))
-        optionsConnection2.push({ value: element.name, label: element.name });
+        setOptAdd2((prevOptAdd2) => [
+          ...prevOptAdd2,
+          { value: element.name, label: element.name },
+        ]);
     });
 
-    sortTable(optionsConnection);
-    sortTable(optionsConnection2);
-  }, [machine, machines, optionsConnection, optionsConnection2]);
+    sortTable(optAdd1);
+    sortTable(optAdd2);
+  }, [machine.addition1, machine.addition2, machines]);
 
   useEffect(() => {
     const newOpt = workers.map((element) => ({
@@ -116,7 +108,24 @@ const ModalMachine = ({
     }));
 
     setOpt((prevOpt) => [...prevOpt, ...newOpt]);
+
+    sortTable(opt);
   }, [workers]);
+
+  useEffect(() => {
+    const newOptConn = machines.map((element) => ({
+      value: element.name,
+      label: element.name,
+    }));
+
+    setOptConn((prevOptConn) => [...prevOptConn, ...newOptConn]);
+
+    console.log("opt conn");
+    console.log(optConn);
+    sortTable(optConn);
+    console.log("opt conn 2");
+    console.log(optConn);
+  }, [machines]);
 
   const handleInputSelectWorker = (selectedOption) => {
     // setWorker(selectedOption.value);
@@ -132,30 +141,6 @@ const ModalMachine = ({
       ...prevMachine,
       connection: selectedOption.value,
     }));
-    optionsConnection2 = [{ value: "Brak", label: "Brak" }];
-
-    machines.forEach((element) => {
-      if (element.name !== selectedOption.value)
-        optionsConnection2.push({ value: element.name, label: element.name });
-    });
-
-    sortTable(optionsConnection2);
-  };
-
-  const handleInputSelectConnection2 = (selectedOption) => {
-    // setConnection2(selectedOption.value);
-    setMachine((prevMachine) => ({
-      ...prevMachine,
-      connection2: selectedOption.value,
-    }));
-    optionsConnection = [{ value: "Brak", label: "Brak" }];
-
-    machines.forEach((element) => {
-      if (element.name !== selectedOption.value)
-        optionsConnection.push({ value: element.name, label: element.name });
-    });
-
-    sortTable(optionsConnection);
   };
 
   const handleInputSelectStatus = (selectedOption) => {
@@ -172,6 +157,18 @@ const ModalMachine = ({
       ...prevMachine,
       row: selectedOption.value,
     }));
+  };
+
+  const handleToggleRetoolingInput = () => {
+    setShowRetooling((prevShowRetooling) => !prevShowRetooling);
+  };
+
+  const handleToogleTransitionInput = () => {
+    setShowTransition((prevShowTransition) => !prevShowTransition);
+  };
+
+  const handleToogleAdditionInput = () => {
+    setShowAddition((prevShowAddition) => !prevShowAddition);
   };
 
   const updateDoc2 = async (e) => {
@@ -268,193 +265,37 @@ const ModalMachine = ({
     const docSnap = await getDoc(machineRef);
 
     //POŁĄCZENIA MASZYN
-    //Jeśli nie miała żadnych połączeń
-    if (
-      currentMachine.connection === "Brak" &&
-      currentMachine.connection2 === "Brak"
-    ) {
-      if (machine.connection !== "Brak") {
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection][
-            "connection"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection}.connection`]: currentMachine.name,
-          });
-        } else if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection][
-            "connection2"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection}.connection2`]: currentMachine.name,
-          });
-        } else {
-          toast.error("Brak wolnego miejsca na maszynie " + machine.connection);
-          return;
-        }
-      }
-
-      if (machine.connection2 !== "Brak") {
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection2][
-            "connection"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection2}.connection`]: currentMachine.name,
-          });
-        } else if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection2][
-            "connection2"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection2}.connection2`]: currentMachine.name,
-          });
-        } else {
-          toast.error(
-            "Brak wolnego miejsca na maszynie " + machine.connection2
-          );
-          return;
-        }
-      }
-    }
-    //jeśli na początku maszyna miała połączenie1 lub połączenie2
-    else if (
-      currentMachine.connection !== "Brak" ||
-      currentMachine.connection2 !== "Brak"
-    ) {
-      //jeśli było połączenie1 a teraz go nie ma
+    if (machine.connection !== "Brak" && currentMachine.connection === "Brak") {
       if (
-        currentMachine.connection !== "Brak" &&
-        machine.connection === "Brak"
+        docSnap.data()[currentShift]["machinesToAdd"][machine.connection]
+          .status === "STOP"
       ) {
-        //sprawdź który connection miała maszyna od której się odłączasz
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][
-            currentMachine.connection
-          ]["connection"] === currentMachine.name
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-          });
-          //jeśli to nie było connection1 to musi byc connection2
-        } else {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
-          });
-        }
-      } else if (
-        currentMachine.connection !== "Brak" &&
-        machine.connection === "Brak" &&
-        currentMachine.connection !== machine.connection
-      ) {
-        //sprawdz ktore connection miala i odłącz od starej
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][
-            currentMachine.connection
-          ]["connection"] === currentMachine.name
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
-          });
-          //jeśli to nie było connection1 to musi byc connection2
-        } else {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection2`]: "Brak",
-          });
-        }
-
-        //podłącz nową do wolnej connection
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection][
-            "connection"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection}.connection`]: currentMachine.name,
-          });
-        } else if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection][
-            "connection2"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection}.connection2`]: currentMachine.name,
-          });
-        } else {
-          toast.error("Brak wolnego miejsca na maszynie " + machine.connection);
-          return;
-        }
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${machine.connection}.status`]: machine.status,
+        });
       }
 
-      //jeśli było połączenie2 a teraz go nie ma
-      if (
-        currentMachine.connection2 !== "Brak" &&
-        machine.connection2 === "Brak"
-      ) {
-        //sprawdź który connection miała maszyna od której się odłączasz
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][
-            currentMachine.connection2
-          ]["connection"] === currentMachine.name
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
-          });
-          //jeśli to nie było connection1 to musi byc connection2
-        } else {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
-          });
-        }
-      } else if (
-        currentMachine.connection2 !== "Brak" &&
-        machine.connection2 === "Brak" &&
-        currentMachine.connection2 !== machine.connection2
-      ) {
-        //sprawdz ktore connection miala i odłącz od starej
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][
-            currentMachine.connection2
-          ]["connection"] === currentMachine.name
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection`]: "Brak",
-          });
-          //jeśli to nie było connection1 to musi byc connection2
-        } else {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${currentMachine.connection2}.connection2`]: "Brak",
-          });
-        }
-
-        //podłącz nową do wolnej connection
-        if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection2][
-            "connection"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection2}.connection`]: currentMachine.name,
-          });
-        } else if (
-          docSnap.data()[currentShift]["machinesToAdd"][machine.connection2][
-            "connection2"
-          ] === "Brak"
-        ) {
-          await updateDoc(machineRef, {
-            [`${currentShift}.machinesToAdd.${machine.connection2}.connection2`]: currentMachine.name,
-          });
-        } else {
-          toast.error(
-            "Brak wolnego miejsca na maszynie " + machine.connection2
-          );
-          return;
-        }
-      }
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${machine.connection}.connection`]: currentMachine.name,
+      });
+    } else if (
+      machine.connection === "Brak" &&
+      currentMachine.connection !== "Brak"
+    ) {
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+      });
+    } else if (
+      machine.connection !== "Brak" &&
+      currentMachine.connection !== "Brak" &&
+      machine.connection !== currentMachine.connection
+    ) {
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+      });
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${machine.connection}.connection`]: currentMachine.name,
+      });
     }
 
     //jeśli maszyny były STOP to teraz rusz
@@ -468,16 +309,6 @@ const ModalMachine = ({
           [`${currentShift}.machinesToAdd.${machine.connection}.status`]: machine.status,
         });
 
-    if (machine.connection2 !== "Brak")
-      if (
-        docSnap.data()[currentShift]["machinesToAdd"][machine.connection2][
-          "status"
-        ] === "STOP"
-      )
-        await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${machine.connection2}.status`]: machine.status,
-        });
-
     await updateDoc(machineRef, {
       [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: machine.referencja,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: machine.form,
@@ -488,8 +319,10 @@ const ModalMachine = ({
       [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: machine.transitionTime,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: machine.status,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: machine.connection,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.connection2`]: machine.connection2,
       [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: machine.worker,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition1`]: machine.addition1,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition2`]: machine.addition2,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.isAddition`]: machine.isAddition,
     });
 
     //jeżeli retooling wjedzie na nową zmiane, to dodaj na tej nowej zmianie
@@ -579,13 +412,6 @@ const ModalMachine = ({
     toast.success("Aktualizuje...");
   };
 
-  console.log("opt");
-  console.log(opt);
-
-  console.log("masyzna");
-  console.log(machine);
-  console.log(machine.worker);
-
   return (
     <Modal
       show={show}
@@ -601,192 +427,291 @@ const ModalMachine = ({
       </Modal.Header>
       <Modal.Body>
         <div className="rowInputs">
-          <label>Nazwa maszyny</label>
-          <input
-            className="formInput"
-            type="text"
-            name="name"
-            placeholder="Nazwa"
-            value={machine.name || ""}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                name: e.target.value,
-              }))
-            }
-          />
-          <label>Rozpoczęcie pracy</label>
-          <input
-            className="formInput"
-            type="time"
-            name="startTime"
-            placeholder="Rozpoczęcie"
-            value={machine.startTime || ""}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                startTime: e.target.value,
-              }))
-            }
-          />
-          <label>Forma</label>
-          <input
-            className="formInput"
-            type="text"
-            name="form"
-            placeholder="Forma"
-            value={machine.form || ""}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                form: e.target.value,
-              }))
-            }
-          />
-          <label>Przezbrojenie</label>
-          <input
-            className="formInput"
-            type="text"
-            name="retooling"
-            placeholder="Przezbrojenie"
-            value={machine.retooling || ""}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                retooling: e.target.value,
-              }))
-            }
-          />
-          <label>Czas przezbrojenia</label>
-          <input
-            className="formInput"
-            type="time"
-            name="retoolingTime"
-            placeholder="Czas przezbrojenia"
-            value={machine.retoolingTime || ""}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                retoolingTime: e.target.value,
-              }))
-            }
-          />
-          <label>Przejście</label>
-          <input
-            className="formInput"
-            type="text"
-            name="transition"
-            placeholder="Przejście na:"
-            value={machine.transition || ""}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                transition: e.target.value,
-              }))
-            }
-          />
-          <label>Czas przejścia</label>
-          <input
-            className="formInput"
-            type="time"
-            name="transitionTime"
-            placeholder="Czas przejścia"
-            value={machine.transitionTime || ""}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                transitionTime: e.target.value,
-              }))
-            }
-          />
-          <label>Status</label>
-          <Select
-            className="formInput"
-            options={optionsStatus}
-            id="status"
-            name="status"
-            value={{ label: machine.status, value: machine.status }}
-            defaultValue={
-              machine.status
-                ? { label: machine.status, value: machine.status }
-                : { label: "STOP", value: "STOP" }
-            }
-            onChange={handleInputSelectStatus}
-          />
+          <div className="buttonsContainer">
+            <button
+              className="css-button-shadow-border--sky"
+              onClick={handleToggleRetoolingInput}
+            >
+              {showRetooling ? "Usuń przezbrojenie" : "Dodaj przezbrojenie"}
+            </button>
+            <button
+              className="css-button-shadow-border--sky"
+              onClick={handleToogleTransitionInput}
+            >
+              {showTransition ? "Usuń przejście" : "Dodaj przejście"}
+            </button>
+            <button
+              className="css-button-shadow-border--sky"
+              onClick={handleToogleAdditionInput}
+            >
+              {showAddition ? "Usuń trzecią maszynę" : "Dodaj trzecią maszynę"}
+            </button>
+          </div>
+          <hr />
+          <div className="inputsRow">
+            <div className="inputContainer-50">
+              <label>Nazwa maszyny</label>
+              <input
+                className="formInput "
+                type="text"
+                name="name"
+                placeholder="Nazwa"
+                value={machine.name || ""}
+                onChange={(e) =>
+                  setMachine((prevMachine) => ({
+                    ...prevMachine,
+                    name: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="inputContainer-50">
+              <label>Rozpoczęcie pracy</label>
+              <input
+                className="formInput"
+                type="time"
+                name="startTime"
+                placeholder="Rozpoczęcie"
+                value={machine.startTime || ""}
+                onChange={(e) =>
+                  setMachine((prevMachine) => ({
+                    ...prevMachine,
+                    startTime: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+          <div className="inputContainer-100">
+            <label>Forma</label>
+            <input
+              className="formInput"
+              type="text"
+              name="form"
+              placeholder="Forma"
+              value={machine.form || ""}
+              onChange={(e) =>
+                setMachine((prevMachine) => ({
+                  ...prevMachine,
+                  form: e.target.value,
+                }))
+              }
+            />
+          </div>
 
-          <label>Wybierz połączenie</label>
-          <Select
-            className="formInput"
-            options={optionsConnection}
-            id="connection"
-            name="connection"
-            value={{ label: machine.connection, value: machine.connection }}
-            defaultValue={{
-              label: machine.connection,
-              value: machine.connection,
-            }}
-            onChange={handleInputSelectConnection}
-          />
-          <label>Wybierz kolejne połączenie</label>
-          <Select
-            className="formInput"
-            options={optionsConnection2}
-            id="connection2"
-            name="connection2"
-            value={{ label: machine.connection2, value: machine.connection2 }}
-            defaultValue={
-              machine.connection2
-                ? { label: machine.connection2, value: machine.connection2 }
-                : { label: "Brak", value: "Brak" }
-            }
-            onChange={handleInputSelectConnection2}
-          />
-          <label>Pracownik</label>
-          <Select
-            className="formInput"
-            options={opt}
-            id="worker"
-            name="worker"
-            value={
-              machine.worker
-                ? { label: machine.worker, value: machine.worker }
-                : { label: "Brak", value: "" }
-            }
-            defaultValue={
-              machine.worker
-                ? { label: machine.worker, value: machine.worker }
-                : { label: "Brak", value: "" }
-            }
-            onChange={handleInputSelectWorker}
-          />
-          <label>Rząd</label>
-          <Select
-            className="formInput"
-            options={optionsRow}
-            id="row"
-            name="row"
-            value={{ label: machine.row, value: machine.row }}
-            defaultValue={
-              machine.row
-                ? { label: machine.row, value: machine.row }
-                : { label: "Lewy rząd", value: "Lewy rząd" }
-            }
-            onChange={handleInputSelectRow}
-          />
-          <label>Miejsce w rzędzie</label>
-          <input
-            className="formInput"
-            type="number"
-            name="rowPlace"
-            placeholder="Miejsce"
-            value={machine.rowPlace}
-            onChange={(e) =>
-              setMachine((prevMachine) => ({
-                ...prevMachine,
-                rowPlace: e.target.value,
-              }))
-            }
-          />
+          {showRetooling && (
+            <div className="inputsRow">
+              <div className="inputContainer-50">
+                <label>Przezbrojenie</label>
+                <input
+                  className="formInput"
+                  type="text"
+                  name="retooling"
+                  placeholder="Przezbrojenie"
+                  value={machine.retooling || ""}
+                  onChange={(e) =>
+                    setMachine((prevMachine) => ({
+                      ...prevMachine,
+                      retooling: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="inputContainer-50">
+                <label>Czas przezbrojenia</label>
+                <input
+                  className="formInput"
+                  type="time"
+                  name="retoolingTime"
+                  placeholder="Czas przezbrojenia"
+                  value={machine.retoolingTime || ""}
+                  onChange={(e) =>
+                    setMachine((prevMachine) => ({
+                      ...prevMachine,
+                      retoolingTime: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          )}
+          {showTransition && (
+            <div className="inputsRow">
+              <div className="inputContainer-50">
+                <label>Przejście</label>
+                <input
+                  className="formInput"
+                  type="text"
+                  name="transition"
+                  placeholder="Przejście na:"
+                  value={machine.transition || ""}
+                  onChange={(e) =>
+                    setMachine((prevMachine) => ({
+                      ...prevMachine,
+                      transition: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="inputContainer-50">
+                <label>Czas przejścia</label>
+                <input
+                  className="formInput"
+                  type="time"
+                  name="transitionTime"
+                  placeholder="Czas przejścia"
+                  value={machine.transitionTime || ""}
+                  onChange={(e) =>
+                    setMachine((prevMachine) => ({
+                      ...prevMachine,
+                      transitionTime: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+          )}
+          <div className="inputsRow">
+            <div className="inputContainer-50">
+              <label>Status</label>
+              <Select
+                className="formInput"
+                options={optionsStatus}
+                id="status"
+                name="status"
+                value={{ label: machine.status, value: machine.status }}
+                defaultValue={
+                  machine.status
+                    ? { label: machine.status, value: machine.status }
+                    : { label: "STOP", value: "STOP" }
+                }
+                onChange={handleInputSelectStatus}
+              />
+            </div>
+            <div className="inputContainer-50">
+              <label>Wybierz połączenie</label>
+              <Select
+                className="formInput"
+                options={optConn}
+                id="connection"
+                name="connection"
+                isDisabled={showAddition ? true : false}
+                value={
+                  machine.connection
+                    ? { label: machine.connection, value: machine.connection }
+                    : { label: "Brak", value: "" }
+                }
+                defaultValue={
+                  machine.connection
+                    ? { label: machine.connection, value: machine.connection }
+                    : { label: "Brak", value: "" }
+                }
+                onChange={handleInputSelectConnection}
+              />
+            </div>
+          </div>
+          {showAddition && (
+            <div className="inputsRow">
+              <div className="inputContainer-50">
+                <label>Pierwsza dokładka:</label>
+                <Select
+                  className="formInput"
+                  options={optAdd1}
+                  id="addition1"
+                  name="addition1"
+                  value={{
+                    label: machine.addition1,
+                    value: machine.addition1,
+                  }}
+                  defaultValue={
+                    machine.addition1
+                      ? {
+                          label: machine.addition1,
+                          value: machine.addition1,
+                        }
+                      : { label: "Brak", value: "Brak" }
+                  }
+                  onChange={true}
+                />
+              </div>
+              <div className="inputContainer-50">
+                <label>Druga dokładka:</label>
+                <Select
+                  className="formInput"
+                  options={optAdd2}
+                  id="addition2"
+                  name="addition2"
+                  value={{
+                    label: machine.addition2,
+                    value: machine.addition2,
+                  }}
+                  defaultValue={
+                    machine.addition2
+                      ? {
+                          label: machine.addition2,
+                          value: machine.addition2,
+                        }
+                      : { label: "Brak", value: "Brak" }
+                  }
+                  onChange={true}
+                />
+              </div>
+            </div>
+          )}
+          <div className="inputContainer-100">
+            <label>Pracownik</label>
+            <Select
+              className="formInput"
+              options={opt}
+              id="worker"
+              name="worker"
+              value={
+                machine.worker
+                  ? { label: machine.worker, value: machine.worker }
+                  : { label: "Brak", value: "" }
+              }
+              defaultValue={
+                machine.worker
+                  ? { label: machine.worker, value: machine.worker }
+                  : { label: "Brak", value: "" }
+              }
+              onChange={handleInputSelectWorker}
+            />
+          </div>
+          <div className="inputsRow">
+            <div className="inputContainer-50">
+              <label>Rząd</label>
+              <Select
+                className="formInput"
+                options={optionsRow}
+                id="row"
+                name="row"
+                value={{ label: machine.row, value: machine.row }}
+                defaultValue={
+                  machine.row
+                    ? { label: machine.row, value: machine.row }
+                    : { label: "Lewy rząd", value: "Lewy rząd" }
+                }
+                onChange={handleInputSelectRow}
+              />
+            </div>
+            <div className="inputContainer-50">
+              <label>Miejsce w rzędzie</label>
+              <input
+                className="formInput"
+                type="number"
+                name="rowPlace"
+                placeholder="Miejsce"
+                value={machine.rowPlace}
+                onChange={(e) =>
+                  setMachine((prevMachine) => ({
+                    ...prevMachine,
+                    rowPlace: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
           <Button className="buttonForm" variant="success" onClick={updateDoc2}>
             Aktualizuj
           </Button>

@@ -158,7 +158,9 @@ const Homepage = () => {
               transitionTime: "",
               form: "",
               connection: "Brak",
-              connection2: "Brak",
+              isAddition: false,
+              addition1: "Brak",
+              addition2: "Brak",
               worker: "",
               numberOfPeople: "1",
             };
@@ -425,21 +427,6 @@ const Homepage = () => {
               <b> {element.connection}</b>
             </Button>
           )}{" "}
-          {element.connection2 !== "Brak" && (
-            <Button
-              variant="info"
-              onClick={() => {
-                setCurrentMachine(
-                  machines.find((obj) => {
-                    return obj.name === element.connection2;
-                  })
-                );
-                setModalShow(true);
-              }}
-            >
-              <b> {element.connection2}</b>
-            </Button>
-          )}
           <h5 className={element.status} style={{ float: "right" }}>
             {" "}
             {element.status}

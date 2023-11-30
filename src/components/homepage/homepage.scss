@@ -158,10 +158,38 @@
     }
   }
 }
+.input_50 {
+  width: 80%;
+}
 
 .rowInputs {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+
+  .inputContainer-100 {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+  }
+  .buttonsContainer {
+    display: flex;
+  }
+
+  .inputsRow {
+    display: flex;
+    flex-direction: row;
+  }
+  .inputContainer-50 {
+    display: flex;
+    flex-direction: column;
+    margin-right: 10px;
+    width: 50%;
+  }
+
   .formInput {
-    width: 100%;
+    min-width: 100%;
+    height: 100%;
     padding: 10px;
     margin-bottom: 10px;
     background-color: rgb(193, 238, 236);
@@ -178,5 +206,32 @@
   .buttonForm {
     margin-top: 20px;
     float: right;
+    font-weight: bold;
+  }
+  .css-button-shadow-border--sky {
+    min-width: 100px;
+    max-width: 150px;
+    height: 50px;
+    color: #fff;
+    margin: 0px 5px;
+    padding: 5px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    outline: none;
+    border-radius: 5px;
+    border: none;
+    box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+      7px 7px 20px 0px rgba(0, 0, 0, 0.1), 4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+    background: #4433ff;
+  }
+  .css-button-shadow-border--sky:hover {
+    background-color: #3a86ff;
+  }
+  .css-button-shadow-border--sky:active {
+    top: 2px;
   }
 }

@@ -99,46 +99,10 @@ export const scheduleColumns = (machines, machinesAll) => [
 function renderName(row, machines, machinesAll) {
   const currentMachine = row;
   const connectedMachineName = currentMachine.connection;
-  const connectedMachineName2 = currentMachine.connection2;
 
   const connectedMachine = machinesAll.find(
     (machine) => machine.name === connectedMachineName
   );
-
-  const connectedMachine2 = machinesAll.find(
-    (machine) => machine.name === connectedMachineName2
-  );
-
-  if (connectedMachine && connectedMachine2) {
-    return (
-      <div className="small-column">
-        <b style={{ color: "#0066ff" }}>{currentMachine.name} </b> -{" "}
-        <b>{currentMachine.form}</b>
-        {currentMachine.startTime !== "" ? (
-          <> o {currentMachine.startTime} </>
-        ) : (
-          "  "
-        )}
-        <br />
-        <b style={{ color: "#009933" }}>{connectedMachine.name}</b> -{" "}
-        <b>{connectedMachine.form}</b>{" "}
-        {connectedMachine.startTime !== "" ? (
-          <> o {connectedMachine.startTime} </>
-        ) : (
-          " "
-        )}
-        <br />
-        <b style={{ color: "#990099" }}>{connectedMachine2.name} </b> -{" "}
-        <b>{connectedMachine2.form}</b>{" "}
-        {connectedMachine2.startTime !== "" ? (
-          <> o {connectedMachine2.startTime} </>
-        ) : (
-          ""
-        )}
-      </div>
-    );
-  }
-
   if (connectedMachine) {
     return (
       <div className="small-column">
@@ -176,17 +140,12 @@ function renderName(row, machines, machinesAll) {
 function renderStatus(row, machines, machinesAll) {
   const currentMachine = row;
   const connectedMachineName = currentMachine.connection;
-  const connectedMachineName2 = currentMachine.connection2;
 
   const connectedMachine = machinesAll.find(
     (machine) => machine.name === connectedMachineName
   );
 
-  const connectedMachine2 = machinesAll.find(
-    (machine) => machine.name === connectedMachineName2
-  );
-
-  if (connectedMachine && connectedMachine2) {
+  if (connectedMachine) {
     return (
       <div className="small-column">
         {row.status === "Praca" ? (
@@ -199,51 +158,6 @@ function renderStatus(row, machines, machinesAll) {
         {connectedMachine.status === "Praca" ? (
           <div style={{ color: "#008000" }}>Praca</div>
         ) : connectedMachine.status === "Rozruch" ? (
-          <div style={{ color: " #ff1a1a" }}>Rozruch</div>
-        ) : (
-          <div style={{ color: "#ff7b00" }}>Uruchomienie</div>
-        )}
-        {connectedMachine2.status === "Praca" ? (
-          <div style={{ color: "#008000" }}>Praca</div>
-        ) : connectedMachine2.status === "Rozruch" ? (
-          <div style={{ color: " #ff1a1a" }}>Rozruch</div>
-        ) : (
-          <div style={{ color: "#ff7b00" }}>Uruchomienie</div>
-        )}
-      </div>
-    );
-  } else if (connectedMachine) {
-    return (
-      <div className="small-column">
-        {row.status === "Praca" ? (
-          <div style={{ color: "#008000" }}>Praca</div>
-        ) : row.status === "Rozruch" ? (
-          <div style={{ color: " #ff1a1a" }}>Rozruch</div>
-        ) : (
-          <div style={{ color: "#ff7b00" }}>Uruchomienie</div>
-        )}
-        {connectedMachine.status === "Praca" ? (
-          <div style={{ color: "#008000" }}>Praca</div>
-        ) : connectedMachine.status === "Rozruch" ? (
-          <div style={{ color: " #ff1a1a" }}>Rozruch</div>
-        ) : (
-          <div style={{ color: "#ff7b00" }}>Uruchomienie</div>
-        )}
-      </div>
-    );
-  } else if (connectedMachine2) {
-    return (
-      <div className="small-column">
-        {row.status === "Praca" ? (
-          <div style={{ color: "#008000" }}>Praca</div>
-        ) : row.status === "Rozruch" ? (
-          <div style={{ color: " #ff1a1a" }}>Rozruch</div>
-        ) : (
-          <div style={{ color: "#ff7b00" }}>Uruchomienie</div>
-        )}
-        {connectedMachine2.status === "Praca" ? (
-          <div style={{ color: "#008000" }}>Praca</div>
-        ) : connectedMachine2.status === "Rozruch" ? (
           <div style={{ color: " #ff1a1a" }}>Rozruch</div>
         ) : (
           <div style={{ color: "#ff7b00" }}>Uruchomienie</div>
@@ -269,47 +183,11 @@ function renderStatus(row, machines, machinesAll) {
 function renderRetooling(row, machines, machinesAll) {
   const currentMachine = row;
   const connectedMachineName = currentMachine.connection;
-  const connectedMachineName2 = currentMachine.connection2;
 
   const connectedMachine = machinesAll.find(
     (machine) => machine.name === connectedMachineName
   );
 
-  const connectedMachine2 = machinesAll.find(
-    (machine) => machine.name === connectedMachineName2
-  );
-  if (connectedMachine && connectedMachine2) {
-    return (
-      <div>
-        {currentMachine.retooling !== "" ? (
-          <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> o{" "}
-            {currentMachine.retoolingTime}
-          </>
-        ) : (
-          <> --</>
-        )}
-        <br />
-        {connectedMachine.retooling !== "" ? (
-          <>
-            <b style={{ color: "#009933" }}>{connectedMachine.retooling}</b> o{" "}
-            {connectedMachine.retoolingTime}
-          </>
-        ) : (
-          <>--</>
-        )}
-        <br />
-        {connectedMachine2.retooling !== "" ? (
-          <>
-            <b style={{ color: "#990099" }}>{connectedMachine2.retooling}</b> o{" "}
-            {connectedMachine2.retoolingTime}
-          </>
-        ) : (
-          <>--</>
-        )}
-      </div>
-    );
-  }
   if (connectedMachine) {
     return (
       <div>
@@ -351,48 +229,11 @@ function renderRetooling(row, machines, machinesAll) {
 function renderTransition(row, machines, machinesAll) {
   const currentMachine = row;
   const connectedMachineName = currentMachine.connection;
-  const connectedMachineName2 = currentMachine.connection2;
 
   const connectedMachine = machinesAll.find(
     (machine) => machine.name === connectedMachineName
   );
 
-  const connectedMachine2 = machinesAll.find(
-    (machine) => machine.name === connectedMachineName2
-  );
-
-  if (connectedMachine && connectedMachine2) {
-    return (
-      <div>
-        {currentMachine.transition !== "" ? (
-          <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> o{" "}
-            {currentMachine.transitionTime}
-          </>
-        ) : (
-          <>--</>
-        )}
-        <br />
-        {connectedMachine.transition !== "" ? (
-          <>
-            <b style={{ color: "#009933" }}>{connectedMachine.transition}</b> o{" "}
-            {connectedMachine.transitionTime}
-          </>
-        ) : (
-          <>--</>
-        )}
-        <br />
-        {connectedMachine2.transition !== "" ? (
-          <>
-            <b style={{ color: "#990099" }}>{connectedMachine2.transition}</b> o{" "}
-            {connectedMachine2.transitionTime}
-          </>
-        ) : (
-          <>--</>
-        )}
-      </div>
-    );
-  }
   if (connectedMachine) {
     return (
       <div>
@@ -433,17 +274,12 @@ function renderTransition(row, machines, machinesAll) {
 function renderWorker(row, machines, machinesAll) {
   const currentMachine = row;
   const connectedMachineName = currentMachine.connection;
-  const connectedMachineName2 = currentMachine.connection2;
 
   const connectedMachine = machinesAll.find(
     (machine) => machine.name === connectedMachineName
   );
 
-  const connectedMachine2 = machinesAll.find(
-    (machine) => machine.name === connectedMachineName2
-  );
-
-  if (connectedMachine && connectedMachine2) {
+  if (connectedMachine) {
     return (
       <div>
         {currentMachine.worker !== "" ? (
@@ -458,13 +294,6 @@ function renderWorker(row, machines, machinesAll) {
           <>
             <b style={{ color: "#009933" }}>{connectedMachine.worker}</b>
             <br />
-          </>
-        ) : (
-          ""
-        )}{" "}
-        {connectedMachine2.worker !== "" ? (
-          <>
-            <b style={{ color: "#990099" }}>{connectedMachine2.worker}</b>
           </>
         ) : (
           ""

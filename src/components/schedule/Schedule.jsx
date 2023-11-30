@@ -181,12 +181,10 @@ const DatatableSchedules = () => {
           const thirdList = [];
 
           for (const machine of secondList) {
-            const { connection, connection2 } = machine;
+            const { connection } = machine;
             if (
               connection === "Brak" ||
-              !thirdList.find(
-                (item) => item.name === connection || item.name === connection2
-              )
+              !thirdList.find((item) => item.name === connection)
             ) {
               thirdList.push(machine);
             }
