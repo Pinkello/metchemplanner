@@ -1,5 +1,5 @@
 import "./newWorker.scss";
-
+import React from 'react';
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
