@@ -1,3 +1,4 @@
+import React from 'react';
 import "./newService.scss";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -6,7 +7,6 @@ import { useEffect, useState } from "react";
 import { addDoc, collection } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 
-import React from 'react';
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import NavigationBar from "../../components/navigation/NavigationBar";

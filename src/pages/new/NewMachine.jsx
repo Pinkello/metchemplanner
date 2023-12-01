@@ -1,3 +1,4 @@
+import React from 'react';
 import "./newMachine.scss";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";

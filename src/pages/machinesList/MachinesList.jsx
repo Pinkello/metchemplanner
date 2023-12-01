@@ -1,5 +1,5 @@
+import React from 'react';
 import "./machinesList.scss";
-
 import Datatable from "../../components/datatable/Datatable";
 import NavigationBar from "../../components/navigation/NavigationBar";
 

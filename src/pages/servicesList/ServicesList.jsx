@@ -1,5 +1,5 @@
+import React from 'react';
 import "./servicesList.scss";
-
 import Services from "../../components/services/Services";
 import NavigationBar from "../../components/navigation/NavigationBar";
 

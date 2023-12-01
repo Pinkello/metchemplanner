@@ -1,5 +1,5 @@
+import React from 'react';
 import "./schedulesList.scss";
-
 import Schedule from "../../components/schedule/Schedule";
 import NavigationBar from "../../components/navigation/NavigationBar";
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import "./workersList.scss";
 import Workers from "../../components/workers/Workers";
 import NavigationBar from "../../components/navigation/NavigationBar";

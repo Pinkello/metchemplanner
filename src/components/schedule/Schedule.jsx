@@ -1,3 +1,4 @@
+import React from 'react';
 import "./schedule.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { scheduleColumns } from "../../datatablesource";
