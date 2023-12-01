@@ -572,79 +572,75 @@ const ModalMachine = ({
               }
             />
           </div>
-          {showRetooling && (
-            <div className="inputsRow">
-              <div className="inputContainer-50">
-                <label>Przezbrojenie</label>
-                <input
-                  className="formInput"
-                  type="text"
-                  name="retooling"
-                  placeholder="Przezbrojenie"
-                  value={machine.retooling || ""}
-                  onChange={(e) =>
-                    setMachine((prevMachine) => ({
-                      ...prevMachine,
-                      retooling: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="inputContainer-50">
-                <label>Czas przezbrojenia</label>
-                <input
-                  className="formInput"
-                  type="time"
-                  name="retoolingTime"
-                  placeholder="Czas przezbrojenia"
-                  value={machine.retoolingTime || ""}
-                  onChange={(e) =>
-                    setMachine((prevMachine) => ({
-                      ...prevMachine,
-                      retoolingTime: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+          <div className={`inputsRow ${showRetooling ? "show" : "hide"}`}>
+            <div className="inputContainer-50">
+              <label>Przezbrojenie</label>
+              <input
+                className="formInput"
+                type="text"
+                name="retooling"
+                placeholder="Przezbrojenie"
+                value={machine.retooling || ""}
+                onChange={(e) =>
+                  setMachine((prevMachine) => ({
+                    ...prevMachine,
+                    retooling: e.target.value,
+                  }))
+                }
+              />
             </div>
-          )}
+            <div className="inputContainer-50">
+              <label>Czas przezbrojenia</label>
+              <input
+                className="formInput"
+                type="time"
+                name="retoolingTime"
+                placeholder="Czas przezbrojenia"
+                value={machine.retoolingTime || ""}
+                onChange={(e) =>
+                  setMachine((prevMachine) => ({
+                    ...prevMachine,
+                    retoolingTime: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
 
-          {showTransition && (
-            <div className="inputsRow">
-              <div className="inputContainer-50">
-                <label>Przejście</label>
-                <input
-                  className="formInput"
-                  type="text"
-                  name="transition"
-                  placeholder="Przejście na:"
-                  value={machine.transition || ""}
-                  onChange={(e) =>
-                    setMachine((prevMachine) => ({
-                      ...prevMachine,
-                      transition: e.target.value,
-                    }))
-                  }
-                />
-              </div>
-              <div className="inputContainer-50">
-                <label>Czas przejścia</label>
-                <input
-                  className="formInput"
-                  type="time"
-                  name="transitionTime"
-                  placeholder="Czas przejścia"
-                  value={machine.transitionTime || ""}
-                  onChange={(e) =>
-                    setMachine((prevMachine) => ({
-                      ...prevMachine,
-                      transitionTime: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+          <div className={`inputsRow ${showTransition ? "show" : "hide"}`}>
+            <div className="inputContainer-50">
+              <label>Przejście</label>
+              <input
+                className="formInput"
+                type="text"
+                name="transition"
+                placeholder="Przejście na:"
+                value={machine.transition || ""}
+                onChange={(e) =>
+                  setMachine((prevMachine) => ({
+                    ...prevMachine,
+                    transition: e.target.value,
+                  }))
+                }
+              />
             </div>
-          )}
+            <div className="inputContainer-50">
+              <label>Czas przejścia</label>
+              <input
+                className="formInput"
+                type="time"
+                name="transitionTime"
+                placeholder="Czas przejścia"
+                value={machine.transitionTime || ""}
+                onChange={(e) =>
+                  setMachine((prevMachine) => ({
+                    ...prevMachine,
+                    transitionTime: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
 
           <div className="inputsRow">
             <div className="inputContainer-50">
@@ -680,40 +676,38 @@ const ModalMachine = ({
             </div>
           </div>
 
-          {showAddition && (
-            <div className="inputsRow">
-              <div className="inputContainer-50">
-                <label>Pierwsza dokładka:</label>
-                <Select
-                  className="formInput"
-                  options={optAdd1}
-                  id="addition1"
-                  name="addition1"
-                  value={
-                    machine.addition1
-                      ? { label: machine.addition1, value: machine.addition1 }
-                      : { label: "Brak", value: "Brak" }
-                  }
-                  onChange={handleInputSelectAddition1}
-                />
-              </div>
-              <div className="inputContainer-50">
-                <label>Druga dokładka:</label>
-                <Select
-                  className="formInput"
-                  options={optAdd2}
-                  id="addition2"
-                  name="addition2"
-                  value={
-                    machine.addition2
-                      ? { label: machine.addition2, value: machine.addition2 }
-                      : { label: "Brak", value: "Brak" }
-                  }
-                  onChange={handleInputSelectAddition2}
-                />
-              </div>
+          <div className={`inputsRow ${showAddition ? "show" : "hide"}`}>
+            <div className="inputContainer-50">
+              <label>Pierwsza dokładka:</label>
+              <Select
+                className="formInput"
+                options={optAdd1}
+                id="addition1"
+                name="addition1"
+                value={
+                  machine.addition1
+                    ? { label: machine.addition1, value: machine.addition1 }
+                    : { label: "Brak", value: "Brak" }
+                }
+                onChange={handleInputSelectAddition1}
+              />
             </div>
-          )}
+            <div className="inputContainer-50">
+              <label>Druga dokładka:</label>
+              <Select
+                className="formInput"
+                options={optAdd2}
+                id="addition2"
+                name="addition2"
+                value={
+                  machine.addition2
+                    ? { label: machine.addition2, value: machine.addition2 }
+                    : { label: "Brak", value: "Brak" }
+                }
+                onChange={handleInputSelectAddition2}
+              />
+            </div>
+          </div>
           <div className="inputContainer-100">
             <label>Pracownik</label>
             <Select
