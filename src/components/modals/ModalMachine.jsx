@@ -361,12 +361,18 @@ const ModalMachine = ({
 
     //dokładka
     if (machine.isAddition === true) {
-      if (currentMachine.addition1 !== machine.addition1) {
+      if (
+        currentMachine.addition1 !== "Brak" &&
+        currentMachine.addition1 !== machine.addition1
+      ) {
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${currentMachine.addition1}.connectionAdd`]: "Brak",
         });
       }
-      if (currentMachine.addition2 !== machine.addition2) {
+      if (
+        currentMachine.addition2 !== "Brak" &&
+        currentMachine.addition2 !== machine.addition2
+      ) {
         await updateDoc(machineRef, {
           [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]: "Brak",
         });

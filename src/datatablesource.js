@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export const machineColumns = [
   {
@@ -419,34 +419,51 @@ function renderWorker(row, machines, machinesAll) {
   );
 
   if (connectedMachine && connectedAddMachine) {
-    return (
-      <div>
-        {currentMachine.worker !== "" ? (
-          <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.worker}</b>
-            <br />
-          </>
-        ) : (
-          ""
-        )}
-        {connectedMachine.worker !== "" ? (
-          <>
-            <b style={{ color: "#cc9f19" }}>{connectedMachine.worker}</b>
-            <br />
-          </>
-        ) : (
-          ""
-        )}
-        {connectedAddMachine.worker !== "" ? (
-          <>
-            <b style={{ color: "#990099" }}>{connectedAddMachine.worker}</b>
-            <br />
-          </>
-        ) : (
-          ""
-        )}
-      </div>
-    );
+    if (
+      connectedMachine.worker === connectedAddMachine.worker &&
+      connectedMachine.worker === currentMachine.worker
+    ) {
+      return (
+        <div>
+          {currentMachine.worker !== "" ? (
+            <>
+              <b style={{ color: "#0066ff" }}>{currentMachine.worker}</b>
+              <br />
+            </>
+          ) : (
+            ""
+          )}
+        </div>
+      );
+    } else
+      return (
+        <div>
+          {currentMachine.worker !== "" ? (
+            <>
+              <b style={{ color: "#0066ff" }}>{currentMachine.worker}</b>
+              <br />
+            </>
+          ) : (
+            ""
+          )}
+          {connectedMachine.worker !== "" ? (
+            <>
+              <b style={{ color: "#cc9f19" }}>{connectedMachine.worker}</b>
+              <br />
+            </>
+          ) : (
+            ""
+          )}
+          {connectedAddMachine.worker !== "" ? (
+            <>
+              <b style={{ color: "#990099" }}>{connectedAddMachine.worker}</b>
+              <br />
+            </>
+          ) : (
+            ""
+          )}
+        </div>
+      );
   }
   if (connectedMachine) {
     return (
