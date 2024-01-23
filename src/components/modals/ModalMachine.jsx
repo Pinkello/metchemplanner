@@ -32,13 +32,14 @@ const ModalMachine = ({
     parseInt(currentMachine.rowPlace)
   );
   const [machine, setMachine] = useState(currentMachine);
-  const [opt, setOpt] = useState([{ value: "Brak", label: "Brak" }]);
+  const [opt, setOpt] = useState([]);
   const [optConn, setOptConn] = useState([{ value: "Brak", label: "Brak" }]);
   const [optAdd1, setOptAdd1] = useState([{ value: "Brak", label: "Brak" }]);
   const [optAdd2, setOptAdd2] = useState([{ value: "Brak", label: "Brak" }]);
   const [showRetooling, setShowRetooling] = useState(false);
   const [showTransition, setShowTransition] = useState(false);
   const [showAddition, setShowAddition] = useState(false);
+  let contemp;
 
   const optionsStatus = [
     { value: "STOP", label: "Stop" },
@@ -86,7 +87,7 @@ const ModalMachine = ({
       return 0;
     });
 
-    table.unshift({ value: "Brak", label: "Brak" });
+    table.unshift({ value: "", label: "Brak" });
   };
 
   useEffect(() => {
@@ -155,6 +156,8 @@ const ModalMachine = ({
   }, [opt]);
 
   const handleInputSelectWorker = (selectedOption) => {
+    console.log(selectedOption.value)
+    console.log(selectedOption.label)
     setMachine((prevMachine) => ({
       ...prevMachine,
       worker: selectedOption.value,
@@ -229,8 +232,6 @@ const ModalMachine = ({
       toast.error("Brak podanej godziny dla przejścia!");
       return;
     }
-    console.log("machine.isAddition");
-    console.log(machine.isAddition);
     if (
       machine.isAddition === true &&
       (machine.addition1 === "Brak" || machine.addition2 === "Brak")
@@ -359,7 +360,7 @@ const ModalMachine = ({
           [`${currentShift}.machinesToAdd.${machine.connection}.status`]: machine.status,
         });
 
-    //dokładka
+    //addition - check if true and if addition changed
     if (machine.isAddition === true) {
       if (
         currentMachine.addition1 !== "Brak" &&
@@ -377,13 +378,43 @@ const ModalMachine = ({
           [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]: "Brak",
         });
       }
+
+      //update machines with addition
       await updateDoc(machineRef, {
         [`${currentShift}.machinesToAdd.${machine.addition1}.connectionAdd`]: machine.name,
-      });
-
-      await updateDoc(machineRef, {
         [`${currentShift}.machinesToAdd.${machine.addition2}.connectionAdd`]: machine.name,
       });
+      
+      //and their connections
+      contemp = docSnap.data()[currentShift]["machinesToAdd"][machine.addition1];
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: machine.name,
+      });
+      
+      contemp = docSnap.data()[currentShift]["machinesToAdd"][machine.addition2];
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: machine.name,
+      });
+    }
+  
+
+    //when switching to none-addition, remove addition from machines
+    if(currentMachine.isAddition === true && machine.isAddition === false){
+      console.log("zmiana na brak dokladki")
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${currentMachine.addition1}.connectionAdd`]: "Brak",
+        [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]: "Brak",
+      });
+
+      contemp = docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition1];
+    await updateDoc(machineRef, {
+      [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: "Brak",
+    });
+
+    contemp = docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition2];
+    await updateDoc(machineRef, {
+      [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: "Brak",
+    });
     }
 
     await updateDoc(machineRef, {
@@ -488,6 +519,9 @@ const ModalMachine = ({
     }
 
     toast.success("Aktualizuje...");
+    setTimeout(() => {
+      onHide();
+    }, 400);
   };
 
   return (

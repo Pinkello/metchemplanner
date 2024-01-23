@@ -161,20 +161,34 @@ const DatatableSchedules = () => {
           console.log("lista");
           console.log(list);
 
-          const secondList = list.sort((a, b) => {
-            const aNum = parseInt(a.name.replace(/[^\d]/g, ""), 10);
-            const bNum = parseInt(b.name.replace(/[^\d]/g, ""), 10);
+          // const secondList = list.sort((a, b) => {
+          //   const aNum = parseInt(a.name.replace(/[^\d]/g, ""), 10);
+          //   const bNum = parseInt(b.name.replace(/[^\d]/g, ""), 10);
 
-            if (aNum !== bNum) {
-              return aNum - bNum;
-            } else {
-              return a.name.localeCompare(b.name, undefined, {
-                numeric: true,
-              });
-            }
-          });
-          console.log("druga lista");
-          console.log(secondList);
+          //   if (aNum !== bNum) {
+          //     return aNum - bNum;
+          //   } else {
+          //     return a.name.localeCompare(b.name, undefined, {
+          //       numeric: true,
+          //     });
+          //   }
+          // });
+          
+                // Function to sort by rowPlace
+          const sortByRowPlace = (a, b) => {
+            return a.rowPlace - b.rowPlace;
+          };
+
+          const sortByRowPlaceDesc = (a, b) => b.rowPlace - a.rowPlace;
+
+          // Filter and sort for each row type
+          const srodkowyRzad = list.filter(item => item.row === "Środkowy rząd").sort(sortByRowPlace);
+          const prawyRzad = list.filter(item => item.row === "Prawy rząd").sort(sortByRowPlaceDesc);
+          const bocznyRzad = list.filter(item => item.row === "Boczny rząd").sort(sortByRowPlace);
+          const lewyRzad = list.filter(item => item.row === "Lewy rząd").sort(sortByRowPlace);
+
+          // Concatenate the arrays in the desired order
+          const secondList = [...srodkowyRzad, ...prawyRzad, ...bocznyRzad, ...lewyRzad];
 
           // Druga lista maszyn
 
