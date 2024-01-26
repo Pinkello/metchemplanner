@@ -226,6 +226,9 @@ const ModalService = ({
     });
 
     toast.success("Aktualizuje...");
+    setTimeout(() => {
+      onHide();
+    }, 400);
   };
   return (
     <Modal

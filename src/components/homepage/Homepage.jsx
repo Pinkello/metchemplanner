@@ -98,7 +98,7 @@ const Homepage = () => {
         tempWorkers.push(tempWorker);
       });
 
-      setWorkers(tempWorkers); // Używamy slice do utworzenia kopii tablicy
+      setWorkers(tempWorkers); 
     } catch (err) {
       console.log(err);
     }

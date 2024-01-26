@@ -201,10 +201,24 @@ const ModalMachine = ({
 
   const handleToggleRetoolingInput = () => {
     setShowRetooling((prevShowRetooling) => !prevShowRetooling);
+    if(showRetooling){
+      setMachine((prevMachine) => ({
+        ...prevMachine,
+        retooling: "",
+        retoolingTime: ""
+      }));
+    }
   };
 
   const handleToogleTransitionInput = () => {
     setShowTransition((prevShowTransition) => !prevShowTransition);
+    if(showTransition){
+      setMachine((prevMachine) => ({
+        ...prevMachine,
+        transition: "",
+        transitionTime: ""
+      }));
+    }
   };
 
   const handleToogleAdditionInput = () => {
@@ -212,6 +226,8 @@ const ModalMachine = ({
     setMachine((prevMachine) => ({
       ...prevMachine,
       isAddition: !machine.isAddition,
+      addition1: "Brak",
+      addition2: "Brak",
     }));
   };
 
