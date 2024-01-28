@@ -83,6 +83,7 @@
       // height: 20px !important;
       // max-height: 32px !important;
       min-height: 32px !important;
+      border-bottom: #868a8d 1px solid;
     }
 
     .MuiDataGrid-cell {
@@ -312,6 +313,6 @@
   }
 
   .MuiDataGrid-virtualScrollerRenderZone {
-    margin-top: 10px;
+    margin-top: 5px;
   }
 }

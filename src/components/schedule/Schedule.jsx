@@ -459,10 +459,10 @@ const DatatableSchedules = () => {
               </Button>{" "}
             </div>
           </div>
-          <hr />
 
           <div className="notesArea">{notes}</div>
           <br />
+          <hr />
         </div>
       </div>
     </div>
