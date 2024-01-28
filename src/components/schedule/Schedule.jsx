@@ -440,6 +440,7 @@ const DatatableSchedules = () => {
           }}
         />
         <br />
+        <hr />
         <div className="serviceList">
           <h4 className="serviceTitle">Montaże</h4>
           <div className="servicesRow">{showServices(services)}</div>
