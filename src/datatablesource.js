@@ -262,7 +262,7 @@ function renderRetooling(row, machines, machinesAll) {
       <div>
         {currentMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> o{" "}
+            <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> ok.{" "}
             {currentMachine.retoolingTime}
           </>
         ) : (
@@ -271,7 +271,7 @@ function renderRetooling(row, machines, machinesAll) {
         <br />
         {connectedMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#cc9f19" }}>{connectedMachine.retooling}</b> o{" "}
+            <b style={{ color: "#cc9f19" }}>{connectedMachine.retooling}</b> ok.{" "}
             {connectedMachine.retoolingTime}
           </>
         ) : (
@@ -281,7 +281,7 @@ function renderRetooling(row, machines, machinesAll) {
         {connectedAddMachine.retooling !== "" ? (
           <>
             <b style={{ color: "#cc9f19" }}>{connectedAddMachine.retooling}</b>{" "}
-            o {connectedAddMachine.retoolingTime}
+            ok. {connectedAddMachine.retoolingTime}
           </>
         ) : (
           <>--</>
@@ -293,7 +293,7 @@ function renderRetooling(row, machines, machinesAll) {
       <div>
         {currentMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> o{" "}
+            <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> ok.{" "}
             {currentMachine.retoolingTime}
           </>
         ) : (
@@ -302,7 +302,7 @@ function renderRetooling(row, machines, machinesAll) {
         <br />
         {connectedMachine.retooling !== "" ? (
           <>
-            <b style={{ color: "#cc9f19" }}>{connectedMachine.retooling}</b> o{" "}
+            <b style={{ color: "#cc9f19" }}>{connectedMachine.retooling}</b> ok.{" "}
             {connectedMachine.retoolingTime}
           </>
         ) : (
@@ -315,7 +315,7 @@ function renderRetooling(row, machines, machinesAll) {
     <div>
       {currentMachine.retooling !== "" ? (
         <>
-          <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> o{" "}
+          <b style={{ color: "#0066ff" }}>{currentMachine.retooling}</b> ok.{" "}
           {currentMachine.retoolingTime}
         </>
       ) : (
@@ -343,7 +343,7 @@ function renderTransition(row, machines, machinesAll) {
       <div>
         {currentMachine.transition !== "" ? (
           <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> o{" "}
+            <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> ok.{" "}
             {currentMachine.transitionTime}
           </>
         ) : (
@@ -352,8 +352,8 @@ function renderTransition(row, machines, machinesAll) {
         <br />
         {connectedMachine.transition !== "" ? (
           <>
-            <b style={{ color: "#cc9f19" }}>{connectedMachine.transition}</b> o{" "}
-            {connectedMachine.transitionTime}
+            <b style={{ color: "#cc9f19" }}>{connectedMachine.transition}</b>{" "}
+            ok. {connectedMachine.transitionTime}
           </>
         ) : (
           <>--</>
@@ -362,7 +362,7 @@ function renderTransition(row, machines, machinesAll) {
         {connectedAddMachine.transition !== "" ? (
           <>
             <b style={{ color: "#cc9f19" }}>{connectedAddMachine.transition}</b>{" "}
-            o {connectedAddMachine.transitionTime}
+            ok. {connectedAddMachine.transitionTime}
           </>
         ) : (
           <>--</>
@@ -374,7 +374,7 @@ function renderTransition(row, machines, machinesAll) {
       <div>
         {currentMachine.transition !== "" ? (
           <>
-            <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> o{" "}
+            <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> ok.{" "}
             {currentMachine.transitionTime}
           </>
         ) : (
@@ -383,8 +383,8 @@ function renderTransition(row, machines, machinesAll) {
         <br />
         {connectedMachine.transition !== "" ? (
           <>
-            <b style={{ color: "#cc9f19" }}>{connectedMachine.transition}</b> o{" "}
-            {connectedMachine.transitionTime}
+            <b style={{ color: "#cc9f19" }}>{connectedMachine.transition}</b>{" "}
+            ok. {connectedMachine.transitionTime}
           </>
         ) : (
           <>--</>
@@ -396,7 +396,7 @@ function renderTransition(row, machines, machinesAll) {
     <div>
       {currentMachine.transition !== "" ? (
         <>
-          <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> o{" "}
+          <b style={{ color: "#0066ff" }}>{currentMachine.transition}</b> ok.{" "}
           {currentMachine.transitionTime}
         </>
       ) : (

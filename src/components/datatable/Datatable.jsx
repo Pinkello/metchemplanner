@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "./datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { machineColumns, userRows } from "../../datatablesource";

@@ -300,4 +300,18 @@
       width: 100% !important;
     }
   }
+
+  hr {
+    color: black;
+    border-style: solid;
+    border-width: 1px;
+  }
+
+  .MuiDataGrid-columnHeaders {
+    border-bottom: solid black 1px !important;
+  }
+
+  .MuiDataGrid-virtualScrollerRenderZone {
+    margin-top: 10px;
+  }
 }

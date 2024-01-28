@@ -22,7 +22,6 @@
     "react-datepicker": "^4.11.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.2.2",
-    "react-scripts": "^5.0.1",
     "react-select": "^5.7.2",
     "react-toastify": "^9.0.0",
     "recharts": "^2.6.2",
@@ -52,5 +51,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1"
   }
 }

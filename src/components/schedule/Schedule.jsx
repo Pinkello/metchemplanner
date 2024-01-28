@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "./schedule.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { scheduleColumns } from "../../datatablesource";
@@ -173,8 +173,8 @@ const DatatableSchedules = () => {
           //     });
           //   }
           // });
-          
-                // Function to sort by rowPlace
+
+          // Function to sort by rowPlace
           const sortByRowPlace = (a, b) => {
             return a.rowPlace - b.rowPlace;
           };
@@ -182,13 +182,26 @@ const DatatableSchedules = () => {
           const sortByRowPlaceDesc = (a, b) => b.rowPlace - a.rowPlace;
 
           // Filter and sort for each row type
-          const srodkowyRzad = list.filter(item => item.row === "Środkowy rząd").sort(sortByRowPlace);
-          const prawyRzad = list.filter(item => item.row === "Prawy rząd").sort(sortByRowPlaceDesc);
-          const bocznyRzad = list.filter(item => item.row === "Boczny rząd").sort(sortByRowPlace);
-          const lewyRzad = list.filter(item => item.row === "Lewy rząd").sort(sortByRowPlace);
+          const srodkowyRzad = list
+            .filter((item) => item.row === "Środkowy rząd")
+            .sort(sortByRowPlace);
+          const prawyRzad = list
+            .filter((item) => item.row === "Prawy rząd")
+            .sort(sortByRowPlaceDesc);
+          const bocznyRzad = list
+            .filter((item) => item.row === "Boczny rząd")
+            .sort(sortByRowPlace);
+          const lewyRzad = list
+            .filter((item) => item.row === "Lewy rząd")
+            .sort(sortByRowPlace);
 
           // Concatenate the arrays in the desired order
-          const secondList = [...srodkowyRzad, ...prawyRzad, ...bocznyRzad, ...lewyRzad];
+          const secondList = [
+            ...srodkowyRzad,
+            ...prawyRzad,
+            ...bocznyRzad,
+            ...lewyRzad,
+          ];
 
           // Druga lista maszyn
 

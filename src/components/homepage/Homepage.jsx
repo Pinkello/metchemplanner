@@ -98,7 +98,7 @@ const Homepage = () => {
         tempWorkers.push(tempWorker);
       });
 
-      setWorkers(tempWorkers); 
+      setWorkers(tempWorkers);
     } catch (err) {
       console.log(err);
     }
@@ -491,7 +491,7 @@ const Homepage = () => {
               <>
                 {" --->  "}
                 <b style={{ color: "green" }}>{element.retooling} </b>
-                {" o "}
+                {" ok. "}
                 <b style={{ color: "blue" }}>{element.retoolingTime}</b>
               </>
             ) : (
@@ -502,7 +502,7 @@ const Homepage = () => {
                 <br />
                 {" Przejście "}
                 <b style={{ color: "green" }}>{element.transition} </b>
-                {" o "}
+                {" ok. "}
                 <b style={{ color: "blue" }}>{element.transitionTime}</b>
               </>
             ) : (
