@@ -247,4 +247,30 @@
   .css-button-shadow-border--sky:active {
     top: 2px;
   }
+
+  .css-button-shadow-border--red {
+    min-width: 100px;
+    max-width: 150px;
+    height: 50px;
+    color: #fff;
+    padding: 5px 10px;
+    margin: 0px 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    outline: none;
+    border-radius: 5px;
+    border: none;
+    box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+      7px 7px 20px 0px rgba(0, 0, 0, 0.1), 4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+    background: #d90429;
+  }
+  .css-button-shadow-border--red:hover {
+    background-color: #ef233c;
+  }
+  .css-button-shadow-border--red:active {
+    top: 2px;
+  }
 }

@@ -156,8 +156,8 @@ const ModalMachine = ({
   }, [opt]);
 
   const handleInputSelectWorker = (selectedOption) => {
-    console.log(selectedOption.value)
-    console.log(selectedOption.label)
+    console.log(selectedOption.value);
+    console.log(selectedOption.label);
     setMachine((prevMachine) => ({
       ...prevMachine,
       worker: selectedOption.value,
@@ -201,22 +201,22 @@ const ModalMachine = ({
 
   const handleToggleRetoolingInput = () => {
     setShowRetooling((prevShowRetooling) => !prevShowRetooling);
-    if(showRetooling){
+    if (showRetooling) {
       setMachine((prevMachine) => ({
         ...prevMachine,
         retooling: "",
-        retoolingTime: ""
+        retoolingTime: "",
       }));
     }
   };
 
   const handleToogleTransitionInput = () => {
     setShowTransition((prevShowTransition) => !prevShowTransition);
-    if(showTransition){
+    if (showTransition) {
       setMachine((prevMachine) => ({
         ...prevMachine,
         transition: "",
-        transitionTime: ""
+        transitionTime: "",
       }));
     }
   };
@@ -229,6 +229,76 @@ const ModalMachine = ({
       addition1: "Brak",
       addition2: "Brak",
     }));
+  };
+
+  const resetMachine = async () => {
+    const machineRef = doc(db, "dates", currentDate);
+    const docSnap = await getDoc(machineRef);
+    let temp;
+
+    if (currentMachine.isAddition) {
+      if (currentMachine.addition1 != "Brak") {
+        temp =
+          docSnap.data()[currentShift]["machinesToAdd"][
+            currentMachine.addition1
+          ];
+
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${currentMachine.addition1}.connectionAdd`]:
+            "Brak",
+          [`${currentShift}.machinesToAdd.${temp.connection}.connectionAdd`]:
+            "Brak",
+        });
+      }
+
+      if (currentMachine.addition2 != "Brak") {
+        temp =
+          docSnap.data()[currentShift]["machinesToAdd"][
+            currentMachine.addition2
+          ];
+
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]:
+            "Brak",
+          [`${currentShift}.machinesToAdd.${temp.connection}.connectionAdd`]:
+            "Brak",
+        });
+      }
+    }
+
+    if (currentMachine.connection != "Brak") {
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
+          "Brak",
+      });
+    }
+
+    await updateDoc(machineRef, {
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: "",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]: "",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: "",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+        "",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: "",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]:
+        "",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: "STOP",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]:
+        "Brak",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.connectionAdd`]:
+        "Brak",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: "",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition1`]:
+        "Brak",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition2`]:
+        "Brak",
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.isAddition`]: false,
+    });
+
+    toast.warn("Resetuje maszyne " + currentMachine.name);
+    setTimeout(() => {
+      onHide();
+    }, 600);
   };
 
   const updateDoc2 = async (e) => {
@@ -338,19 +408,22 @@ const ModalMachine = ({
           .status === "STOP"
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${machine.connection}.status`]: machine.status,
+          [`${currentShift}.machinesToAdd.${machine.connection}.status`]:
+            machine.status,
         });
       }
 
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${machine.connection}.connection`]: currentMachine.name,
+        [`${currentShift}.machinesToAdd.${machine.connection}.connection`]:
+          currentMachine.name,
       });
     } else if (
       machine.connection === "Brak" &&
       currentMachine.connection !== "Brak"
     ) {
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+        [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
+          "Brak",
       });
     } else if (
       machine.connection !== "Brak" &&
@@ -358,10 +431,12 @@ const ModalMachine = ({
       machine.connection !== currentMachine.connection
     ) {
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]: "Brak",
+        [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
+          "Brak",
       });
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${machine.connection}.connection`]: currentMachine.name,
+        [`${currentShift}.machinesToAdd.${machine.connection}.connection`]:
+          currentMachine.name,
       });
     }
 
@@ -373,7 +448,8 @@ const ModalMachine = ({
         ] === "STOP"
       )
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${machine.connection}.status`]: machine.status,
+          [`${currentShift}.machinesToAdd.${machine.connection}.status`]:
+            machine.status,
         });
 
     //addition - check if true and if addition changed
@@ -383,7 +459,8 @@ const ModalMachine = ({
         currentMachine.addition1 !== machine.addition1
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.addition1}.connectionAdd`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.addition1}.connectionAdd`]:
+            "Brak",
         });
       }
       if (
@@ -391,63 +468,89 @@ const ModalMachine = ({
         currentMachine.addition2 !== machine.addition2
       ) {
         await updateDoc(machineRef, {
-          [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]: "Brak",
+          [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]:
+            "Brak",
         });
       }
 
       //update machines with addition
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${machine.addition1}.connectionAdd`]: machine.name,
-        [`${currentShift}.machinesToAdd.${machine.addition2}.connectionAdd`]: machine.name,
+        [`${currentShift}.machinesToAdd.${machine.addition1}.connectionAdd`]:
+          machine.name,
+        [`${currentShift}.machinesToAdd.${machine.addition2}.connectionAdd`]:
+          machine.name,
       });
-      
+
       //and their connections
-      contemp = docSnap.data()[currentShift]["machinesToAdd"][machine.addition1];
+      contemp =
+        docSnap.data()[currentShift]["machinesToAdd"][machine.addition1];
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: machine.name,
+        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+          machine.name,
       });
-      
-      contemp = docSnap.data()[currentShift]["machinesToAdd"][machine.addition2];
+
+      contemp =
+        docSnap.data()[currentShift]["machinesToAdd"][machine.addition2];
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: machine.name,
+        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+          machine.name,
       });
     }
-  
 
     //when switching to none-addition, remove addition from machines
-    if(currentMachine.isAddition === true && machine.isAddition === false){
-      console.log("zmiana na brak dokladki")
+    if (currentMachine.isAddition === true && machine.isAddition === false) {
+      console.log("zmiana na brak dokladki");
       await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${currentMachine.addition1}.connectionAdd`]: "Brak",
-        [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]: "Brak",
+        [`${currentShift}.machinesToAdd.${currentMachine.addition1}.connectionAdd`]:
+          "Brak",
+        [`${currentShift}.machinesToAdd.${currentMachine.addition2}.connectionAdd`]:
+          "Brak",
       });
 
-      contemp = docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition1];
-    await updateDoc(machineRef, {
-      [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: "Brak",
-    });
+      contemp =
+        docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition1];
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+          "Brak",
+      });
 
-    contemp = docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition2];
-    await updateDoc(machineRef, {
-      [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]: "Brak",
-    });
+      contemp =
+        docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition2];
+      await updateDoc(machineRef, {
+        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+          "Brak",
+      });
     }
 
     await updateDoc(machineRef, {
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]: machine.referencja,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]: machine.form,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]: machine.startTime,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]: machine.retooling,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]: machine.retoolingTime,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]: machine.transition,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]: machine.transitionTime,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]: machine.status,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]: machine.connection,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.connectionAdd`]: machine.connectionAdd,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]: machine.worker,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition1`]: machine.addition1,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition2`]: machine.addition2,
-      [`${currentShift}.machinesToAdd.${currentMachine.name}.isAddition`]: showAddition,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.referencja`]:
+        machine.referencja,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.form`]:
+        machine.form,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.startTime`]:
+        machine.startTime,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.retooling`]:
+        machine.retooling,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+        machine.retoolingTime,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.transition`]:
+        machine.transition,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.transitionTime`]:
+        machine.transitionTime,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.status`]:
+        machine.status,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.connection`]:
+        machine.connection,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.connectionAdd`]:
+        machine.connectionAdd,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.worker`]:
+        machine.worker,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition1`]:
+        machine.addition1,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.addition2`]:
+        machine.addition2,
+      [`${currentShift}.machinesToAdd.${currentMachine.name}.isAddition`]:
+        showAddition,
     });
 
     //jeżeli retooling wjedzie na nową zmiane, to dodaj na tej nowej zmianie
@@ -455,8 +558,10 @@ const ModalMachine = ({
       if (machine.retoolingTime > "14:00" && machine.retoolingTime < "22:00") {
         await updateDoc(machineRef, {
           [`II.machinesToAdd.${currentMachine.name}.form`]: machine.form,
-          [`II.machinesToAdd.${currentMachine.name}.retooling`]: machine.retooling,
-          [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: machine.retoolingTime,
+          [`II.machinesToAdd.${currentMachine.name}.retooling`]:
+            machine.retooling,
+          [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+            machine.retoolingTime,
           [`II.machinesToAdd.${currentMachine.name}.status`]: machine.status,
         });
       }
@@ -466,8 +571,10 @@ const ModalMachine = ({
       ) {
         await updateDoc(machineRef, {
           [`III.machinesToAdd.${currentMachine.name}.form`]: machine.form,
-          [`III.machinesToAdd.${currentMachine.name}.retooling`]: machine.retooling,
-          [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: machine.retoolingTime,
+          [`III.machinesToAdd.${currentMachine.name}.retooling`]:
+            machine.retooling,
+          [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+            machine.retoolingTime,
           [`III.machinesToAdd.${currentMachine.name}.status`]: machine.status,
         });
       }
@@ -478,8 +585,10 @@ const ModalMachine = ({
       ) {
         await updateDoc(machineRef, {
           [`III.machinesToAdd.${currentMachine.name}.form`]: machine.form,
-          [`III.machinesToAdd.${currentMachine.name}.retooling`]: machine.retooling,
-          [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]: machine.retoolingTime,
+          [`III.machinesToAdd.${currentMachine.name}.retooling`]:
+            machine.retooling,
+          [`III.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+            machine.retoolingTime,
           [`III.machinesToAdd.${currentMachine.name}.status`]: machine.status,
         });
       }
@@ -495,8 +604,10 @@ const ModalMachine = ({
 
         await updateDoc(machineRef2, {
           [`I.machinesToAdd.${currentMachine.name}.form`]: machine.form,
-          [`I.machinesToAdd.${currentMachine.name}.retooling`]: machine.retooling,
-          [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: machine.retoolingTime,
+          [`I.machinesToAdd.${currentMachine.name}.retooling`]:
+            machine.retooling,
+          [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+            machine.retoolingTime,
           [`I.machinesToAdd.${currentMachine.name}.status`]: machine.status,
         });
       }
@@ -513,8 +624,10 @@ const ModalMachine = ({
 
         await updateDoc(machineRef2, {
           [`I.machinesToAdd.${currentMachine.name}.form`]: machine.form,
-          [`I.machinesToAdd.${currentMachine.name}.retooling`]: machine.retooling,
-          [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]: machine.retoolingTime,
+          [`I.machinesToAdd.${currentMachine.name}.retooling`]:
+            machine.retooling,
+          [`I.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+            machine.retoolingTime,
           [`I.machinesToAdd.${currentMachine.name}.status`]: machine.status,
         });
       }
@@ -527,8 +640,10 @@ const ModalMachine = ({
 
         await updateDoc(machineRef2, {
           [`II.machinesToAdd.${currentMachine.name}.form`]: machine.form,
-          [`II.machinesToAdd.${currentMachine.name}.retooling`]: machine.retooling,
-          [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]: machine.retoolingTime,
+          [`II.machinesToAdd.${currentMachine.name}.retooling`]:
+            machine.retooling,
+          [`II.machinesToAdd.${currentMachine.name}.retoolingTime`]:
+            machine.retoolingTime,
           [`II.machinesToAdd.${currentMachine.name}.status`]: machine.status,
         });
       }
@@ -575,6 +690,12 @@ const ModalMachine = ({
               {showAddition
                 ? "Ustaw jako zwykłą maszynę"
                 : "Ustaw jako dokładkę"}
+            </button>
+            <button
+              className="css-button-shadow-border--red"
+              onClick={resetMachine}
+            >
+              Zresetuj maszyne
             </button>
           </div>
           <hr />

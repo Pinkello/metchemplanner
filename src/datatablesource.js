@@ -56,6 +56,14 @@ export const workerColumns = [
 
 export const scheduleColumns = (machines, machinesAll) => [
   {
+    field: "worker",
+    headerName: "Pracownik",
+    width: 200,
+    renderCell: (params) => {
+      return renderWorker(params.row, machines, machinesAll);
+    },
+  },
+  {
     field: "name",
     headerName: "Maszyna - forma + start",
     width: 300,
@@ -86,14 +94,6 @@ export const scheduleColumns = (machines, machinesAll) => [
     width: 250,
     renderCell: (params) => {
       return renderTransition(params.row, machines, machinesAll);
-    },
-  },
-  {
-    field: "worker",
-    headerName: "Pracownik",
-    width: 200,
-    renderCell: (params) => {
-      return renderWorker(params.row, machines, machinesAll);
     },
   },
 ];
