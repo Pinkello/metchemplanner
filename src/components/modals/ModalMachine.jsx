@@ -236,8 +236,11 @@ const ModalMachine = ({
     const docSnap = await getDoc(machineRef);
     let temp;
 
+    console.log(currentMachine.isAddition);
+    console.log(machine.isAddition);
+
     if (currentMachine.isAddition) {
-      if (currentMachine.addition1 != "Brak") {
+      if (currentMachine.addition1 !== "Brak") {
         temp =
           docSnap.data()[currentShift]["machinesToAdd"][
             currentMachine.addition1
@@ -251,7 +254,7 @@ const ModalMachine = ({
         });
       }
 
-      if (currentMachine.addition2 != "Brak") {
+      if (currentMachine.addition2 !== "Brak") {
         temp =
           docSnap.data()[currentShift]["machinesToAdd"][
             currentMachine.addition2
@@ -266,7 +269,7 @@ const ModalMachine = ({
       }
     }
 
-    if (currentMachine.connection != "Brak") {
+    if (currentMachine.connection !== "Brak") {
       await updateDoc(machineRef, {
         [`${currentShift}.machinesToAdd.${currentMachine.connection}.connection`]:
           "Brak",
@@ -454,6 +457,7 @@ const ModalMachine = ({
 
     //addition - check if true and if addition changed
     if (machine.isAddition === true) {
+      console.log("HALO");
       if (
         currentMachine.addition1 !== "Brak" &&
         currentMachine.addition1 !== machine.addition1
@@ -484,17 +488,20 @@ const ModalMachine = ({
       //and their connections
       contemp =
         docSnap.data()[currentShift]["machinesToAdd"][machine.addition1];
-      await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
-          machine.name,
-      });
+
+      if (contemp.connection !== "Brak")
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+            machine.name,
+        });
 
       contemp =
         docSnap.data()[currentShift]["machinesToAdd"][machine.addition2];
-      await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
-          machine.name,
-      });
+      if (contemp.connection !== "Brak")
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+            machine.name,
+        });
     }
 
     //when switching to none-addition, remove addition from machines
@@ -509,17 +516,19 @@ const ModalMachine = ({
 
       contemp =
         docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition1];
-      await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
-          "Brak",
-      });
+      if (contemp.connection !== "Brak")
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+            "Brak",
+        });
 
       contemp =
         docSnap.data()[currentShift]["machinesToAdd"][currentMachine.addition2];
-      await updateDoc(machineRef, {
-        [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
-          "Brak",
-      });
+      if (contemp.connection !== "Brak")
+        await updateDoc(machineRef, {
+          [`${currentShift}.machinesToAdd.${contemp.connection}.connectionAdd`]:
+            "Brak",
+        });
     }
 
     await updateDoc(machineRef, {

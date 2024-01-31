@@ -450,7 +450,7 @@ const Homepage = () => {
                 onClick={() => {
                   setCurrentMachine(
                     machines.find((obj) => {
-                      return obj.name === element.connectionAdd;
+                      return obj.name === element.addition1;
                     })
                   );
                   setModalShow(true);
@@ -463,7 +463,7 @@ const Homepage = () => {
                 onClick={() => {
                   setCurrentMachine(
                     machines.find((obj) => {
-                      return obj.name === element.connectionAdd;
+                      return obj.name === element.addition2;
                     })
                   );
                   setModalShow(true);
