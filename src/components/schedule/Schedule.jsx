@@ -260,7 +260,11 @@ const DatatableSchedules = () => {
                 {element.opis ? element.opis : <br />}
               </div>
               <div style={{ textAlign: "center", color: "green" }}>
-                {element.worker ? element.worker : <br />}
+                {element.worker && element.worker !== "Brak" ? (
+                  element.worker
+                ) : (
+                  <br />
+                )}
               </div>
             </div>
           ) : (
