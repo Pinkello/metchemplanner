@@ -360,6 +360,9 @@ const DatatableSchedules = () => {
 
   const columns = scheduleColumns(machines, machinesAll);
 
+  console.log("machines");
+  console.log(machines.length);
+
   return (
     <div className="datatableSchedules container">
       <Modal show={loading} centered>
@@ -416,6 +419,9 @@ const DatatableSchedules = () => {
         </div>
       </div>
       <div className="datatableTitleSchedules ">
+        <div className="columnsLength print-hide">
+          Stanowiska: {machines.length}
+        </div>
         <h4 className="titleh2">
           Grafik - zmiana &nbsp;
           <span className="currentShift">{currentShift}</span> &nbsp; dnia
