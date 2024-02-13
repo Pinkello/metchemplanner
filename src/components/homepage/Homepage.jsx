@@ -4,6 +4,8 @@ import "./homepage.scss";
 
 import { ToastContainer } from "react-toastify";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   collection,
   onSnapshot,
@@ -116,192 +118,201 @@ const Homepage = () => {
     const unsub = onSnapshot(
       doc(db, "dates", currentDate),
       async (querySnapshot) => {
-        let tempMachine = {};
-        let list = [];
-        let listS = [];
-        let listL = [];
-        let listR = [];
-        let listM = [];
-        const machinesToAdd = {};
+        try {
+          let tempMachine = {};
+          let list = [];
+          let listS = [];
+          let listL = [];
+          let listR = [];
+          let listM = [];
+          const machinesToAdd = {};
 
-        let tempService = {};
-        let list2 = [];
-        let listL2 = [];
-        let listR2 = [];
-        let listM2 = [];
-        const servicesToAdd = {};
+          let tempService = {};
+          let list2 = [];
+          let listL2 = [];
+          let listR2 = [];
+          let listM2 = [];
+          const servicesToAdd = {};
 
-        let tablica = [];
-        let tablica2 = [];
-        let tablicaService = [];
+          let tablica = [];
+          let tablica2 = [];
+          let tablicaService = [];
 
-        let id = 1;
-        let id2 = 25;
+          let id = 1;
+          let id2 = 25;
 
-        if (!querySnapshot.data()) {
-          console.log("puste na start");
+          if (!querySnapshot.data()) {
+            console.log("puste na start");
 
-          //pobierz domyślną liste maszyn
+            //pobierz domyślną liste maszyn
 
-          const q2 = query(collection(db, "machines"));
-          const querySnapshot2 = await getDocs(q2);
-          querySnapshot2.forEach((doc) => {
-            // idMachinesList.push(doc.id);
-            tempMachine = {
-              referencja: doc.id,
-              status: "STOP",
-              operator: "",
-              startTime: "",
-              retooling: "",
-              retoolingTime: "",
-              transition: "",
-              transitionTime: "",
-              form: "",
-              connection: "Brak",
-              connectionAdd: "Brak",
-              isAddition: false,
-              addition1: "Brak",
-              addition2: "Brak",
-              worker: "",
-              numberOfPeople: "1",
-            };
-
-            machinesToAdd[doc.data().name] = tempMachine;
-          });
-
-          const q3 = query(collection(db, "services"));
-          const querySnapshot3 = await getDocs(q3);
-          querySnapshot3.forEach((doc) => {
-            // idMachinesList.push(doc.id);
-            tempService = {
-              referencja: doc.id,
-              praca: "Nie",
-              opis: "",
-              worker: "",
-            };
-
-            servicesToAdd[doc.data().name] = tempService;
-          });
-
-          const docData = {
-            I: {
-              machinesToAdd,
-              servicesToAdd,
-            },
-            II: {
-              machinesToAdd,
-              servicesToAdd,
-            },
-            III: {
-              machinesToAdd,
-              servicesToAdd,
-            },
-          };
-
-          try {
-            await setDoc(doc(db, "dates", currentDate), docData);
-          } catch (err) {
-            console.log(err);
-          }
-        } else {
-          const machinesDatabase = Object.values(
-            querySnapshot.data()[currentShift]["machinesToAdd"]
-          );
-
-          for (const machine of machinesDatabase) {
-            tablica.push(machine.referencja);
-          }
-
-          tablica2 = tablica.slice(0, 25);
-          const listPromise = await fetchDataFromDoc(
-            tablica2,
-            machinesDatabase,
-            id
-          );
-
-          tablica2 = tablica.slice(25, 50);
-          const listPromise2 = await fetchDataFromDoc(
-            tablica2,
-            machinesDatabase,
-            id2
-          );
-
-          list = [...listPromise, ...listPromise2];
-
-          const connections = {};
-          list.forEach((machine) => {
-            if (machine.connection !== "Brak") {
-              connections[machine.connection] = machine;
-            }
-          });
-
-          const servicesDatabase = Object.values(
-            querySnapshot.data()[currentShift]["servicesToAdd"]
-          );
-
-          for (const service of servicesDatabase) {
-            tablicaService.push(service.referencja);
-          }
-
-          const qService = query(
-            collection(db, "services"),
-            where(documentId(), "in", tablicaService)
-          );
-
-          const servicesDocsSnap = await getDocs(qService);
-          let result;
-
-          servicesDocsSnap.forEach((doc) => {
-            result = servicesDatabase.find(
-              (service) => service.referencja === doc.id
-            );
-            if (result) {
-              result = {
-                ...result,
-                name: doc.data().name,
-                row: doc.data().row,
-                rowPlace: doc.data().rowPlace,
-                id: id,
+            const q2 = query(collection(db, "machines"));
+            const querySnapshot2 = await getDocs(q2);
+            querySnapshot2.forEach((doc) => {
+              // idMachinesList.push(doc.id);
+              tempMachine = {
+                referencja: doc.id,
+                status: "STOP",
+                operator: "",
+                startTime: "",
+                retooling: "",
+                retoolingTime: "",
+                transition: "",
+                transitionTime: "",
+                form: "",
+                connection: "Brak",
+                connectionAdd: "Brak",
+                isAddition: false,
+                addition1: "Brak",
+                addition2: "Brak",
+                worker: "",
+                numberOfPeople: "1",
               };
-              id = id + 1;
-              list2.push(result);
+
+              machinesToAdd[doc.data().name] = tempMachine;
+            });
+
+            const q3 = query(collection(db, "services"));
+            const querySnapshot3 = await getDocs(q3);
+            querySnapshot3.forEach((doc) => {
+              // idMachinesList.push(doc.id);
+              tempService = {
+                referencja: doc.id,
+                praca: "Nie",
+                opis: "",
+                worker: "",
+              };
+
+              servicesToAdd[doc.data().name] = tempService;
+            });
+
+            const docData = {
+              I: {
+                machinesToAdd,
+                servicesToAdd,
+              },
+              II: {
+                machinesToAdd,
+                servicesToAdd,
+              },
+              III: {
+                machinesToAdd,
+                servicesToAdd,
+              },
+            };
+
+            try {
+              await setDoc(doc(db, "dates", currentDate), docData);
+            } catch (err) {
+              console.log(err);
+            }
+          } else {
+            const machinesDatabase = Object.values(
+              querySnapshot.data()[currentShift]["machinesToAdd"]
+            );
+
+            for (const machine of machinesDatabase) {
+              tablica.push(machine.referencja);
+            }
+
+            tablica2 = tablica.slice(0, 25);
+            const listPromise = await fetchDataFromDoc(
+              tablica2,
+              machinesDatabase,
+              id
+            );
+
+            tablica2 = tablica.slice(25, 50);
+            const listPromise2 = await fetchDataFromDoc(
+              tablica2,
+              machinesDatabase,
+              id2
+            );
+
+            list = [...listPromise, ...listPromise2];
+
+            const connections = {};
+            list.forEach((machine) => {
+              if (machine.connection !== "Brak") {
+                connections[machine.connection] = machine;
+              }
+            });
+
+            const servicesDatabase = Object.values(
+              querySnapshot.data()[currentShift]["servicesToAdd"]
+            );
+
+            for (const service of servicesDatabase) {
+              tablicaService.push(service.referencja);
+            }
+
+            const qService = query(
+              collection(db, "services"),
+              where(documentId(), "in", tablicaService)
+            );
+
+            const servicesDocsSnap = await getDocs(qService);
+            let result;
+
+            servicesDocsSnap.forEach((doc) => {
+              result = servicesDatabase.find(
+                (service) => service.referencja === doc.id
+              );
+              if (result) {
+                result = {
+                  ...result,
+                  name: doc.data().name,
+                  row: doc.data().row,
+                  rowPlace: doc.data().rowPlace,
+                  id: id,
+                };
+                id = id + 1;
+                list2.push(result);
+              }
+            });
+          }
+          setTimeout(() => {
+            setLoading(false);
+          }, 500);
+
+          setMachines(list);
+
+          list.forEach((element) => {
+            if (element.row === "Prawy rząd") {
+              listR.push(element);
+            } else if (element["row"] === "Lewy rząd") {
+              listL.push(element);
+            } else if (element["row"] === "Boczny rząd") {
+              listS.push(element);
+            } else {
+              listM.push(element);
             }
           });
-        }
-        setTimeout(() => {
+          setSideRow(listS);
+          setleftRow(listL);
+          setMiddleRow(listM);
+          setRightRow(listR);
+
+          list2.forEach((element) => {
+            if (element.row === "Prawy rząd") {
+              listR2.push(element);
+            } else if (element["row"] === "Lewy rząd") {
+              listL2.push(element);
+            } else {
+              listM2.push(element);
+            }
+          });
+          setleftRow2(listL2);
+          setMiddleRow2(listM2);
+          setRightRow2(listR2);
+        } catch (error) {
+          console.error("Błąd podczas pobierania danych:", error.message);
+          toast.error(
+            "Wystąpił błąd podczas pobierania danych. Spróbuj ponownie później."
+          );
+          // Zakończ ładowanie, aby użytkownik mógł kontynuować interakcję z aplikacją
           setLoading(false);
-        }, 500);
-
-        setMachines(list);
-
-        list.forEach((element) => {
-          if (element.row === "Prawy rząd") {
-            listR.push(element);
-          } else if (element["row"] === "Lewy rząd") {
-            listL.push(element);
-          } else if (element["row"] === "Boczny rząd") {
-            listS.push(element);
-          } else {
-            listM.push(element);
-          }
-        });
-        setSideRow(listS);
-        setleftRow(listL);
-        setMiddleRow(listM);
-        setRightRow(listR);
-
-        list2.forEach((element) => {
-          if (element.row === "Prawy rząd") {
-            listR2.push(element);
-          } else if (element["row"] === "Lewy rząd") {
-            listL2.push(element);
-          } else {
-            listM2.push(element);
-          }
-        });
-        setleftRow2(listL2);
-        setMiddleRow2(listM2);
-        setRightRow2(listR2);
+        }
       },
       (error) => {
         console.log(error);
