@@ -28,15 +28,19 @@ import ModalService from "./../modals/ModalService";
 import ModalMachine from "./../modals/ModalMachine";
 
 const Homepage = () => {
+  const storedDate =
+    localStorage.getItem("currentDate") ||
+    new Date().toISOString().slice(0, 10);
+
+  const storedShift = localStorage.getItem("currentShift") || "I";
+
   const [machines, setMachines] = useState([]);
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentMachine, setCurrentMachine] = useState({});
   const [currentService, setCurrentService] = useState({});
-  const [currentDate, setCurrentDate] = useState(
-    new Date().toISOString().slice(0, 10)
-  );
-  const [currentShift, setCurrentShift] = useState("I");
+  const [currentDate, setCurrentDate] = useState(storedDate);
+  const [currentShift, setCurrentShift] = useState(storedShift);
   const [sideRow, setSideRow] = useState([]);
   const [leftRow, setleftRow] = useState([]);
   const [rightRow, setRightRow] = useState([]);
@@ -112,6 +116,9 @@ const Homepage = () => {
 
   useEffect(() => {
     //LISTEN
+    localStorage.setItem("currentDate", currentDate);
+    localStorage.setItem("currentShift", currentShift);
+
     setLoading(true);
     console.log("wywolanie duzego effecta");
 

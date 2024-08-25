@@ -22,13 +22,16 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const DatatableSchedules = () => {
+  const storedDate =
+    localStorage.getItem("currentDate") ||
+    new Date().toISOString().slice(0, 10);
+  const storedShift = localStorage.getItem("currentShift") || "I";
+
   const [machines, setMachines] = useState([]);
   const [machinesAll, setMachinesAll] = useState([]);
   const [services, setServices] = useState([]);
-  const [currentDate, setCurrentDate] = useState(
-    new Date().toISOString().slice(0, 10)
-  );
-  const [currentShift, setCurrentShift] = useState("I");
+  const [currentDate, setCurrentDate] = useState(storedDate);
+  const [currentShift, setCurrentShift] = useState(storedShift);
   const [loading, setLoading] = useState(true);
   const [notes, setNotes] = useState("");
   const [modalNotesShow, setModalNotesShow] = useState(false);
@@ -74,6 +77,10 @@ const DatatableSchedules = () => {
   useEffect(() => {
     //LISTEN
     setLoading(true);
+
+    localStorage.setItem("currentDate", currentDate);
+    localStorage.setItem("currentShift", currentShift);
+
     const unsub = onSnapshot(
       doc(db, "dates", currentDate),
       async (querySnapshot) => {
