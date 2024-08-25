@@ -158,8 +158,8 @@ const DatatableSchedules = () => {
             }
           });
 
-          console.log("lista");
-          console.log(list);
+          // console.log("lista2");
+          // console.log(list2);
 
           // const secondList = list.sort((a, b) => {
           //   const aNum = parseInt(a.name.replace(/[^\d]/g, ""), 10);
@@ -207,15 +207,23 @@ const DatatableSchedules = () => {
 
           // Tworzenie trzeciej listy z uwzględnieniem połączeń
           const thirdList = [];
-
+          console.log("secondList");
+          console.log(secondList);
           for (const machine of secondList) {
-            const { connection, isAddition } = machine;
+            const { connection, isAddition, name } = machine;
             if (
               (connection === "Brak" ||
-                !thirdList.find((item) => item.name === connection)) &&
+                !thirdList.find(
+                  (item) => item.name === connection && item.connection === name
+                )) &&
               !isAddition
             ) {
               thirdList.push(machine);
+            } else {
+              console.log("nie dodaje maszyny " + machine.name);
+              console.log(
+                "potencjalny powod  - connection do " + machine.connection
+              );
             }
           }
 
@@ -243,7 +251,7 @@ const DatatableSchedules = () => {
   }, [currentDate, currentShift]);
 
   const showServices = (services) => {
-    console.log("sortuje");
+    // console.log("sortuje");
     services.sort((a, b) => a.rowPlace - b.rowPlace);
     return services.map((element, index) => {
       return (
@@ -360,8 +368,9 @@ const DatatableSchedules = () => {
 
   const columns = scheduleColumns(machines, machinesAll);
 
-  console.log("machines");
-  console.log(machines.length);
+  // console.log("machines");
+  // console.log(machines);
+  // console.log(machines.length);
 
   return (
     <div className="datatableSchedules container">
