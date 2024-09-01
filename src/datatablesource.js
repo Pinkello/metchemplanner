@@ -22,6 +22,17 @@ export const serviceColumns = [
   },
 ];
 
+export const notesColumns = [
+  {
+    field: "note",
+    headerName: "Notatka",
+    width: 600,
+    renderCell: (params) => {
+      return <div className="machineNames">{params.row.notes}</div>;
+    },
+  },
+];
+
 export const workerColumns = [
   // { field: "id", headerName: "ID", width: 200 },
   {

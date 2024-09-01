@@ -3,8 +3,8 @@ import React from "react";
 import "./homepage.scss";
 
 import { ToastContainer } from "react-toastify";
-import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useEffect, useMemo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import {
   collection,

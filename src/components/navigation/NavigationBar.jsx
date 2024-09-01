@@ -43,6 +43,9 @@ const NavigationBar = () => {
               <Nav.Link className="navbar-link" href="../services">
                 Montaże
               </Nav.Link>
+              <Nav.Link className="navbar-link" href="../notes">
+                Uwagi
+              </Nav.Link>
             </Nav>
             <Nav>
               <Button

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "./newService.scss";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -27,8 +27,6 @@ const NewService = ({ inputs, title }) => {
   useEffect(() => {
     const uploadFile = () => {
       const name = new Date().getTime() + file.name;
-
-      console.log(name);
 
       const storageRef = ref(storage, file.name);
 
@@ -74,22 +72,38 @@ const NewService = ({ inputs, title }) => {
   const handleInput = (e) => {
     const id = e.target.id;
     const value = e.target.value;
-    console.log(e.target.id);
 
     setData({ ...data, [id]: value });
   };
 
   const handleAddService = async (e) => {
     e.preventDefault();
+
+    const specialSigns = ["~", "*", "/", "[", "]"];
+    const wrongSing = specialSigns.find((sign) => data.name.includes(sign));
+
+    if (wrongSing) {
+      toast.error(
+        <div>Błąd! Nie możesz używać w nazwie znaku ' {wrongSing} ' !</div>
+      );
+      return;
+    }
+
+    if (!data["row"]) {
+      toast.error("Podaj rząd dla montażu!");
+      return;
+    }
+
     if (!data["rowPlace"]) {
       toast.error("Podaj miejsce w rzędzie dla montażu!");
       return;
     }
+
     try {
       await addDoc(collection(db, "services"), {
         ...data,
       });
-      toast.success("Dodaje nową maszyne..");
+      toast.success("Dodaje nowy montaż...");
 
       document.getElementById("name").value = ""; // Przykład dla pola "name"
       document.getElementById("rowPlace").value = ""; // Przykład dla pola "row"

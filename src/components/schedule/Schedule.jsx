@@ -317,7 +317,7 @@ const DatatableSchedules = () => {
       overflow: "auto", // lub 'hidden', jeśli nie chcesz widocznych pasków przewijania
       whiteSpace: "pre-wrap", // umożliwia łamanie tekstu do kolejnych linii
       height: "auto", // początkowa wysokość pola tekstowego
-      minHeight: "100px", // minimalna wysokość pola tekstowego
+      minHeight: "300px", // minimalna wysokość pola tekstowego
     };
 
     const updateDoc2 = async (e) => {
@@ -436,7 +436,7 @@ const DatatableSchedules = () => {
       </div>
       <div className="datatableTitleSchedules ">
         <div className="columnsLength print-hide">
-          Stanowiska: {machines.length}
+          Stanowiska: {machines.length + services.length}
         </div>
         <h4 className="titleh2">
           Grafik - zmiana &nbsp;

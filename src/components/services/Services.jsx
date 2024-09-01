@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "./services.scss";
 import { DataGrid } from "@mui/x-data-grid";
 import { serviceColumns } from "../../datatablesource";
@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
+import { toast } from "react-toastify";
 
 const DatatableServices = () => {
   const [data, setData] = useState([]);
@@ -31,10 +32,12 @@ const DatatableServices = () => {
     };
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, name) => {
     try {
       await deleteDoc(doc(db, "services", id));
       setData(data.filter((item) => item.id !== id));
+      console.log();
+      toast.success('Usuwam montaż "' + name + '"');
     } catch (err) {
       console.log(err);
     }
@@ -53,7 +56,7 @@ const DatatableServices = () => {
             </Link> */}
             <div
               className="deleteButton"
-              onClick={() => handleDelete(params.row.id)}
+              onClick={() => handleDelete(params.row.id, params.row.name)}
             >
               Usuń montaż
             </div>

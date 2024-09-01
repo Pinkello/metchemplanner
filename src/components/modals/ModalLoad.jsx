@@ -11,23 +11,37 @@ import Select from "react-select";
 const ModalLoad = (props) => {
   const [currentDateLoad, setCurrentDateLoad] = useState(props.currentDate);
   const [currentShiftLoad, setCurrentShiftLoad] = useState(props.currentShift);
+  const [toLoad, setToLoad] = useState({
+    value: "all",
+    label: "Wszystko",
+  });
   const [tempDate, setTempDate] = useState(props.currentDate);
   const [tempShift, setTempShift] = useState(props.currentShift);
-  console.log(currentDateLoad);
-  console.log(props.currentDate);
+
   const optionsShift = [
     { value: "I", label: "I" },
     { value: "II", label: "II" },
     { value: "III", label: "III" },
   ];
 
+  const optionsLoad = [
+    { value: "all", label: "Wszystko" },
+    { value: "machines", label: "Maszyny" },
+    { value: "services", label: "Montaże" },
+  ];
+
   const handleInputSelectShiftLoad = (selectedOption) => {
     setCurrentShiftLoad(selectedOption.value);
   };
 
-  const updateDoc2 = async (e) => {
+  const handleInputSelectOptionsLoad = (selectedOption) => {
+    setToLoad(selectedOption);
+  };
+
+  const updateDoc2 = async () => {
     const docRef = doc(db, "dates", currentDateLoad);
     const date = await getDoc(docRef);
+
     try {
       if (
         props.currentDate === currentDateLoad &&
@@ -36,15 +50,35 @@ const ModalLoad = (props) => {
         toast.error("Nie możesz ładować danych z tego samego dnia i zmiany");
         return;
       }
-      const dateToReplace = doc(db, "dates", props.currentDate);
 
-      await updateDoc(dateToReplace, {
-        [props.currentShift]: date.data()[currentShiftLoad],
-      });
+      const tempNotes = date.data()[currentShiftLoad].notes ?? "";
+
+      const dateToReplace = doc(db, "dates", props.currentDate);
+      switch (toLoad.value) {
+        case "all":
+          await updateDoc(dateToReplace, {
+            [props.currentShift]: date.data()[currentShiftLoad],
+          });
+          break;
+        case "machines":
+          await updateDoc(dateToReplace, {
+            [`${props.currentShift}.machinesToAdd`]:
+              date.data()[currentShiftLoad].machinesToAdd,
+            [`${props.currentShift}.notes`]: tempNotes,
+          });
+          break;
+        case "services":
+          await updateDoc(dateToReplace, {
+            [`${props.currentShift}.servicesToAdd`]:
+              date.data()[currentShiftLoad].servicesToAdd,
+            [`${props.currentShift}.notes`]: tempNotes,
+          });
+          break;
+      }
 
       toast.success("Ładuje dane...");
     } catch (error) {
-      toast.error("Brak danych z podanego dnia."); // Wyświetlenie błędu w Toastify
+      toast.error("Brak danych z podanego dnia.");
     }
   };
 
@@ -76,7 +110,7 @@ const ModalLoad = (props) => {
                 setCurrentDateLoad(e.target.value);
               }}
             />
-            <label htmlFor="date">Zmiana:</label>
+            <label htmlFor="shift">Zmiana:</label>
 
             <Select
               className="formInput"
@@ -87,6 +121,18 @@ const ModalLoad = (props) => {
               onChange={(value) => {
                 // loadShift(currentDate, value.value);
                 handleInputSelectShiftLoad(value);
+              }}
+            />
+
+            <label htmlFor="optionsLoad">Co załadować:</label>
+            <Select
+              className="formInput"
+              options={optionsLoad}
+              id="optionsLoad"
+              name="optionsLoad"
+              defaultValue={{ label: "Wszystko", value: "all" }}
+              onChange={(option) => {
+                handleInputSelectOptionsLoad(option);
               }}
             />
           </div>

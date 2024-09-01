@@ -4,6 +4,7 @@ import MachinesList from "./pages/machinesList/MachinesList";
 import WorkersList from "./pages/workersList/WorkersList.jsx";
 import ServicesList from "./pages/servicesList/ServicesList.jsx";
 import SchedulesList from "./pages/schedulesList/SchedulesList.jsx";
+import NotesList from "./pages/notesList/NotesList.jsx";
 import Single from "./pages/single/Single";
 import New from "./pages/new/NewMachine";
 import NewWorker from "./pages/newWorker/NewWorker";
@@ -15,7 +16,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
 import { AuthContext } from "./context/AuthContext";
-import React from 'react';
+import React from "react";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -130,6 +131,16 @@ function App() {
                 element={
                   <RequireAuth>
                     <SchedulesList />
+                  </RequireAuth>
+                }
+              />
+            </Route>
+            <Route path="notes">
+              <Route
+                index
+                element={
+                  <RequireAuth>
+                    <NotesList />
                   </RequireAuth>
                 }
               />

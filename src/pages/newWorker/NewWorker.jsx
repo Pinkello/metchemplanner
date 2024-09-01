@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import "./newWorker.scss";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
 import { useEffect, useState } from "react";
@@ -133,7 +133,7 @@ const New = ({ inputs, title }) => {
                 disabled={perc !== null && perc < 100}
                 type="submit"
               >
-                Send
+                Dodaj pracownika
               </button>
             </form>
           </div>

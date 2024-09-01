@@ -26,12 +26,6 @@ const ModalService = ({
   show,
 }) => {
   const [service, setService] = useState(currentService);
-  // const [praca, setPraca] = useState("");
-  // const [name, setName] = useState("");
-  // const [row, setRow] = useState("");
-  // const [rowPlace, setRowPlace] = useState("");
-  // const [description, setDescription] = useState("");
-  // const [worker, setWorker] = useState("");
 
   const [rowOld, setRowOld] = useState(currentService.row);
   const [rowPlaceOld, setRowPlaceOld] = useState(
@@ -102,7 +96,19 @@ const ModalService = ({
 
     fetchWorkers();
   }, [optionsWorker]);
+
   const updateDoc2 = async () => {
+    const specialSigns = ["~", "*", "/", "[", "]"];
+
+    const wrongSing = specialSigns.find((sign) => service.name.includes(sign));
+
+    if (wrongSing) {
+      toast.error(
+        <div>Błąd! Nie możesz używać w nazwie znaku ' {wrongSing} ' !</div>
+      );
+      return;
+    }
+
     const machineRef = doc(db, "dates", currentDate);
     //jesli trzeba zmienic service
     if (
@@ -125,23 +131,30 @@ const ModalService = ({
       });
 
       await updateDoc(machineRef, {
-        [`${currentShift}.servicesToAdd.${service.name}.referencja`]: currentService.referencja,
+        [`${currentShift}.servicesToAdd.${service.name}.referencja`]:
+          currentService.referencja,
         [`${currentShift}.servicesToAdd.${service.name}.praca`]: service.praca,
         [`${currentShift}.servicesToAdd.${service.name}.opis`]: service.opis,
-        [`${currentShift}.servicesToAdd.${service.name}.worker`]: service.worker,
+        [`${currentShift}.servicesToAdd.${service.name}.worker`]:
+          service.worker,
       });
       //jesli tylko update pracy/opisu
     } else {
       if (service.worker) {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: service.praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: service.opis,
-          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: service.worker,
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]:
+            service.praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
+            service.opis,
+          [`${currentShift}.servicesToAdd.${currentService.name}.worker`]:
+            service.worker,
         });
       } else {
         await updateDoc(machineRef, {
-          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]: service.praca,
-          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]: service.opis,
+          [`${currentShift}.servicesToAdd.${currentService.name}.praca`]:
+            service.praca,
+          [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
+            service.opis,
           [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: "",
         });
       }
