@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "../../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
@@ -15,7 +15,6 @@ const ModalLoad = (props) => {
     value: "all",
     label: "Wszystko",
   });
-  const [tempDate, setTempDate] = useState(props.currentDate);
   const [tempShift, setTempShift] = useState(props.currentShift);
 
   const optionsShift = [
@@ -35,6 +34,7 @@ const ModalLoad = (props) => {
   };
 
   const handleInputSelectOptionsLoad = (selectedOption) => {
+    console.log(selectedOption);
     setToLoad(selectedOption);
   };
 
@@ -52,10 +52,11 @@ const ModalLoad = (props) => {
       }
 
       const tempNotes = date.data()[currentShiftLoad].notes ?? "";
-
+      console.log(toLoad.value);
       const dateToReplace = doc(db, "dates", props.currentDate);
       switch (toLoad.value) {
         case "all":
+          console.log(date.data()[currentShiftLoad]);
           await updateDoc(dateToReplace, {
             [props.currentShift]: date.data()[currentShiftLoad],
           });
@@ -77,10 +78,20 @@ const ModalLoad = (props) => {
       }
 
       toast.success("Ładuje dane...");
+      setTimeout(() => {
+        props.onHide(false);
+      }, 400);
     } catch (error) {
       toast.error("Brak danych z podanego dnia.");
     }
   };
+
+  useEffect(() => {
+    if (props.show) {
+      console.log("test");
+      setToLoad({ label: "Wszystko", value: "all" });
+    }
+  }, [props.show]);
 
   return (
     <Modal
@@ -119,7 +130,6 @@ const ModalLoad = (props) => {
               name="shift"
               defaultValue={{ label: tempShift, value: tempShift }}
               onChange={(value) => {
-                // loadShift(currentDate, value.value);
                 handleInputSelectShiftLoad(value);
               }}
             />
