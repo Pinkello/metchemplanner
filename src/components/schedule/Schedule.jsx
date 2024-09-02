@@ -97,6 +97,10 @@ const DatatableSchedules = () => {
         if (!querySnapshot.data()) {
           console.log("puste na start");
           //pobierz domyślną liste maszyn
+          setMachines([]);
+          setMachinesAll([]);
+          setServices([]);
+          setNotes("");
           setLoading(false);
         } else {
           console.log("nie puste na start");

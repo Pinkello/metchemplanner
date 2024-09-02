@@ -3,6 +3,7 @@ import React from "react";
 import { useState, useEffect, useMemo } from "react";
 import {
   doc,
+  getDoc,
   updateDoc,
   deleteField,
   getDocs,
@@ -110,6 +111,7 @@ const ModalService = ({
     }
 
     const machineRef = doc(db, "dates", currentDate);
+
     //jesli trzeba zmienic service
     if (
       service.name !== currentService.name ||
@@ -135,17 +137,34 @@ const ModalService = ({
           currentService.referencja,
         [`${currentShift}.servicesToAdd.${service.name}.praca`]: service.praca,
         [`${currentShift}.servicesToAdd.${service.name}.opis`]: service.opis,
+        [`${currentShift}.servicesToAdd.${service.name}.referencja`]:
+          service.referencja,
         [`${currentShift}.servicesToAdd.${service.name}.worker`]:
           service.worker,
       });
-      //jesli tylko update pracy/opisu
+      // jesli tylko update pracy/opisu
     } else {
+      const date = await getDoc(machineRef);
+      const shiftData = date.data()[currentShift].servicesToAdd;
+
+      const nameToRemove = Object.keys(shiftData).find(
+        (key) => shiftData[key].referencja === service.referencja
+      );
+
+      if (nameToRemove != currentService.name) {
+        await updateDoc(machineRef, {
+          [`${currentShift}.servicesToAdd.${nameToRemove}`]: deleteField(),
+        });
+      }
+
       if (service.worker) {
         await updateDoc(machineRef, {
           [`${currentShift}.servicesToAdd.${currentService.name}.praca`]:
             service.praca,
           [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
             service.opis,
+          [`${currentShift}.servicesToAdd.${currentService.name}.referencja`]:
+            service.referencja,
           [`${currentShift}.servicesToAdd.${currentService.name}.worker`]:
             service.worker,
         });
@@ -155,6 +174,8 @@ const ModalService = ({
             service.praca,
           [`${currentShift}.servicesToAdd.${currentService.name}.opis`]:
             service.opis,
+          [`${currentShift}.servicesToAdd.${currentService.name}.referencja`]:
+            service.referencja,
           [`${currentShift}.servicesToAdd.${currentService.name}.worker`]: "",
         });
       }

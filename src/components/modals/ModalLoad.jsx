@@ -12,8 +12,8 @@ const ModalLoad = (props) => {
   const [currentDateLoad, setCurrentDateLoad] = useState(props.currentDate);
   const [currentShiftLoad, setCurrentShiftLoad] = useState(props.currentShift);
   const [toLoad, setToLoad] = useState({
-    value: "all",
-    label: "Wszystko",
+    value: "machines",
+    label: "Maszyny",
   });
   const [tempShift, setTempShift] = useState(props.currentShift);
 
@@ -34,7 +34,6 @@ const ModalLoad = (props) => {
   };
 
   const handleInputSelectOptionsLoad = (selectedOption) => {
-    console.log(selectedOption);
     setToLoad(selectedOption);
   };
 
@@ -51,28 +50,26 @@ const ModalLoad = (props) => {
         return;
       }
 
-      const tempNotes = date.data()[currentShiftLoad].notes ?? "";
-      console.log(toLoad.value);
       const dateToReplace = doc(db, "dates", props.currentDate);
       switch (toLoad.value) {
         case "all":
-          console.log(date.data()[currentShiftLoad]);
           await updateDoc(dateToReplace, {
-            [props.currentShift]: date.data()[currentShiftLoad],
+            [`${props.currentShift}.machinesToAdd`]:
+              date.data()[currentShiftLoad].machinesToAdd,
+            [`${props.currentShift}.servicesToAdd`]:
+              date.data()[currentShiftLoad].servicesToAdd,
           });
           break;
         case "machines":
           await updateDoc(dateToReplace, {
             [`${props.currentShift}.machinesToAdd`]:
               date.data()[currentShiftLoad].machinesToAdd,
-            [`${props.currentShift}.notes`]: tempNotes,
           });
           break;
         case "services":
           await updateDoc(dateToReplace, {
             [`${props.currentShift}.servicesToAdd`]:
               date.data()[currentShiftLoad].servicesToAdd,
-            [`${props.currentShift}.notes`]: tempNotes,
           });
           break;
       }
@@ -89,7 +86,8 @@ const ModalLoad = (props) => {
   useEffect(() => {
     if (props.show) {
       console.log("test");
-      setToLoad({ label: "Wszystko", value: "all" });
+      setToLoad({ label: "Maszyny", value: "machines" });
+      setCurrentShiftLoad(props.currentShift);
     }
   }, [props.show]);
 
@@ -140,7 +138,7 @@ const ModalLoad = (props) => {
               options={optionsLoad}
               id="optionsLoad"
               name="optionsLoad"
-              defaultValue={{ label: "Wszystko", value: "all" }}
+              defaultValue={{ label: "Maszyny", value: "machines" }}
               onChange={(option) => {
                 handleInputSelectOptionsLoad(option);
               }}
