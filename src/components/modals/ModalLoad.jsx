@@ -15,7 +15,6 @@ const ModalLoad = (props) => {
     value: "machines",
     label: "Maszyny",
   });
-  const [tempShift, setTempShift] = useState(props.currentShift);
 
   const optionsShift = [
     { value: "I", label: "I" },
@@ -40,7 +39,10 @@ const ModalLoad = (props) => {
   const updateDoc2 = async () => {
     const docRef = doc(db, "dates", currentDateLoad);
     const date = await getDoc(docRef);
-
+    console.log(props.currentDate);
+    console.log(props.currentShift);
+    console.log(currentDateLoad);
+    console.log(currentShiftLoad);
     try {
       if (
         props.currentDate === currentDateLoad &&
@@ -126,7 +128,10 @@ const ModalLoad = (props) => {
               options={optionsShift}
               id="shift"
               name="shift"
-              defaultValue={{ label: tempShift, value: tempShift }}
+              defaultValue={{
+                label: props.currentShift,
+                value: props.currentShift,
+              }}
               onChange={(value) => {
                 handleInputSelectShiftLoad(value);
               }}
