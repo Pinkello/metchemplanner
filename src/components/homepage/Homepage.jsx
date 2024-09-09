@@ -152,7 +152,6 @@ const Homepage = () => {
             console.log("puste na start");
 
             //pobierz domyślną liste maszyn
-
             const q2 = query(collection(db, "machines"));
             const querySnapshot2 = await getDocs(q2);
             querySnapshot2.forEach((doc) => {
@@ -179,6 +178,7 @@ const Homepage = () => {
               machinesToAdd[doc.data().name] = tempMachine;
             });
 
+            //pobierz domyślną liste montazy
             const q3 = query(collection(db, "services"));
             const querySnapshot3 = await getDocs(q3);
             querySnapshot3.forEach((doc) => {
@@ -193,18 +193,28 @@ const Homepage = () => {
               servicesToAdd[doc.data().name] = tempService;
             });
 
+            const q4 = query(collection(db, "notes"));
+            const querySnapshot4 = await getDocs(q4);
+            const tempNotes = [];
+            querySnapshot4.forEach((doc) => {
+              tempNotes.push(doc.data().notes);
+            });
+
             const docData = {
               I: {
                 machinesToAdd,
                 servicesToAdd,
+                notes: tempNotes[0],
               },
               II: {
                 machinesToAdd,
                 servicesToAdd,
+                notes: tempNotes[1],
               },
               III: {
                 machinesToAdd,
                 servicesToAdd,
+                notes: tempNotes[2],
               },
             };
 
