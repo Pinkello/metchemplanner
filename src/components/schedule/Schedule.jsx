@@ -330,6 +330,10 @@ const DatatableSchedules = () => {
         [`${currentShift}.notes`]: notes2,
       });
       toast.success("Aktualizuje...");
+
+      setTimeout(() => {
+        setModalNotesShow(false);
+      }, 400);
     };
 
     return (

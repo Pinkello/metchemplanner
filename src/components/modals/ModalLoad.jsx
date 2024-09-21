@@ -39,10 +39,7 @@ const ModalLoad = (props) => {
   const updateDoc2 = async () => {
     const docRef = doc(db, "dates", currentDateLoad);
     const date = await getDoc(docRef);
-    console.log(props.currentDate);
-    console.log(props.currentShift);
-    console.log(currentDateLoad);
-    console.log(currentShiftLoad);
+
     try {
       if (
         props.currentDate === currentDateLoad &&
