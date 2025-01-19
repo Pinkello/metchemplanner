@@ -553,9 +553,8 @@ const Homepage = () => {
     <div className="home ">
       <div className="homeContainer ">
         <Modal show={loading} centered>
-          <Modal.Body className="d-flex justify-content-center ">
+          <Modal.Body className="d-flex justify-content-center">
             <div>
-              {" "}
               <h3>Pobieranie danych... </h3>
             </div>
             <Spinner animation="border" role="status">
