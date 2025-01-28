@@ -40,49 +40,58 @@ const ModalLoad = (props) => {
     setToLoad(selectedOption);
   };
 
+  //funkcja do usuwania niepotrzebnych połączeń
+  const chooseConnections = (machinesList) => {
+    checkedItems.forEach((id) => {
+      const connection = connections[id];
+
+      machinesList[connection.machine1]["connection"] = "Brak";
+      machinesList[connection.machine2]["connection"] = "Brak";
+
+      if (connection.addition !== "Brak") {
+        //usuwam dokladke na maszynach
+        machinesList[connection.machine1]["connectionAdd"] = "Brak";
+        machinesList[connection.machine2]["connectionAdd"] = "Brak";
+
+        //sprawdzam do ktorych maszyn to byla dokladka
+        const additionTo1 = machinesList[connection.addition]["addition1"];
+        const additionTo2 = machinesList[connection.addition]["addition2"];
+
+        //dla kazdej maszyny sprawdzam czy miala połączenie - jeśli tak to z połączenia też muszę usunąć dokładke
+        if (additionTo1 !== "Brak") {
+          machinesList[additionTo1]["connectionAdd"] = "Brak";
+
+          const additionalConnection = machinesList[additionTo1]["connection"];
+
+          if (additionalConnection !== "Brak") {
+            machinesList[additionalConnection]["connectionAdd"] = "Brak";
+          }
+        }
+
+        if (additionTo2 !== "Brak") {
+          machinesList[additionTo2]["connectionAdd"] = "Brak";
+
+          const additionalConnection = machinesList[additionTo2]["connection"];
+
+          if (additionalConnection !== "Brak") {
+            machinesList[additionalConnection]["connectionAdd"] = "Brak";
+          }
+        }
+        //usuwam do której to maszyny była dokładka
+        machinesList[connection.addition]["addition1"] = "Brak";
+        machinesList[connection.addition]["addition2"] = "Brak";
+        machinesList[connection.addition]["isAddition"] = false;
+      }
+    });
+
+    return machinesList;
+  };
+
   const updateDoc2 = async () => {
     try {
       const docRef = doc(db, "dates", currentDateLoad);
       const date = await getDoc(docRef);
-      const machinesList = date.data()[currentShiftLoad].machinesToAdd;
-
-      checkedItems.forEach((element) => {
-        machinesList[connections[element].machine1]["connection"] = "Brak";
-        machinesList[connections[element].machine2]["connection"] = "Brak";
-
-        if (connections[element].addition !== "Brak") {
-          machinesList[connections[element].machine1]["connectionAdd"] = "Brak";
-          machinesList[connections[element].machine2]["connectionAdd"] = "Brak";
-
-          //usuwam do której to maszyny była dokładka
-          if (
-            machinesList[connections[element].addition]["addition1"] ===
-              connections[element].machine1 ||
-            machinesList[connections[element].addition]["addition1"] ===
-              connections[element].machine2
-          ) {
-            machinesList[connections[element].addition]["addition1"] = "Brak";
-          }
-
-          if (
-            machinesList[connections[element].addition]["addition2"] ===
-              connections[element].machine1 ||
-            machinesList[connections[element].addition]["addition2"] ===
-              connections[element].machine2
-          ) {
-            machinesList[connections[element].addition]["addition2"] = "Brak";
-          }
-
-          //jeżeli już nie jest dokładką do żadnej maszyny to ustawiam na false
-          if (
-            machinesList[connections[element].addition]["addition1"] ===
-              "Brak" &&
-            machinesList[connections[element].addition]["addition2"] === "Brak"
-          ) {
-            machinesList[connections[element].addition]["isAddition"] = false;
-          }
-        }
-      });
+      let machinesList = date.data()[currentShiftLoad].machinesToAdd;
 
       if (
         props.currentDate === currentDateLoad &&
@@ -95,6 +104,7 @@ const ModalLoad = (props) => {
       const dateToReplace = doc(db, "dates", props.currentDate);
       switch (toLoad.value) {
         case "all":
+          machinesList = chooseConnections(machinesList);
           await updateDoc(dateToReplace, {
             [`${props.currentShift}.machinesToAdd`]: machinesList,
             [`${props.currentShift}.servicesToAdd`]:
@@ -102,6 +112,7 @@ const ModalLoad = (props) => {
           });
           break;
         case "machines":
+          machinesList = chooseConnections(machinesList);
           await updateDoc(dateToReplace, {
             [`${props.currentShift}.machinesToAdd`]: machinesList,
           });
@@ -157,7 +168,9 @@ const ModalLoad = (props) => {
         sortedMachines.forEach(([key, value]) => {
           if (
             value.connection !== "Brak" &&
-            !connectionsArray.some((el) => el.machine1 === value.connection)
+            !connectionsArray.some(
+              (el) => el.machine1 === value.connection && el.machine2 === key
+            )
           ) {
             connectionsArray.push({
               machine1: key,
@@ -268,7 +281,7 @@ const ModalLoad = (props) => {
             {connections.length > 0 && (
               <div>
                 <h3>Lista połączeń do usunięcia:</h3>
-                <ul>
+                <ul className="bg-blue p-10">
                   {connections.map((con, index) => (
                     <div key={index}>
                       <input
@@ -290,8 +303,16 @@ const ModalLoad = (props) => {
                     </div>
                   ))}
                 </ul>
-                <button onClick={handleSelectAll}>Zaznacz wszystkie</button>
-                <button onClick={handleDeselectAll}>Odznacz wszystkie</button>
+                <Button
+                  className="buttonFormModal"
+                  variant="primary"
+                  onClick={handleSelectAll}
+                >
+                  Zaznacz wszystkie
+                </Button>
+                <Button variant="primary" onClick={handleDeselectAll}>
+                  Odznacz wszystkie
+                </Button>
               </div>
             )}
           </div>
